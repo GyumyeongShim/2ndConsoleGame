@@ -36,8 +36,8 @@ namespace Wannabe
 
 	void StatComponent::ProgressTurn(float spdMultiple)
 	{
-		float speed = 1.0f + (m_EquipBonus.spd * 0.1f);
-		m_fTurnCnt += speed;
+		float speedBonus = 1.0f + (GetSpd() * 0.1f);
+		m_fTurnCnt += speedBonus * spdMultiple;
 	}
 
 	void StatComponent::ResetTurn()
