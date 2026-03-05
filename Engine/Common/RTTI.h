@@ -6,7 +6,7 @@
 // 아래 코드에서 Type, ParentType이 실제 타입으로 변환되어 복사/붙여넣기 됨.
 #define RTTI_DECLARATIONS(Type, ParentType)												\
 friend class RTTI;																		\
-protected:																				\
+public:																				\
 	static const size_t TypeIdClass()													\
 	{																					\
 		static int runTimeTypeId = 0;													\
