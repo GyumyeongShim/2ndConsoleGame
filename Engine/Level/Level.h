@@ -7,6 +7,7 @@
 #include "Render/Camera.h"
 #include "Render/RenderSystem.h"
 #include "Render/Canvas.h"
+#include "../Game/Data/RunGameData.h"
 
 namespace Wannabe
 {
@@ -25,6 +26,9 @@ namespace Wannabe
 		virtual void Draw(Wannabe::RenderSystem& renderSys);
 
 		virtual void ConfigureRenderer(RenderSystem& renderer) const = 0; // actor draw mode 지정
+		virtual void OnEnterLevel(struct RunGameData* pData) {};
+		virtual void OnExitLevel(struct RunGameData* pData) {};
+
 		//액터 추가 함수
 		void AddNewActor(Actor* newActor); //전방선언을 여기서 해버림
 

@@ -123,6 +123,7 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClCompile Include="Component\StatusComponent.cpp" />
     <ClCompile Include="Interface\IBattleCommand.cpp" />
     <ClCompile Include="Item\ItemInstance.cpp" />
+    <ClCompile Include="Manager\SaveManager.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Core\Input.cpp" />
     <ClCompile Include="Render\RenderSystem.cpp" />
@@ -170,6 +171,7 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClInclude Include="Interface\IEngineCutscenePlayer.h" />
     <ClInclude Include="Interface\IRemoveActorCallback.h" />
     <ClInclude Include="Item\ItemInstance.h" />
+    <ClInclude Include="Manager\SaveManager.h" />
     <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\RenderSystem.h" />
     <ClInclude Include="Component\StatComponent.h" />

@@ -78,6 +78,7 @@ namespace Wannabe
         int GetCritChance() const { return m_iCritChance + m_EquipBonus.critChance; }
         int GetCritResist() const { return m_iCritResist + m_EquipBonus.critResist; }
         float GetTurnCnt() const { return m_fTurnCnt; }
+        StatData GetStatData() const;
 
     private:
         int m_iLevel = 1;

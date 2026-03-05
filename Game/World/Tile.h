@@ -6,6 +6,7 @@ enum class TileType
     Ground,
     Wall,
     Bush,
+    Portal,
     Event
 };
 

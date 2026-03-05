@@ -5,11 +5,11 @@
 #include "Manager/DataManager.h"
 
 #include "Level/TitleLevel.h"
+#include "Level/TownLevel.h"
 #include "Level/MainLevel.h"
 #include "Level/BattleLevel.h"
 
-#include "Data/MonsterData.h"
-#include "Data/ActionData.h"
+#include "Data/RunGameData.h"
 
 using namespace Wannabe;
 
@@ -36,27 +36,89 @@ Game::~Game()
 	m_pBattleLevel = nullptr;
 }
 
-void Game::Init()
+void Game::InitNewGame()
 {
-	// 1. JSON 파일 로드
-	DataManager::Get().Init();
+	m_pRunData = std::make_unique<RunGameData>();
+	const PlayerData* pDefaultData = DataManager::Get().GetPlayerData(1);
 
-	//레벨 생성 및 등록
-	m_vecLevels.emplace_back(new MainLevel());
-	m_pCurLevel = m_vecLevels[0];
+	if (pDefaultData)
+	{
+		m_pRunData.get()->m_PlayerStat.iLevel = pDefaultData->baseStat.iLevel;
+		m_pRunData.get()->m_PlayerStat.iMaxHp = pDefaultData->baseStat.iMaxHp;
+		m_pRunData.get()->m_PlayerStat.iHp = pDefaultData->baseStat.iMaxHp; // 시작 시 풀피
+		m_pRunData.get()->m_PlayerStat.iAtk = pDefaultData->baseStat.iAtk;
+		m_pRunData.get()->m_PlayerStat.iDef = pDefaultData->baseStat.iDef;
 
+		m_pRunData.get()->m_PlayerStat.iAccuracy = pDefaultData->baseStat.iAccuracy;
+		m_pRunData.get()->m_PlayerStat.iEvasion = pDefaultData->baseStat.iEvasion;
+		m_pRunData.get()->m_PlayerStat.iCritChance = pDefaultData->baseStat.iCritChance;
+		m_pRunData.get()->m_PlayerStat.iCritResist = pDefaultData->baseStat.iCritResist;
+
+		m_pRunData.get()->m_PlayerStat.iMaxExp = 100;
+		m_pRunData.get()->m_PlayerStat.iExp = 0;
+
+		m_pRunData.get()->m_PlayerStat.iTurnCnt = 0;
+		m_pRunData.get()->m_PlayerStat.iMaxTurnCnt = 10;
+	}
+
+	//위치
+	m_pRunData->m_CurLevelId = TownLevel::TypeIdClass();
+	m_pRunData->m_lastWorldPos = { 5, 5 }; // 마을 입구 좌표
+	m_pRunData->m_iGold = 0;
+}
+
+void Game::ChangeLevel(const size_t levelID)
+{
+	if (m_pCurLevel && m_pRunData) // PlayerData 최신화해서 가져오기
+		m_pCurLevel->OnExitLevel(m_pRunData.get());
+
+	Level* pNewLevel = CreateLevel(levelID);
+	if (pNewLevel == nullptr)
+		return;
+
+	pNewLevel->OnEnterLevel(m_pRunData.get());
+
+	// 레벨 제거
+	if (m_pBattleLevel)
+	{
+		delete m_pBattleLevel;
+		m_pBattleLevel = nullptr;
+	}
+
+	if (m_pCurLevel)
+	{
+		delete m_pCurLevel;
+		m_pCurLevel = nullptr;
+	}
+
+	m_pCurLevel = pNewLevel;
 	Engine::Get().SetNewLevel(m_pCurLevel);
 }
 
-void Game::ToggleMenu()
+void Game::Init()
 {
-	//화면 지우기.
-	system("cls");
-	int stateIdx = static_cast<int>(state);
-	int Nextstate = 1 - stateIdx;
-	state = (State)Nextstate;
+	//DataManager::Get().Init();
 
-	m_pCurLevel = m_vecLevels[static_cast<int>(state)];
+	//m_vecLevels.emplace_back(new MainLevel());
+	//m_pCurLevel = m_vecLevels[0];
+
+	//Engine::Get().SetNewLevel(m_pCurLevel);
+	
+	DataManager::Get().Init();
+
+	ChangeLevel(TitleLevel::TypeIdClass());
+}
+
+Level* Game::CreateLevel(const size_t levelID)
+{
+	if (levelID == TitleLevel::TypeIdClass())
+		return new TitleLevel();
+	if (levelID == TownLevel::TypeIdClass())
+		return new TownLevel();
+	if (levelID == MainLevel::TypeIdClass())
+		return new MainLevel();
+
+	return nullptr;
 }
 
 void Game::BattleStart(std::vector<Wannabe::Actor*> vecPlayerParty, std::vector<Wannabe::Actor*> vecEnemyParty)
@@ -79,6 +141,7 @@ void Game::BattleStart(std::vector<Wannabe::Actor*> vecPlayerParty, std::vector<
 	m_pBattleLevel->SetupBattle(vecPlayerParty, vecEnemyParty);
 
 	m_pCurLevel = m_pBattleLevel;
+	m_eState = State::Battle;
 	Engine::Get().SetNewLevel(m_pCurLevel);
 }
 
@@ -109,6 +172,7 @@ void Game::BattleEnd()
 
 	m_pCurLevel = m_vecLevels[0];
 	Engine::Get().SetNewLevel(m_pCurLevel);
+	m_eState = State::GamePlay;
 }
 
 Game& Game::Get()

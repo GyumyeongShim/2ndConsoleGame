@@ -38,4 +38,3 @@ private:
 	std::vector<Actor*> m_vecPlayers;	
 	std::vector<Actor*> m_vecMonsters;	
 };
-

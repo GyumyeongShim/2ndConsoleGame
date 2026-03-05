@@ -6,7 +6,6 @@
 
 #include "Battle/Event/GameBattleEventFactory.h"
 
-//레벨 관리에 사용할 열거형.
 enum class State
 {
 	None = -1,
@@ -17,32 +16,39 @@ enum class State
 
 class MainLevel;
 class BattleLevel;
+class RunGameData;
 
-class Game : public Engine // 모든 레벨을 관리하는 총괄 매니저 느낌
+class Game : public Engine
 {
 public:
 	Game();
 	~Game();
 
-	void ToggleMenu();
+	void InitNewGame();
+	void ChangeLevel(const size_t levelID);
 
 	void BattleStart(std::vector<Actor*> vecPlayerParty, std::vector<Actor*>vecEnemyParty);
 	void BattleEnd();
 
 	BattleLevel* GetBattleLevel() { return m_pBattleLevel; }
+	RunGameData* GetRunData() { return m_pRunData.get(); }
+
 	static Game& Get();
+
 private:
 	void Init();
+	Level* CreateLevel(const size_t levelID);
 
 private:
-	std::vector<Level*> m_vecLevels; // 게임에서 관리하는 레벨을 저장할 배열
-
-	State state = State::GamePlay; // 현재 활성화된 레벨을 나타내는 상태 변수
-
 	static Game* instance; // 싱글톤
 
-	Level* m_pCurLevel = nullptr;
-	BattleLevel* m_pBattleLevel = nullptr;
-	std::unique_ptr<GameBattleEventFactory> m_pBattleFactory;
-};
+	State m_eState = State::Title;
 
+	std::vector<Level*> m_vecLevels;
+	Level* m_pCurLevel = nullptr; //필드/던전, 마을
+	BattleLevel* m_pBattleLevel = nullptr; //현재 전투 레벨
+
+	std::unique_ptr<GameBattleEventFactory> m_pBattleFactory; //log,dmg,delay 등등 이벤트
+
+	std::unique_ptr<RunGameData> m_pRunData; // 레벨전환시 해당 데이터로 재생성
+};

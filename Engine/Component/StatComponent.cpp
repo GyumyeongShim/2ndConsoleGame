@@ -111,4 +111,29 @@ namespace Wannabe
 		m_EquipBonus.hp -= hp;
 		m_EquipBonus.spd -= speed;
 	}
+
+	StatData StatComponent::GetStatData() const
+	{
+		StatData data;
+
+		data.iLevel = m_iLevel;
+		data.iMaxHp = m_iMaxHp;
+		data.iHp = m_iHp;
+		data.iAtk = m_iAtk;
+		data.iDef = m_iDef;
+		data.iSpd = m_iSpd;
+
+		data.iAccuracy = m_iAccuracy;
+		data.iEvasion = m_iEvasion;
+		data.iCritChance = m_iCritChance;
+		data.iCritResist = m_iCritResist;
+
+		data.iMaxExp = m_iMaxExp;
+		data.iExp = m_iExp;
+
+		data.iTurnCnt = static_cast<int>(m_fTurnCnt);
+		data.iMaxTurnCnt = m_iMaxTurnCnt;
+
+		return data;
+	}
 }
