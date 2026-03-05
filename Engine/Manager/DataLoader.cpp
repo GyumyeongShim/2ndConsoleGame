@@ -106,10 +106,18 @@ std::wstring ToWString(const std::string& str)
 
 void from_json(const json& j, BaseStat& stat)
 {
-    stat.maxHp = j.value("maxHp", 0);
-    stat.atk = j.value("atk", 0);
-    stat.defense = j.value("defense", 0);
-    stat.spd = j.value("spd", 0);
+    stat.iMaxHp = j.value("maxHp", 0);
+    stat.iAtk = j.value("atk", 0);
+    stat.iDef = j.value("def", 0); // 구조체 변수명은 iDef, JSON 키는 defense
+    stat.iSpd = j.value("spd", 0);
+
+    stat.iAccuracy = j.value("accuracy", 0);
+    stat.iEvasion = j.value("evasion", 0);
+    stat.iCritChance = j.value("critChance", 0);
+    stat.iCritResist = j.value("critResist", 0);
+
+    stat.iLevel = j.value("level", 1);   // 레벨 기본값은 보통 1
+    stat.iMaxExp = j.value("maxExp", 0);
 }
 
 void from_json(const json& j, CharacterVisualData& visual)

@@ -6,7 +6,13 @@
         "maxHp": 60,
         "atk": 8,
         "defense": 3,
-        "spd": 8
+        "spd": 8,
+        "accuracy": 95,
+        "evasion": 2,
+        "critChance": 5,
+        "critResist": 0,
+        "level": 1,
+        "maxExp": 0
       },
       "expReward": 15,
       "skillIds": [ 301, 302 ],
@@ -17,7 +23,7 @@
           "(*_*)",
           "-----"
         ],
-        "color": "RightGreen"
+        "color": "LightGreen"
       }
     },
     {
@@ -26,7 +32,13 @@
         "maxHp": 90,
         "atk": 12,
         "defense": 5,
-        "spd": 6
+        "spd": 6,
+        "accuracy": 100,
+        "evasion": 5,
+        "critChance": 10,
+        "critResist": 5,
+        "level": 3,
+        "maxExp": 0
       },
       "expReward": 30,
       "skillIds": [ 303, 304 ],
@@ -48,7 +60,13 @@
         "maxHp": 70,
         "atk": 15,
         "defense": 4,
-        "spd": 9
+        "spd": 9,
+        "accuracy": 110,
+        "evasion": 15,
+        "critChance": 20,
+        "critResist": 10,
+        "level": 5,
+        "maxExp": 0
       },
       "expReward": 35,
       "skillIds": [ 305, 306 ],
@@ -59,7 +77,7 @@
           "(oo) ",
           " vv  "
         ],
-        "color": "RightGray"
+        "color": "LightGray"
       }
     },
     {
@@ -68,7 +86,13 @@
         "maxHp": 50,
         "atk": 10,
         "defense": 2,
-        "spd": 12
+        "spd": 12,
+        "accuracy": 120,
+        "evasion": 20,
+        "critChance": 5,
+        "critResist": 2,
+        "level": 4,
+        "maxExp": 0
       },
       "expReward": 25,
       "skillIds": [ 307, 308 ],
