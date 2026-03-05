@@ -6,9 +6,10 @@ namespace Wannabe
 {
 	void StatComponent::Update(float fDeltaTime)
 	{
-		m_fTurnCnt += fDeltaTime;
+		float speedBonus = 1.0f + (GetSpd() * 0.1f);
+		m_fTurnCnt += speedBonus * fDeltaTime;
 
-		if (m_fTurnCnt > m_iMaxTurnCnt)
+		if (m_fTurnCnt > static_cast<float>(m_iMaxTurnCnt))
 			m_fTurnCnt = static_cast<float>(m_iMaxTurnCnt);
 	}
 
