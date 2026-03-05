@@ -1,0 +1,44 @@
+{
+  "Players": [
+    {
+      "tid": 1,
+      "baseStat": {
+        "maxHp": 160,
+        "atk": 25,
+        "defense": 14,
+        "spd": 5
+      },
+      "visual": {
+        "name": "Warrior",
+        "ascii": [
+          "  O  ",
+          " /|\\ ",
+          " / \\ "
+        ],
+        "color": "Red"
+      },
+      "level": 5,
+      "skillIds": [ 101, 102, 103 ]
+    },
+    {
+      "tid": 2,
+      "baseStat": {
+        "maxHp": 110,
+        "atk": 30,
+        "defense": 6,
+        "spd": 8
+      },
+      "visual": {
+        "name": "Mage",
+        "ascii": [
+          "  O  ",
+          " /|\\ ",
+          "  |  "
+        ],
+        "color": "Blue"
+      },
+      "level": 3,
+      "skillIds": [ 201, 202 ]
+    }
+  ]
+}

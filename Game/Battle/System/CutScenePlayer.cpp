@@ -1,0 +1,93 @@
+#include "CutscenePlayer.h"
+#include "Battle/BattleContext.h"
+#include "Battle/BattleLogSystem.h"
+
+void CutscenePlayer::Push(std::unique_ptr<Wannabe::ICutsceneEvent> event)
+{
+    if (event == nullptr)
+        return;
+
+    m_queCutSceneEvent.push(std::move(event));
+    if (m_eState != State::Play)
+        m_eState = State::Play;
+}
+
+void CutscenePlayer::Update(Wannabe::BattleContext& context, float fDeltaTime)
+{
+    if (m_eState != State::Play)
+        return;
+
+    if (m_queCutSceneEvent.empty() == true)
+    {
+        m_eState = State::Idle;
+        return;
+    }
+
+    if (m_bSkipRequested)
+    {
+        while (!m_queCutSceneEvent.empty())
+            m_queCutSceneEvent.pop();
+
+        m_bIsStarted = false;
+        m_eState = State::Idle;
+        m_bSkipRequested = false;
+        return;
+    }
+
+    m_fEventCooldown -= fDeltaTime;
+    if (m_fEventCooldown > 0)
+        return;
+
+    auto& event = m_queCutSceneEvent.front();
+    if (event->IsValid(context) == false)
+    {
+        m_queCutSceneEvent.pop();
+        m_bIsStarted = false;
+        return;
+    }
+
+    if (m_bIsStarted == false)
+    {
+        event->OnStart(context);
+        m_bIsStarted = true;
+        return;
+    }
+
+    if (event->Update(context, fDeltaTime))
+    {
+        event->OnEnd(context);
+
+        m_queCutSceneEvent.pop();
+        m_bIsStarted = false;
+        m_fEventCooldown = m_fEventInterval;
+    }
+}
+
+void CutscenePlayer::ClearCutscenePlayer()
+{
+    while (!m_queCutSceneEvent.empty())
+        m_queCutSceneEvent.pop();
+
+    m_bIsStarted = false;
+    m_eState = State::Idle;
+}
+
+const bool CutscenePlayer::IsPlaying() const
+{
+    return m_eState == State::Play;
+}
+
+const bool CutscenePlayer::IsFinished() const
+{
+    return m_eState == State::Finish;
+}
+
+void CutscenePlayer::RequestSkip()
+{
+    m_bSkipRequested = true;
+}
+
+bool CutscenePlayer::IsSkippable() const
+{
+    return true;
+}

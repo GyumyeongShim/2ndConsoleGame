@@ -1,0 +1,140 @@
+{
+  "Items":
+  [
+    {
+      "tid": 1001,
+      "name": "Small Potion",
+      "itemType": "Consumable",
+      "value": 50,
+      "targetType": "AllySingle",
+      "maxTargetCnt": 1,
+
+      "visual":
+      {
+        "asciiSymbol": "+",
+        "color": "Green",
+        "particleSpeed": 12.0,
+        "particleRange": 4
+      },
+
+      "effects":
+      [
+        {
+          "type": "Heal",
+          "power": 50,
+          "duration": 0,
+          "ratio": 100
+        }
+      ]
+    },
+
+    {
+      "tid": 1002,
+      "name": "Smoke Bomb",
+      "itemType": "Consumable",
+      "value": 120,
+      "targetType": "AllEnemy",
+      "maxTargetCnt": 5,
+
+      "visual":
+      {
+        "asciiSymbol": "~",
+        "color": "Cyan",
+        "particleSpeed": 8.0,
+        "particleRange": 6
+      },
+
+      "effects":
+      [
+        {
+          "type": "ApplyStatus",
+          "statusType": "Blind",
+          "power": 0,
+          "duration": 2,
+          "ratio": 75
+        }
+      ]
+    },
+	
+	{
+	  "tid": 1010,
+	  "name": "Battle Tonic",
+	  "itemType": "Consumable",
+	  "value": 200,
+	  "targetType": "Self",
+	  "maxTargetCnt": 1,
+
+	  "visual":
+	  {
+		"asciiSymbol": "!",
+		"color": "Yellow",
+		"particleSpeed": 15,
+		"particleRange": 5
+	  },
+
+	  "effects":
+	  [
+		{
+		  "type": "Heal",
+		  "power": 30
+		},
+		{
+		  "type": "ApplyStatus",
+		  "statusType": "AtkUp",
+		  "power": 5,
+		  "duration": 3,
+		  "ratio": 100
+		}
+	  ]
+	},
+	
+    {
+      "tid": 2001,
+      "name": "Iron Sword",
+      "itemType": "Equipment",
+      "value": 300,
+      "equipSlot": "Weapon",
+
+      "statModifier":
+      {
+        "iAtk": 10,
+        "iAccuracy": 5
+      }
+    },
+
+    {
+      "tid": 2002,
+      "name": "Swift Boots",
+      "itemType": "Equipment",
+      "value": 450,
+      "equipSlot": "Armor",
+
+      "statModifier":
+      {
+        "iSpd": 7,
+        "iEvasion": 5
+      }
+    },
+
+    {
+      "tid": 2003,
+      "name": "Assassin Ring",
+      "itemType": "Equipment",
+      "value": 800,
+      "equipSlot": "Accessory",
+
+      "statModifier":
+      {
+        "iCritChance": 15,
+        "iCritResist": -5
+      }
+    },
+
+    {
+      "tid": 9001,
+      "name": "Ancient Relic",
+      "itemType": "Quest",
+      "value": 0
+    }
+  ]
+}

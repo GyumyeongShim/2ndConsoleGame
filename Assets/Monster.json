@@ -1,0 +1,86 @@
+﻿{
+  "Monsters": [
+    {
+      "tid": 1,
+      "baseStat": {
+        "maxHp": 60,
+        "atk": 8,
+        "defense": 3,
+        "spd": 8
+      },
+      "expReward": 15,
+      "skillIds": [ 301, 302 ],
+      "visual": {
+        "name": "슬라임",
+        "ascii": [
+          "____",
+          "(*_*)",
+          "-----"
+        ],
+        "color": "RightGreen"
+      }
+    },
+    {
+      "tid": 2,
+      "baseStat": {
+        "maxHp": 90,
+        "atk": 12,
+        "defense": 5,
+        "spd": 6
+      },
+      "expReward": 30,
+      "skillIds": [ 303, 304 ],
+      "visual": {
+        "name": "고블린",
+        "ascii": [
+          "  /\\  ",
+          " (oo) ",
+          " /||\\ ",
+          "/_  _\\",
+          "  ~~  "
+        ],
+        "color": "Green"
+      }
+    },
+    {
+      "tid": 3,
+      "baseStat": {
+        "maxHp": 70,
+        "atk": 15,
+        "defense": 4,
+        "spd": 9
+      },
+      "expReward": 35,
+      "skillIds": [ 305, 306 ],
+      "visual": {
+        "name": "늑대",
+        "ascii": [
+          "/\\^/ ",
+          "(oo) ",
+          " vv  "
+        ],
+        "color": "RightGray"
+      }
+    },
+    {
+      "tid": 4,
+      "baseStat": {
+        "maxHp": 50,
+        "atk": 10,
+        "defense": 2,
+        "spd": 12
+      },
+      "expReward": 25,
+      "skillIds": [ 307, 308 ],
+      "visual": {
+        "name": "박쥐",
+        "ascii": [
+          "\\/^\\/ ",
+          " (o o) ",
+          "  vv  "
+        ],
+        "color": "Cyan"
+      }
+    }
+  ]
+}

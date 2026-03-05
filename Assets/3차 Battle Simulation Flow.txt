@@ -1,0 +1,85 @@
+핵심 원칙: 시뮬레이션(Logic)과 프레젠테이션(Visual)의 엄격한 분리 및 TurnManager의 책임 강화.
+
+1. 전체 계층 구조 (Layered Architecture)
+Plaintext
+[Input Layer]          Input (VK_RETURN / Target Select)
+     ↓
+[Command Layer]        IBattleCommand (AtkCommand, SkillCommand)
+     ↓
+[Simulation Layer]     TurnManager ↔ BattleResolver ↔ StatComponent
+     ↓
+[Data Layer]           BattleResult (데미지 수치, 상태이상 결과 등 순수 데이터)
+     ↓
+[Interpreter Layer]    BattleEventProcessor (Result → CutSceneEvent 변환)
+     ↓
+[Presentation Layer]   CutScenePlayer (DamageEvent, LogEvent, TurnEndEvent)
+     ↓
+[World Layer]          BattleLevel / BattleActor / ProjectileActor
+
+2. Simulation Layer (역할 재정의)
+구성:
+
+TurnManager: 턴의 주체(m_CurActor)를 결정하고, 연출이 끝난 후 게이지를 리셋(TurnEnd)하는 총괄 제어자.
+BattleResolver: 스탯을 비교하여 회피, 크리티컬, 최종 데미지 수치를 도출하는 순수 계산기.
+StatComponent: 게이지(m_fTurnCnt)와 생명력(m_iHp) 데이터를 보유.
+
+핵심 로직:
+BattleResolver는 CutScenePlayer를 절대 include 하지 않는다.
+계산 결과는 오직 BattleResult 구조체에 담겨 반환된다.
+
+3. Data Layer: BattleResult (연결 고리)
+계산된 결과값을 담는 통로입니다.
+
+필드 예시:
+TargetActor*: 대상 포인터
+int Damage: 확정된 데미지 양
+bool isDead: 이 타격으로 사망했는지 여부
+std::vector<StatusEffect>: 부여된 상태이상 목록
+
+4. Interpreter Layer: BattleEventProcessor
+구성:
+BattleEventProcessor (기존의 BattleResolver 결과 해석기 역할)
+GameBattleEventFactory
+
+역할:
+BattleResult를 매개변수로 받아 실제 연출 객체들을 생성한다.
+
+연결 고리 조립:
+LogEvent 생성 (누가 누구를 공격했다)
+VisualEffectEvent 생성 (피격 이펙트)
+DamageEvent 생성 (실제 HP 차감 및 숫자 띄우기)
+TurnEndEvent 생성 (모든 연출의 끝에 반드시 삽입)
+생성된 이벤트들을 CutScenePlayer에 Push 한다.
+
+5. Presentation Layer (연출 실행)
+구성:
+CutScenePlayer: 큐에 쌓인 이벤트를 순차적으로 업데이트.
+TurnEndEvent: 이 이벤트의 Update가 끝날 때 TurnManager::TurnEnd()를 호출하여 데이터상의 턴을 공식 종료시킨다.
+
+제한:
+CutScenePlayer가 재생 중일 때(IsPlaying == true), BattleLevel은 다른 상태(TurnCheck 등)로 전이할 수 없다.
+
+6. World Layer (상태 보관)
+구성:
+
+BattleLevel: 전체 Phase(Phase_TurnCheck, Phase_Selection, Phase_Animation) 관리.
+BattleActor: 자신의 위치 및 선택 상태(SetTargeted) 표현.
+
+역할:
+Phase_Animation에서 CutScenePlayer의 상태를 관찰하며, 모든 연출이 끝났을 때만 다음 턴으로 넘긴다.
+
+7. 수정된 의존성 규칙 (Dependency Rules)
+단방향 흐름: Command → Resolver → Result → Processor → Events.
+TurnManager의 독립성: TurnManager는 BattleLevel의 상태를 몰라도 된다. 오직 TurnEnd()가 호출되었을 때 현재 액터를 리셋할 뿐이다.
+포인터 안전성: BattleEventProcessor는 FlushRemoval과 협력하여 죽은 대상에게 연출을 시도하지 않도록 검사한다.
+
+8. 최종 실행 메커니즘 (The "Glue")
+현재 프로젝트에서 "연결"을 완성하는 최종 시퀀스입니다.
+
+Logic: AtkCommand::Execute() 실행.
+Simulation: Resolver가 BattleResult 생성.
+Interpretation: EventProcessor가 Result를 CutsceneEvents 리스트로 변환.
+Push: 생성된 리스트를 CutScenePlayer에 전달.
+Visual: CutScenePlayer가 화면에 출력 (데미지 쾅!).
+Cleanup: 마지막 TurnEndEvent가 실행되며 StatComponent::ResetTurn() 호출.
+Next: BattleLevel이 비어있는 큐를 확인하고 다음 액터를 찾음(Phase_TurnCheck).

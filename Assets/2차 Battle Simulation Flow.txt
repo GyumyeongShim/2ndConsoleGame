@@ -1,0 +1,179 @@
+==============================
+TURN-BASED BATTLE ARCHITECTURE
+==============================
+
+[목표]
+전투 시뮬레이션(Simulation)과 연출(Presentation)을 완전히 분리한다.
+Simulation은 규칙 계산만 담당한다.
+Presentation은 결과를 해석하여 연출을 실행한다.
+World는 Actor 및 레벨을 관리한다.
+의존성은 한 방향으로만 흐른다.
+
+--------------------------------------------------
+1. 전체 계층 구조
+--------------------------------------------------
+
+Input
+  ↓
+Command
+  ↓
+Simulation Layer
+  ↓
+BattleResult (Data)
+  ↓
+Result Interpreter
+  ↓
+CutScene Events
+  ↓
+CutScenePlayer
+  ↓
+World (BattleLevel / Actor)
+
+--------------------------------------------------
+2. Simulation Layer
+--------------------------------------------------
+
+구성:
+- TurnManager
+- Command (SkillCommand 등)
+- SkillSimulation (기존 SkillExecutionEvent의 순수화 버전)
+- BattleContext
+- BattleResult (순수 데이터 구조)
+
+역할:
+- 타겟 결정
+- 데미지 계산
+- 상태 적용 계산
+- 행동 가능 여부 판단
+- BattleResult 생성
+
+제한:
+- CutScenePlayer를 모르면 된다.
+- ProjectileActor를 모르면 된다.
+- BattleLevel을 직접 조작하면 안 된다.
+- 연출 관련 클래스를 include 하지 않는다.
+
+BattleContext가 포함하는 기능:
+- CalcSkillDamage
+- ResolveTargets
+- ApplyDamage (논리적 적용)
+- ApplyStatus (논리적 적용)
+- CanAct
+
+BattleContext가 포함하면 안 되는 것:
+- CutScenePlayer
+- BattleLevel
+- SpawnActor
+- RemoveActor
+- 연출 이벤트 타입
+
+--------------------------------------------------
+3. BattleResult (Data Layer)
+--------------------------------------------------
+
+순수 데이터 구조체.
+
+예시 필드:
+
+- ResultType (Damage, ApplyStatus 등)
+- Instigator
+- Target
+- Value
+- StatusType
+- Duration
+
+특징:
+- 로직 없음
+- 포인터 최소화 (가능하면 ID 사용)
+- 다른 계층을 include 하지 않음
+
+BattleResult는 계층 간 연결 고리이다.
+
+--------------------------------------------------
+4. Result Interpreter Layer
+--------------------------------------------------
+
+구성:
+- BattleResultInterpreter
+
+역할:
+- BattleResult를 해석한다.
+- CutSceneEvent를 생성한다.
+- 필요 시 ProjectileActor 등을 생성한다.
+- 연출 흐름(DelayEvent 등)을 조립한다.
+
+이 레이어가 연출과 월드를 연결한다.
+Simulation은 이 레이어를 모른다.
+
+--------------------------------------------------
+5. Presentation Layer
+--------------------------------------------------
+
+구성:
+- ICutsceneEvent
+- DamageEvent
+- DelayEvent
+- ApplyStatusEvent
+- CutScenePlayer
+
+역할:
+- 이벤트 재생
+- 시간 흐름 관리
+- 연출 실행
+
+제한:
+- 전투 계산 로직을 포함하지 않는다.
+- BattleContext를 직접 조작하지 않는다.
+
+--------------------------------------------------
+6. World Layer
+--------------------------------------------------
+
+구성:
+- BattleLevel
+- Actor
+- ProjectileActor 등
+
+역할:
+- Actor 생성 및 제거
+- 파티 관리
+- 실제 월드 상태 보관
+
+제한:
+- 전투 계산을 하지 않는다.
+- BattleResult를 직접 생성하지 않는다.
+
+--------------------------------------------------
+7. 의존성 규칙
+--------------------------------------------------
+
+허용 방향:
+
+Simulation → BattleResult (Data)
+Interpreter → BattleResult
+Interpreter → Presentation
+Interpreter → World
+
+금지 방향:
+
+Simulation → Presentation
+Simulation → World
+Presentation → Simulation
+World → Simulation 내부 로직 호출
+
+순환 의존성은 절대 허용하지 않는다.
+
+--------------------------------------------------
+8. 핵심 철학
+--------------------------------------------------
+
+Simulation은 "결과를 계산"한다.
+Presentation은 "결과를 해석"한다.
+World는 "상태를 보관"한다.
+
+계산과 해석이 분리되는 순간,
+전투 시스템은 엔진이 된다.
+
+==============================
+END OF DOCUMENT
+==============================

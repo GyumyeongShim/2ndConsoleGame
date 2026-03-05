@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{6d22c0ab-eb28-44fa-b7ac-9abfc3450533}</ProjectGuid>
+    <RootNamespace>Game</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Bin\$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)Bin\$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)\;..\Engine;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\Library\Engine\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);..\Includes\Engine\;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\Library\Engine\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Actor\BattleActor.cpp" />
+    <ClCompile Include="Actor\Monster.cpp" />
+    <ClCompile Include="Actor\Player.cpp" />
+    <ClCompile Include="Actor\ProjectileActor.cpp" />
+    <ClCompile Include="Battle\Command\ItemCommand.cpp" />
+    <ClCompile Include="Battle\Command\RunCommand.cpp" />
+    <ClCompile Include="Battle\Command\SkillCommand.cpp" />
+    <ClCompile Include="Battle\Cutscene\AsciiParticleEvent.cpp" />
+    <ClCompile Include="Battle\Cutscene\BattlePhaseChangeEvent.cpp" />
+    <ClCompile Include="Battle\Cutscene\DamageEvent.cpp" />
+    <ClCompile Include="Battle\CutScene\LogEvent.cpp" />
+    <ClCompile Include="Battle\Cutscene\VisualEffectEvent.cpp" />
+    <ClCompile Include="Battle\AI\EnemyAI.cpp" />
+    <ClCompile Include="Battle\Cutscene\DelayEvent.cpp" />
+    <ClCompile Include="Battle\Cutscene\DeathEvent.cpp" />
+    <ClCompile Include="Battle\System\CutScenePlayer.cpp" />
+    <ClCompile Include="Battle\Event\GameBattleEventFactory.cpp" />
+    <ClCompile Include="Battle\Cutscene\TurnStartEvent.cpp" />
+    <ClCompile Include="Battle\Cutscene\TurnEndEvent.cpp" />
+    <ClCompile Include="Item\EquipmentItem.cpp" />
+    <ClCompile Include="UI\UIAnimation\BlinkAnimation.cpp" />
+    <ClCompile Include="UI\UIAnimation\SlideAnimation.cpp" />
+    <ClCompile Include="UI\UIAnimation\TypingAnimation.cpp" />
+    <ClCompile Include="UI\UI_BattleMenu.cpp" />
+    <ClCompile Include="UI\UI_Dialogue.cpp" />
+    <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Level\BattleLevel.cpp" />
+    <ClCompile Include="Level\MainLevel.cpp" />
+    <ClCompile Include="Level\TitleLevel.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Battle\Command\AtkCommand.cpp" />
+    <ClCompile Include="UI\UI_HPBar.cpp" />
+    <ClCompile Include="UI\UI_Inventory.cpp" />
+    <ClCompile Include="UI\UI_MenuList.cpp" />
+    <ClCompile Include="UI\UI_TurnOrder.cpp" />
+    <ClCompile Include="UI\UI_TargetCursor.cpp" />
+    <ClCompile Include="World\TileMap.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Actor\BattleActor.h" />
+    <ClInclude Include="Actor\Monster.h" />
+    <ClInclude Include="Actor\Player.h" />
+    <ClInclude Include="Actor\ProjectileActor.h" />
+    <ClInclude Include="Battle\Command\AtkCommand.h" />
+    <ClInclude Include="Battle\Command\ItemCommand.h" />
+    <ClInclude Include="Battle\Command\RunCommand.h" />
+    <ClInclude Include="Battle\Command\SkillCommand.h" />
+    <ClInclude Include="Battle\Cutscene\AsciiParticleEvent.h" />
+    <ClInclude Include="Battle\Cutscene\BattlePhaseChangeEvent.h" />
+    <ClInclude Include="Battle\Cutscene\DamageEvent.h" />
+    <ClInclude Include="Battle\Cutscene\VisualEffectEvent.h" />
+    <ClInclude Include="Battle\CutScene\LogEvent.h" />
+    <ClInclude Include="Battle\AI\EnemyAI.h" />
+    <ClInclude Include="Battle\Cutscene\DelayEvent.h" />
+    <ClInclude Include="Battle\Cutscene\DeathEvent.h" />
+    <ClInclude Include="Battle\System\CutScenePlayer.h" />
+    <ClInclude Include="Data\ActionData.h" />
+    <ClInclude Include="Data\CharacterData.h" />
+    <ClInclude Include="Data\PlayerData.h" />
+    <ClInclude Include="Battle\Event\GameBattleEventFactory.h" />
+    <ClInclude Include="Data\MonsterData.h" />
+    <ClInclude Include="Battle\Cutscene\TurnStartEvent.h" />
+    <ClInclude Include="Battle\Cutscene\TurnEndEvent.h" />
+    <ClInclude Include="Item\EquipmentItem.h" />
+    <ClInclude Include="UI\UIAnimation\BlinkAnimation.h" />
+    <ClInclude Include="UI\UIAnimation\SlideAnimation.h" />
+    <ClInclude Include="UI\UIAnimation\TypingAnimation.h" />
+    <ClInclude Include="UI\UI_BattleMenu.h" />
+    <ClInclude Include="UI\UI_Dialogue.h" />
+    <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Level\BattleLevel.h" />
+    <ClInclude Include="Level\MainLevel.h" />
+    <ClInclude Include="Level\TitleLevel.h" />
+    <ClInclude Include="UI\UI_HPBar.h" />
+    <ClInclude Include="UI\UI_Inventory.h" />
+    <ClInclude Include="UI\UI_MenuList.h" />
+    <ClInclude Include="UI\UI_TurnOrder.h" />
+    <ClInclude Include="UI\UI_TargetCursor.h" />
+    <ClInclude Include="World\Tile.h" />
+    <ClInclude Include="World\TileMap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Asset\BattleFormulaData.json" />
+    <None Include="Asset\Item.json" />
+    <None Include="Asset\Monster.json" />
+    <None Include="Asset\Skill.json" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

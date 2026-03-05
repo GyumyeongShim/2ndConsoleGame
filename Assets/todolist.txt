@@ -1,0 +1,330 @@
+내가 궁금한 것:
+- 구조가 잘 설계되어 있는지
+- 책임 분리가 적절한지
+- 유지보수에 문제 없는지
+- 개선해야 할 구조적 문제
+내 C++ 콘솔 게임 엔진 프로젝트를 계층 다이어그램 형태로 텍스트로 도식화해서 설명해줘
+내 C++ 콘솔 게임 엔진 프로젝트를 Mermaid 다이어 그램형태로 작성하고 
+그걸 Architecture_Diagram.txt 이름을 정하고 파일 만들어서 폴더에 저장해줘.
+이미지화는 내가 할게.
+의존성 방향도 함께 표시해줘.
+
+내 구조를 SOLID 관점에서 분석해줘.
+의존성 역전이 필요한 부분이 있는지도 봐줘.
+
+ue5 같은 구조와 비교해서
+내 콘솔 엔진 구조의 장단점을 설명해줘.
+
+내 프로젝트를 중형 규모 게임으로 확장한다고 가정했을 때
+현재 구조에서 병목이나 유지보수 리스크가 생길 부분을 예측해줘.
+
+내 C++ 콘솔 게임 엔진 프로젝트를 구조적으로 분석해줘.
+
+[1] 폴더 구조:
+Directory structure:
+└── gyumyeongshim-1stconsolegame/
+    ├── 1stConsoleGame.sln
+    ├── Assets/
+    │   ├── BattleFormulaData.json
+    │   ├── BattleLayout.txt
+    │   ├── Item.json
+    │   ├── Lifecycle_Analysis.txt
+    │   ├── map.txt
+    │   ├── maze.txt
+    │   ├── Monster.json
+    │   ├── Player.json
+    │   ├── Project_Analysis_Diagram.txt
+    │   ├── Skill.json
+    │   └── todolist.txt
+    ├── Config/
+    │   └── Setting.txt
+    ├── Engine/
+    │   ├── Engine.vcxproj
+    │   ├── Engine.vcxproj.filters
+    │   ├── Actor/
+    │   │   ├── Actor.cpp
+    │   │   ├── Actor.h
+    │   │   ├── Item.cpp
+    │   │   ├── Item.h
+    │   │   ├── ItemInstance.cpp
+    │   │   └── ItemInstance.h
+    │   ├── Common/
+    │   │   ├── Common.h
+    │   │   └── RTTI.h
+    │   ├── Component/
+    │   │   ├── DisplayComponent.cpp
+    │   │   ├── DisplayComponent.h
+    │   │   ├── EquipmentComponent.cpp
+    │   │   ├── EquipmentComponent.h
+    │   │   ├── InventoryComponent.cpp
+    │   │   ├── InventoryComponent.h
+    │   │   ├── StatComponent.cpp
+    │   │   ├── StatComponent.h
+    │   │   ├── StatusComponent.cpp
+    │   │   └── StatusComponent.h
+    │   ├── Core/
+    │   │   ├── Input.cpp
+    │   │   └── Input.h
+    │   ├── Engine/
+    │   │   ├── Engine.cpp
+    │   │   └── Engine.h
+    │   ├── Interface/
+    │   │   ├── ICanPlayerMove.h
+    │   │   ├── IStatusEffect.h
+    │   │   └── IUIAnimation.h
+    │   ├── Level/
+    │   │   ├── Level.cpp
+    │   │   └── Level.h
+    │   ├── Manager/
+    │   │   ├── DataLoader.cpp
+    │   │   ├── DataLoader.h
+    │   │   ├── DataManager.cpp
+    │   │   ├── DataManager.h
+    │   │   ├── UIManager.cpp
+    │   │   └── UIManager.h
+    │   ├── Math/
+    │   │   ├── Color.h
+    │   │   ├── Vector2.cpp
+    │   │   └── Vector2.h
+    │   ├── Render/
+    │   │   ├── Camera.cpp
+    │   │   ├── Camera.h
+    │   │   ├── Canvas.cpp
+    │   │   ├── Canvas.h
+    │   │   ├── Renderer.cpp
+    │   │   ├── Renderer.h
+    │   │   ├── RenderSystem.cpp
+    │   │   ├── RenderSystem.h
+    │   │   ├── ScreenBuffer.cpp
+    │   │   └── ScreenBuffer.h
+    │   ├── UI/
+    │   │   ├── UI.cpp
+    │   │   └── UI.h
+    │   └── Util/
+    │       ├── Timer.cpp
+    │       ├── Timer.h
+    │       └── Utill.h
+    ├── Game/
+    │   ├── Game.vcxproj
+    │   ├── Game.vcxproj.filters
+    │   ├── Main.cpp
+    │   ├── Actor/
+    │   │   ├── BattleActor.cpp
+    │   │   ├── BattleActor.h
+    │   │   ├── Bush.cpp
+    │   │   ├── Bush.h
+    │   │   ├── Ground.cpp
+    │   │   ├── Ground.h
+    │   │   ├── Monster.cpp
+    │   │   ├── Monster.h
+    │   │   ├── Player.cpp
+    │   │   ├── Player.h
+    │   │   ├── Wall.cpp
+    │   │   └── Wall.h
+    │   ├── Battle/
+    │   │   ├── AI/
+    │   │   │   ├── EnemyAI.cpp
+    │   │   │   └── EnemyAI.h
+    │   │   ├── Command/
+    │   │   │   ├── AtkCommand.cpp
+    │   │   │   ├── AtkCommand.h
+    │   │   │   ├── BattleCommand.h
+    │   │   │   ├── ItemCommand.cpp
+    │   │   │   ├── ItemCommand.h
+    │   │   │   ├── RunCommand.cpp
+    │   │   │   ├── RunCommand.h
+    │   │   │   ├── SkillCommand.cpp
+    │   │   │   └── SkillCommand.h
+    │   │   ├── Cutscene/
+    │   │   │   ├── ApplyStatusEvent.cpp
+    │   │   │   ├── ApplyStatusEvent.h
+    │   │   │   ├── CutScenePlayer.cpp
+    │   │   │   ├── CutScenePlayer.h
+    │   │   │   ├── DamageEvent.cpp
+    │   │   │   ├── DamageEvent.h
+    │   │   │   ├── DeathEvent.cpp
+    │   │   │   ├── DeathEvent.h
+    │   │   │   ├── DelayEvent.cpp
+    │   │   │   ├── DelayEvent.h
+    │   │   │   ├── ICutSceneEvent.h
+    │   │   │   ├── LogEvent.cpp
+    │   │   │   ├── LogEvent.h
+    │   │   │   ├── StatusTickEvent.cpp
+    │   │   │   └── StatusTickEvent.h
+    │   │   └── System/
+    │   │       ├── BattleContext.cpp
+    │   │       ├── BattleContext.h
+    │   │       ├── BattleLogSystem.cpp
+    │   │       ├── BattleLogSystem.h
+    │   │       ├── TurnManager.cpp
+    │   │       └── TurnManager.h
+    │   ├── Data/
+    │   │   ├── CharacterData.h
+    │   │   ├── ItemData.h
+    │   │   ├── MonsterData.h
+    │   │   ├── PlayerData.h
+    │   │   └── SkillData.h
+    │   ├── Effect/
+    │   │   ├── Effect_BattleStart.cpp
+    │   │   ├── Effect_BattleStart.h
+    │   │   ├── EnemyDestroyEffect.cpp
+    │   │   └── EnemyDestroyEffect.h
+    │   ├── Game/
+    │   │   ├── Game.cpp
+    │   │   └── Game.h
+    │   ├── Item/
+    │   │   ├── ConsumableItem.cpp
+    │   │   ├── ConsumableItem.h
+    │   │   ├── EquipmentItem.cpp
+    │   │   ├── EquipmentItem.h
+    │   │   ├── HealingPotion.cpp
+    │   │   ├── HealingPotion.h
+    │   │   ├── Sword.cpp
+    │   │   └── Sword.h
+    │   ├── Level/
+    │   │   ├── BattleLevel.cpp
+    │   │   ├── BattleLevel.h
+    │   │   ├── MainLevel.cpp
+    │   │   ├── MainLevel.h
+    │   │   ├── TitleLevel.cpp
+    │   │   └── TitleLevel.h
+    │   ├── UI/
+    │   │   ├── UI_BattleMenu.cpp
+    │   │   ├── UI_BattleMenu.h
+    │   │   ├── UI_Dialogue.cpp
+    │   │   ├── UI_Dialogue.h
+    │   │   ├── UI_HPBar.cpp
+    │   │   ├── UI_HPBar.h
+    │   │   ├── UI_Inventory.cpp
+    │   │   ├── UI_Inventory.h
+    │   │   ├── UI_TargetCursor.cpp
+    │   │   ├── UI_TargetCursor.h
+    │   │   ├── UI_TurnOrder.cpp
+    │   │   ├── UI_TurnOrder.h
+    │   │   └── UIAnimation/
+    │   │       ├── BlinkAnimation.cpp
+    │   │       ├── BlinkAnimation.h
+    │   │       ├── SlideAnimation.cpp
+    │   │       ├── SlideAnimation.h
+    │   │       ├── TypingAnimation.cpp
+    │   │       └── TypingAnimation.h
+    │   └── World/
+    │       ├── Tile.h
+    │       ├── TileMap.cpp
+    │       └── TileMap.h
+    └── Includes/
+        └── ThirdParty/
+            └── json.hpp
+
+[2] 주요 클래스와 역할:
+너무 많아서 설명하기 힘들다...
+
+[3] 실행 흐름:
+Engine loop->
+mainlevel-> actor->random Encounter > battleLevel -> BattleActor cloe(Actor) -> Battlle End 
+->mainLevlel->...
+
+[4] 설계 목표:
+- 싱글 플레이 RPG
+- 씬 기반 구조
+- 콘솔 출력 엔진
+
+[5] 분석 요청:
+1) 계층 구조 도식화
+2) 의존성 방향 분석
+3) 책임 분리 적절성
+4) SOLID 위반 여부
+5) 확장성 위험 요소
+6) 리팩토링 제안
+**신규 프롬프트 문장**
+
+** 이번 프로젝트 원칙 **
+행동은 상태를 직접 바꾸지 않는다.
+모든 변화는 이벤트로 표현된다.
+상태 적용은 한 곳에서만 일어난다.
+Engine은 규칙만 가진다.
+Game은 데이터만 가진다.
+
+기능 추가시 판단 질문
+1.데이터인가?
+2.규칙인가?
+3.표현인가?
+
+MainLevel이 10x10이어도
+BattleLevel이 720x480이어도
+Renderer는 하나다.
+카메라만 다르다.
+
+**************구현 예정
+1.상태 이상 시스템
+	지속형 버프/디버프
+	중첩 규칙 (stacking rule)
+	우선순위 처리
+	이벤트 기반 트리거 (피격 시 발동, 턴 시작 시 발동 등)
+Behavior Tree 또는 Utility AI 적용하기
+2. Monster AI
+	행동 점수 기반 AI (utility AI)
+	위협도 기반 타겟팅
+	상태 이상 고려
+3.월드 시스템 
+	충돌 레이어 분리
+	상호작용 오브젝트 시스템
+	이벤트 트리거 타일
+	랜덤 던전 생성 (간단한 BSP 알고리즘)
+4.세이브 / 로드 시스템 json data (객체 그래프 직렬화 문제, 참조 복원 문제, ID 기반 객체 관리)
+	Player 상태
+	인벤토리
+	월드 상태
+	전투 상태
+5.이벤트 버스
+EventBus
+  Subscribe
+  Publish
+  
+OnDamage()
+OnDeath()
+OnTurnStart()
+6. 아이템, 장비
+	세트효과
+	속성 상성
+	스킬 강화 조건
+7. 전투 로그 리플레이 기능
+	이벤트 기록
+	상태 스냅샷
+	재현 가능성
+8. 난이도 스케일링 시스템 (기획 역량)
+	플레이 시간 기반
+	레벨 기반
+	플레이 스타일 기반
+9.level 전환 구조 개선
+MainLevel → BattleLevel → MainLevel
+GameState
+  Title
+  Exploration
+  Battle
+  Pause
+
+필드레벨을 길찾기, 쿼드트리 적용하기
+애니/연출 기능 구현
+UI 구현하기 (돈, 아이템, 장비, 상점 등등)
+전투 시작/결과 처리
+
+SkillExecutionEvent는 "연출 스크립트 실행기"다.
+실제 게임 결과는 모두 CutSceneEvent로 분리한다.
+
+BattleResolver → 순수 계산 + 해석
+BattleEventProcessor → 상태 변경 + 반응 실행
+StatComponent → 수치 보관
+Game(SkillData) → 데이터 정의
+
+Actor
+ ↓
+BattleCommand (추가 권장)
+ ↓
+Resolver (계산)
+ ↓
+EventProcessor (실행)
+ ↓
+Component 상태 변경
+ ↓
+Reaction Queue 처

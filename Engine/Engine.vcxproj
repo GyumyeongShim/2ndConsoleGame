@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{e7e41195-49ee-4c92-b23f-532a9c90635c}</ProjectGuid>
+    <RootNamespace>Engine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Bin\$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)Bin\$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>ENGINE_BUILD_DLL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)\;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PreBuildEvent>
+      <Command>xcopy *.h ..\Includes\Engine\ /e /y</Command>
+      <Message>컴파일　전　ｈ파일을　복붙</Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy $(OutDir)\Engine.dll ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
+
+xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y</Command>
+      <Message>dll,lib를 복붙한다.</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>ENGINE_BUILD_DLL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)\;..\Assets\</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PreBuildEvent>
+      <Command>xcopy *.h ..\Includes\Engine\ /e /y</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy $(OutDir)\Engine.dll ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
+
+xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Actor\Actor.cpp" />
+    <ClCompile Include="Component\SkillComponent.cpp" />
+    <ClCompile Include="Item\Item.cpp" />
+    <ClCompile Include="Battle\BattleContext.cpp" />
+    <ClCompile Include="Battle\BattleEventProcessor.cpp" />
+    <ClCompile Include="Battle\BattleLogSystem.cpp" />
+    <ClCompile Include="Battle\BattleResolver.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Battle\ChainNode\CounterNode.cpp" />
+    <ClCompile Include="Battle\ChainNode\DeathCheckNode.cpp" />
+    <ClCompile Include="Battle\ChainNode\HealReflectNode.cpp" />
+    <ClCompile Include="Battle\ChainNode\ReflectNode.cpp" />
+    <ClCompile Include="Battle\ChainNode\StatusImmediateNode.cpp" />
+    <ClCompile Include="Battle\ChainNode\TurnEndStatusNode.cpp" />
+    <ClCompile Include="Battle\ChainNode\TurnStartStatusNode.cpp" />
+    <ClCompile Include="Battle\CheckChainSystem.cpp" />
+    <ClCompile Include="Battle\TurnManager.cpp" />
+    <ClCompile Include="Component\DisplayComponent.cpp" />
+    <ClCompile Include="Component\EquipmentComponent.cpp" />
+    <ClCompile Include="Component\InventoryComponent.cpp" />
+    <ClCompile Include="Component\StatComponent.cpp" />
+    <ClCompile Include="Component\StatusComponent.cpp" />
+    <ClCompile Include="Interface\IBattleCommand.cpp" />
+    <ClCompile Include="Item\ItemInstance.cpp" />
+    <ClCompile Include="Render\Camera.cpp" />
+    <ClCompile Include="Core\Input.cpp" />
+    <ClCompile Include="Render\RenderSystem.cpp" />
+    <ClCompile Include="Manager\DataLoader.cpp" />
+    <ClCompile Include="Manager\DataManager.cpp" />
+    <ClCompile Include="Render\Canvas.cpp" />
+    <ClCompile Include="Render\Renderer.cpp" />
+    <ClCompile Include="Engine\Engine.cpp" />
+    <ClCompile Include="Level\Level.cpp" />
+    <ClCompile Include="Math\Vector2.cpp" />
+    <ClCompile Include="Render\ScreenBuffer.cpp" />
+    <ClCompile Include="UI\UI.cpp" />
+    <ClCompile Include="Manager\UIManager.cpp" />
+    <ClCompile Include="Util\Timer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Actor\Actor.h" />
+    <ClInclude Include="Component\SkillComponent.h" />
+    <ClInclude Include="Enum\ActionType.h" />
+    <ClInclude Include="Interface\IEquipmentData.h" />
+    <ClInclude Include="Item\Item.h" />
+    <ClInclude Include="Battle\BattleContext.h" />
+    <ClInclude Include="Battle\BattleEventProcessor.h" />
+    <ClInclude Include="Battle\BattleLogSystem.h" />
+    <ClInclude Include="Battle\BattleResolver.h" />
+    <ClInclude Include="Battle\ChainNode\CounterNode.h" />
+    <ClInclude Include="Battle\ChainNode\DeathCheckNode.h" />
+    <ClInclude Include="Battle\ChainNode\HealReflectNode.h" />
+    <ClInclude Include="Battle\ChainNode\ReflectNode.h" />
+    <ClInclude Include="Battle\ChainNode\StatusImmediateNode.h" />
+    <ClInclude Include="Battle\ChainNode\TurnEndStatusNode.h" />
+    <ClInclude Include="Battle\ChainNode\TurnStartStatusNode.h" />
+    <ClInclude Include="Battle\CheckChainSystem.h" />
+    <ClInclude Include="Battle\TurnManager.h" />
+    <ClInclude Include="Common\Common.h" />
+    <ClInclude Include="Common\RTTI.h" />
+    <ClInclude Include="Component\DisplayComponent.h" />
+    <ClInclude Include="Component\EquipmentComponent.h" />
+    <ClInclude Include="Component\InventoryComponent.h" />
+    <ClInclude Include="Interface\IBattleCommand.h" />
+    <ClInclude Include="Interface\IBattleEventFactory.h" />
+    <ClInclude Include="Interface\IBattleLevel.h" />
+    <ClInclude Include="Interface\ICheckNode.h" />
+    <ClInclude Include="Interface\ICutsceneEvent.h" />
+    <ClInclude Include="Interface\IEngineCutscenePlayer.h" />
+    <ClInclude Include="Interface\IRemoveActorCallback.h" />
+    <ClInclude Include="Item\ItemInstance.h" />
+    <ClInclude Include="Render\Camera.h" />
+    <ClInclude Include="Render\RenderSystem.h" />
+    <ClInclude Include="Component\StatComponent.h" />
+    <ClInclude Include="Component\StatusComponent.h" />
+    <ClInclude Include="Core\Input.h" />
+    <ClInclude Include="Engine\Engine.h" />
+    <ClInclude Include="Level\Level.h" />
+    <ClInclude Include="Manager\DataLoader.h" />
+    <ClInclude Include="Manager\DataManager.h" />
+    <ClInclude Include="Math\Color.h" />
+    <ClInclude Include="Math\Vector2.h" />
+    <ClInclude Include="Render\Canvas.h" />
+    <ClInclude Include="Render\Renderer.h" />
+    <ClInclude Include="Render\ScreenBuffer.h" />
+    <ClInclude Include="UI\UI.h" />
+    <ClInclude Include="Manager\UIManager.h" />
+    <ClInclude Include="Interface\IUIAnimation.h" />
+    <ClInclude Include="Enum\CombatType.h" />
+    <ClInclude Include="Enum\ItemType.h" />
+    <ClInclude Include="Util\Rul.h" />
+    <ClInclude Include="Util\Timer.h" />
+    <ClInclude Include="Util\Utill.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

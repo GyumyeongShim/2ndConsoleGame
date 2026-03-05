@@ -1,0 +1,12 @@
+입력
+  ↓
+Command
+  ↓
+BattleContext (룰 계산)
+  ↓
+Event 생성
+  ↓
+CutScenePlayer가 연출 실행
+
+BattleLevel tick -> state 체크 -> 메뉴 선택 -> command 생성 -> battlecontext 연산 -> event 생성 -> 
+cutsceneplayer 진행-> 로그, ascii 표현 등등
