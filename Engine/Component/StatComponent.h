@@ -15,6 +15,7 @@ namespace Wannabe
         int iHp;
         int iAtk;
         int iDef;
+        int iSpd;
 
         // 확률 및 전투 보정 능력치 (단위: % 또는 0.1%)
         int iAccuracy;      // 명중률
@@ -70,11 +71,12 @@ namespace Wannabe
         int GetHp() const { return m_iHp; }
         int GetAtk() const { return m_iAtk + m_EquipBonus.atk; }
         int GetDef() const { return m_iDef + m_EquipBonus.def; }
+        int GetSpd() const { return m_iSpd + m_EquipBonus.spd; }
         int GetMaxHp() const { return m_iMaxHp + m_EquipBonus.hp; }
-        int GetAccuracy() const { return m_iAccuracy; }
-        int GetEvasion() const { return m_iEvasion; }
-        int GetCritChance() const { return m_iCritChance; }
-        int GetCritResist() const { return m_iCritResist; }
+        int GetAccuracy() const { return m_iAccuracy + m_EquipBonus.accuracy; }
+        int GetEvasion() const { return m_iEvasion + m_EquipBonus.evasion; }
+        int GetCritChance() const { return m_iCritChance + m_EquipBonus.critChance; }
+        int GetCritResist() const { return m_iCritResist + m_EquipBonus.critResist; }
         float GetTurnCnt() const { return m_fTurnCnt; }
 
     private:
@@ -84,6 +86,7 @@ namespace Wannabe
 
         int m_iAtk = 0;
         int m_iDef = 0;
+        int m_iSpd = 0;
         
         int m_iAccuracy = 0;
         int m_iEvasion = 0;

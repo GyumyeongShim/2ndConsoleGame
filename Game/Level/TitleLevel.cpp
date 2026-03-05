@@ -100,6 +100,7 @@ void TitleLevel::ProcessConfirm(int iIdx)
 	{
 		if (iIdx == 0) // New
 		{
+			Game::Get().InitNewGame();
 			Game::Get().ChangeLevel(TownLevel::TypeIdClass());
 		}
 		else if (iIdx == 1) // Load

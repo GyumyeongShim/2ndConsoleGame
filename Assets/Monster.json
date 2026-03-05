@@ -5,7 +5,7 @@
       "baseStat": {
         "maxHp": 60,
         "atk": 8,
-        "defense": 3,
+        "def": 3,
         "spd": 8,
         "accuracy": 95,
         "evasion": 2,
@@ -31,7 +31,7 @@
       "baseStat": {
         "maxHp": 90,
         "atk": 12,
-        "defense": 5,
+        "def": 5,
         "spd": 6,
         "accuracy": 100,
         "evasion": 5,
@@ -59,7 +59,7 @@
       "baseStat": {
         "maxHp": 70,
         "atk": 15,
-        "defense": 4,
+        "def": 4,
         "spd": 9,
         "accuracy": 110,
         "evasion": 15,
@@ -85,7 +85,7 @@
       "baseStat": {
         "maxHp": 50,
         "atk": 10,
-        "defense": 2,
+        "def": 2,
         "spd": 12,
         "accuracy": 120,
         "evasion": 20,

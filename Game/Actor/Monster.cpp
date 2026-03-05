@@ -49,18 +49,23 @@ void Monster::Init()
 		return;
 
 	StatData stat;
-
 	stat.iLevel = 1;
-	stat.iMaxHp = data->baseStat.maxHp;
-	stat.iHp = data->baseStat.maxHp;
-	stat.iAtk = data->baseStat.atk;
-	stat.iDef = data->baseStat.defense;
+	stat.iMaxHp = data->baseStat.iMaxHp;
+	stat.iHp = data->baseStat.iMaxHp;
+	stat.iAtk = data->baseStat.iAtk;
+	stat.iDef = data->baseStat.iDef;
+	stat.iSpd = data->baseStat.iSpd;
+
+	stat.iAccuracy = data->baseStat.iAccuracy;
+	stat.iEvasion = data->baseStat.iEvasion;
+	stat.iCritChance = data->baseStat.iCritChance;
+	stat.iCritResist = data->baseStat.iCritResist;
 
 	stat.iMaxExp = data->expReward;
 	stat.iExp = 0;
 
 	stat.iTurnCnt = 0;
-	stat.iMaxTurnCnt = data->baseStat.spd;
+	stat.iMaxTurnCnt = 10;
 
 	m_pStatComponent->SetStatByData(stat);
 

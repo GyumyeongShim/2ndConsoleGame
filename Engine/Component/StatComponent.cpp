@@ -14,12 +14,17 @@ namespace Wannabe
 
 	void StatComponent::SetStatByData(const StatData& data)
 	{
-		// data -> 멤버 변수로 복사하도록 수정
 		m_iLevel = data.iLevel;
 		m_iMaxHp = data.iMaxHp;
 		m_iHp = data.iHp;
 		m_iAtk = data.iAtk;
 		m_iDef = data.iDef;
+		m_iSpd = data.iSpd;
+
+		m_iAccuracy = data.iAccuracy;
+		m_iEvasion = data.iEvasion;
+		m_iCritChance = data.iCritChance;
+		m_iCritResist = data.iCritResist;
 
 		m_iMaxExp = data.iMaxExp;
 		m_iExp = data.iExp;

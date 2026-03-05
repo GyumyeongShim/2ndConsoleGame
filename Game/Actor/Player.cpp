@@ -112,11 +112,21 @@ void Player::Init()
 	//╫╨ех ют╥б
 	StatData stat;
 	stat.iLevel = data->level;
-	stat.iMaxHp = data->baseStat.maxHp;
-	stat.iHp = data->baseStat.maxHp;
-	stat.iAtk = data->baseStat.atk;
-	stat.iDef = data->baseStat.defense;
-	stat.iMaxTurnCnt = data->baseStat.spd;
+	stat.iMaxHp = data->baseStat.iMaxHp;
+	stat.iHp = data->baseStat.iMaxHp;
+	stat.iAtk = data->baseStat.iAtk;
+	stat.iDef = data->baseStat.iDef;
+	stat.iSpd = data->baseStat.iSpd;
+
+	stat.iAccuracy = data->baseStat.iAccuracy;
+	stat.iEvasion = data->baseStat.iEvasion;
+	stat.iCritChance = data->baseStat.iCritChance;
+	stat.iCritResist = data->baseStat.iCritResist;
+
+	stat.iExp = 0;
+	stat.iMaxExp = 100;
+
+	stat.iMaxTurnCnt = 10;
 	stat.iTurnCnt = 0;
 
 	m_pStatComponent->SetStatByData(stat);
