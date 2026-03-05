@@ -13,15 +13,13 @@ public:
 	TownLevel();
 	virtual ~TownLevel();
 
-	bool CanMove(const Vector2& nextPos);
-
-protected:
 protected:
 	virtual void Tick(float fDeltaTime)override;
 	virtual void Draw(Wannabe::RenderSystem& renderSys) override;
 	virtual void ConfigureRenderer(Wannabe::RenderSystem& renderer) const override;
 	virtual void OnEnterLevel(RunGameData* pData) override;
 	virtual void OnExitLevel(RunGameData* pData) override;
+	virtual bool CanMove(const Vector2& nextPos);
 
 private:
     void Init();

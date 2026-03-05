@@ -30,27 +30,51 @@ void UI_MenuList::Draw(Wannabe::RenderSystem& renderSys)
     int posY = static_cast<int>(m_cachedViewportPos.y);
     int drawCount = std::min<int>(m_iMaxShow, (int)m_wstItems.size());
 
-    // 테두리
-    renderSys.DrawUI(L"+------------------+", Vector2(posX, posY), Color::White, m_SortingOrder);
+    //// 테두리
+    //renderSys.DrawUI(L"+------------------+", Vector2(posX, posY), Color::White, m_SortingOrder);
+    //for (int i = 1; i <= drawCount; ++i)
+    //{
+    //    renderSys.DrawUI(L"|                  |", Vector2(posX, posY + i), Color::White, m_SortingOrder);
+    //}
+    //renderSys.DrawUI(L"+------------------+", Vector2(posX, posY + drawCount + 1), Color::White, m_SortingOrder);
+
+    //// 2. 메뉴 아이템
+    //for (int i = 0; i < drawCount; i++)
+    //{
+    //    int realIndex = m_iStartIdx + i;
+    //    if (realIndex >= (int)m_wstItems.size()) break;
+
+    //    bool selected = (realIndex == m_iCursorIdx);
+    //    int drawY = posY + 1 + i;
+
+    //    // 화살표 표시
+    //    renderSys.DrawUI(selected ? L"▶" : L"  ", Vector2(posX + 2, drawY),
+    //        selected ? Color::Green : Color::White, m_SortingOrder);
+    //    renderSys.DrawUI(m_wstItems[realIndex], Vector2(posX + 5, drawY),
+    //        selected ? Color::Green : Color::White, m_SortingOrder);
+    //}
+
+    std::wstring horizontalLine = L"+" + std::wstring(m_iMenuWidth - 2, L'-') + L"+";
+    std::wstring emptyLine = L"|" + std::wstring(m_iMenuWidth - 2, L' ') + L"|";
+
+    renderSys.DrawUI(horizontalLine, Vector2(posX, posY), Color::White, m_SortingOrder);
     for (int i = 1; i <= drawCount; ++i)
     {
-        renderSys.DrawUI(L"|                  |", Vector2(posX, posY + i), Color::White, m_SortingOrder);
+        renderSys.DrawUI(emptyLine, Vector2(posX, posY + i), Color::White, m_SortingOrder);
     }
-    renderSys.DrawUI(L"+------------------+", Vector2(posX, posY + drawCount + 1), Color::White, m_SortingOrder);
+    renderSys.DrawUI(horizontalLine, Vector2(posX, posY + drawCount + 1), Color::White, m_SortingOrder);
 
-    // 2. 메뉴 아이템
+    // 2. 아이템 출력 (Padding 반영)
     for (int i = 0; i < drawCount; i++)
     {
         int realIndex = m_iStartIdx + i;
         if (realIndex >= (int)m_wstItems.size()) break;
 
         bool selected = (realIndex == m_iCursorIdx);
-        int drawY = posY + 1 + i;
-
-        // 화살표 표시
-        renderSys.DrawUI(selected ? L"▶" : L"  ", Vector2(posX + 2, drawY),
+        renderSys.DrawUI(selected ? L"▶" : L"  ", Vector2(posX + m_iPaddingX, posY + m_iPaddingY + i),
             selected ? Color::Green : Color::White, m_SortingOrder);
-        renderSys.DrawUI(m_wstItems[realIndex], Vector2(posX + 5, drawY),
+
+        renderSys.DrawUI(m_wstItems[realIndex], Vector2(posX + m_iPaddingX + 3, posY + m_iPaddingY + i),
             selected ? Color::Green : Color::White, m_SortingOrder);
     }
 }
@@ -60,18 +84,49 @@ void UI_MenuList::RecalculateViewportPosition()
     if (!m_pRenderSystem)
         return;
 
+    //Vector2 screen = m_pRenderSystem->GetScreenSize();
+
+    //const int menuWidth = 18;
+    //const int menuHeight = 6; 
+
+    //Vector2 pos = { screen.x - menuWidth, screen.y - menuHeight };
+
+    //pos = pos + m_offset;
+    //pos.x = std::max(0, std::min(pos.x, screen.x - menuWidth));
+    //pos.y = std::max(0, std::min(pos.y, screen.y - menuHeight));
+
+    //m_cachedViewportPos = pos;
+
     Vector2 screen = m_pRenderSystem->GetScreenSize();
+    int currentDrawCount = std::min<int>(m_iMaxShow, (int)m_wstItems.size());
+    int menuHeight = currentDrawCount + 2;
 
-    const int menuWidth = 18;
-    const int menuHeight = 6; 
+    Vector2 basePos = { 0, 0 };
 
-    Vector2 pos = { screen.x - menuWidth, screen.y - menuHeight };
+    switch (m_anchor)
+    {
+    case UIAnchor::Center:
+        basePos.x = (screen.x / 2) - (m_iMenuWidth / 2);
+        basePos.y = (screen.y / 2) - (menuHeight / 2);
+        break;
 
-    pos = pos + m_offset;
-    pos.x = std::max(0, std::min(pos.x, screen.x - menuWidth));
-    pos.y = std::max(0, std::min(pos.y, screen.y - menuHeight));
+    case UIAnchor::BottomRight:
+        basePos.x = screen.x - m_iMenuWidth;
+        basePos.y = screen.y - menuHeight;
+        break;
 
-    m_cachedViewportPos = pos;
+    case UIAnchor::TopLeft:
+        basePos = { 0, 0 };
+        break;
+    }
+
+    Vector2 relativePos =
+    {
+        static_cast<int>(screen.x * m_relative.x),
+        static_cast<int>(screen.y * m_relative.y)
+    };
+
+    m_cachedViewportPos = basePos + relativePos + m_offset;
 }
 
 void UI_MenuList::Init()

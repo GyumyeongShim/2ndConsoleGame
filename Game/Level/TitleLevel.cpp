@@ -6,6 +6,8 @@
 #include "Render/RenderSystem.h"
 #include "Manager/SaveManager.h"
 
+#include "UI/UI.h"
+#include "UI/UI_BattleMenu.h"
 #include "Level/TownLevel.h"
 #include "Level/MainLevel.h"
 
@@ -57,8 +59,11 @@ void TitleLevel::Init()
 {
 	m_pMenuList = new UI_MenuList();
 	m_pMenuList->SetRenderSystem(&Engine::Get().GetRenderSystem());
-	m_pMenuList->SetActive(true);
+	m_pMenuList->SetAnchor(UI::UIAnchor::Center);
+	m_pMenuList->SetBoxSize(24, 3);
+	m_pMenuList->SetPadding(4, 1);
 
+	m_pMenuList->SetActive(true);
 	SetupMainMenus();
 }
 

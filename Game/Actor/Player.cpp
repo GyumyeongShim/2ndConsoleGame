@@ -85,9 +85,9 @@ void Player::Tick(float fDeltaTime)
 
 	if (m_MoveIntent.bMoveRequested)
 	{
-		MainLevel* level = GetOwner()->As<MainLevel>();
+		Level* level = GetOwner();
 
-		if (level && level->CanMove(currentPos, nextPos))
+		if (level && level->CanMove(nextPos))
 		{
 			SetPosition(nextPos);
 		}

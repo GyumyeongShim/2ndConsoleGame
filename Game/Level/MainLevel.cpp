@@ -27,7 +27,6 @@ MainLevel::~MainLevel()
 void MainLevel::BeginPlay()
 {
 	super::BeginPlay();
-	ConfigureRenderer(Engine::Get().GetRenderSystem());
 }
 
 void MainLevel::Tick(float fDeltaTime)
@@ -69,7 +68,39 @@ void MainLevel::ConfigureRenderer(Wannabe::RenderSystem& renderer) const
 	renderer.GetCamera().SetFollowMode(true);
 }
 
-bool MainLevel::CanMove(const Vector2& player, const Vector2 nextPos)
+void MainLevel::OnEnterLevel(RunGameData* pData)
+{
+	if (pData == nullptr)
+		return;
+
+	m_pPlayer = new Player(1, pData->m_lastWorldPos);
+
+	if (m_pPlayer->GetStat())
+	{
+		m_pPlayer->GetStat()->SetStatByData(pData->m_PlayerStat);
+	}
+
+	AddNewActor(m_pPlayer);
+
+	m_pCamera->SetFollowMode(true);
+	m_pCamera->SetFollowTarget(&m_pPlayer->GetPosition());
+}
+
+void MainLevel::OnExitLevel(RunGameData* pData)
+{
+	if (pData == nullptr || m_pPlayer == nullptr)
+		return;
+
+	pData->m_lastWorldPos = m_pPlayer->GetPosition(); //나가서 시작할 맵 위치
+
+	// 현재 스탯(HP, Exp 등) 백업은 Battle 종료 시나 특정 시점에 수행할 수도 있음
+	if (m_pPlayer->GetStat())
+	{
+		pData->m_PlayerStat = m_pPlayer->GetStat()->GetStatData();
+	}
+}
+
+bool MainLevel::CanMove(const Vector2& nextPos)
 {
 	Vector2 tilePos = m_worldMap->WorldToTile(nextPos);
 
@@ -116,6 +147,8 @@ void MainLevel::Init()
 
 	m_pCamera->SetFollowMode(true);
 	m_pCamera->SetFollowTarget(&m_pPlayer->GetPosition());
+
+	ConfigureRenderer(Engine::Get().GetRenderSystem());
 }
 
 void MainLevel::CheckRandomEncounter()

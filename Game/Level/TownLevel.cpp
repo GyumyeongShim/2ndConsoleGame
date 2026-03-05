@@ -16,7 +16,6 @@ TownLevel::~TownLevel()
     m_vecNPCs.clear();
 }
 
-
 void TownLevel::Tick(float fDeltaTime)
 {
     super::Tick(fDeltaTime);
