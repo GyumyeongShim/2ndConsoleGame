@@ -162,7 +162,12 @@ namespace Wannabe
                 break;
 
             int count = std::min((int)temp.size(), iMaxTargetCnt);
-            std::shuffle(temp.begin(), temp.end(),std::mt19937(std::random_device()()));
+            for (int i = 0; i < temp.size(); ++i)
+            {
+                int sour = Util::Random(0, (int)temp.size() - 1);
+                int dest = Util::Random(0, (int)temp.size() - 1);
+                std::swap(temp[sour], temp[dest]);
+            }
 
             for (int i = 0; i < count; ++i)
                 result.emplace_back(temp[i]);

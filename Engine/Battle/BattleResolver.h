@@ -23,6 +23,7 @@ namespace Wannabe
 		int CalcDmg(Actor* pAtker, Actor* pTarget);
 		int CalcSkillDamage(Actor* pAtaker, Actor* pTarget, int iPower, int iRatio);
 		int CalcSkillHeal(Actor* pAtaker, Actor* pTarget, int iPower, int iRatio);
+		bool CalcRunSucess(BattleContext& context);
 		bool CheckMiss(Actor* pAtker, Actor* pTarget);
 		bool CheckCritical(Actor* pAtker, Actor* pTarget);
 	};

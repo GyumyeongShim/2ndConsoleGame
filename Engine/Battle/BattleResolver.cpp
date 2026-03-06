@@ -196,26 +196,19 @@ namespace Wannabe
         int atk = pAtaker->GetStat()->GetAtk();
         int def = pTarget->GetStat()->GetDef();
 
-        // 1. 기본 공격력 기반
-        float base = atk * (iPower * 0.01f);
+        // 1. 공격력 기본 수치 (Power와 Ratio 적용)
+        float rawDamage = atk * (iPower * 0.01f) * (iRatio * 0.01f);
 
-        // 2. 스킬 개별 계수
-        base *= (iRatio * 0.01f);
+        // 2. 로그 스케일 방어력 적용: Damage = Raw * (100 / (100 + Def))
+           // 방어력이 100이면 데미지 50% 감소, 300이면 75% 감소하는 구조
+        float damageReduction = 100.0f / (100.0f + def);
+        float finalBase = rawDamage * damageReduction;
 
-        // 3. 방어력 완전 차감이 아닌 완화 적용
-        base -= def * 0.5f;
-
-        base = std::max(1.0f, base);
-
-        // 4. 랜덤 보정
+        // 3. 랜덤 보정 및 치명타
         float random = Util::Random(0.9f, 1.1f);
+        if (CheckCritical(pAtaker, pTarget)) finalBase *= 1.5f;
 
-        // 5. 치명타
-        float crit = CheckCritical(pAtaker, pTarget) ? 1.5f : 1.0f;
-
-        int dmg = static_cast<int>(base * random * crit);
-
-        return std::max(1, dmg);
+        return std::max(1, (int)(finalBase * random));
     }
 
     int BattleResolver::CalcSkillHeal(Actor* pAtaker, Actor* pTarget, int iPower, int iRatio)
@@ -240,6 +233,11 @@ namespace Wannabe
             heal = 0.f;
 
         return static_cast<int>(heal);
+    }
+
+    bool BattleResolver::CalcRunSucess(BattleContext& context)
+    {
+        return Util::Random(0, 100) < 50;
     }
 
     bool BattleResolver::CheckMiss(Actor* pAtker, Actor* pTarget)

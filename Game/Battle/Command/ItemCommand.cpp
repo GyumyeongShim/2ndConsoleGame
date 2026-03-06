@@ -35,8 +35,7 @@ void ItemCommand::Execute(Wannabe::BattleContext& context)
         BattleLog log;
         log.eLogType = LogType::Free;
         log.wstrTxt = act.wstrReason;
-        context.GetCutscenePlayer().Push(
-            std::make_unique<LogEvent>(log));
+        context.GetCutscenePlayer().Push(std::make_unique<LogEvent>(log));
         return;
     }
 
@@ -55,32 +54,27 @@ void ItemCommand::Execute(Wannabe::BattleContext& context)
         return;
 
     // 타겟 선정
-    auto targets = context.ResolveTargets(m_pInstigator, m_pTarget, itemData->targetType, itemData->iMaxTargetCnt);
-    switch (itemData->targetType)
+    auto targets = context.ResolveTargets(m_pInstigator, m_pTarget, 
+        itemData->targetType, itemData->iMaxTargetCnt);
+    if (targets.empty() == true)
+        return;
+
+    // 로그
+    BattleLog useLog;
+    useLog.wstrTxt = m_pInstigator->GetDisplay()->GetOriginName() + L"이(가) " + itemData->wstrName + L"을(를) 사용!";
+    context.GetCutscenePlayer().Push(std::make_unique<LogEvent>(useLog));
+
+    // 아이템 적용
+    for (auto* target : targets)
     {
-    case ActionTargetType::Self:
-        targets.push_back(m_pInstigator);
-        break;
+        auto results = context.GetResolver().ResolveAction(m_pInstigator, target, 
+            itemData->vecEffects, itemData->iPower);
 
-    case ActionTargetType::SingleEnemy:
-        targets.push_back(m_pTarget);
-        break;
-
-    case ActionTargetType::AllEnemy:
-        targets = context.IsEnemy(m_pInstigator) ?
-            context.GetEnemyParty(m_pInstigator) : context.GetPlayerParty(m_pInstigator);
-        break;
-
-    case ActionTargetType::AllAlly:
-        targets = context.IsEnemy(m_pInstigator) ?
-            context.GetPlayerParty(m_pInstigator) : context.GetEnemyParty(m_pInstigator);
-        break;
-
-    case ActionTargetType::SingleAlly:
-        targets.push_back(m_pTarget);
-        break;
-
-    case ActionTargetType::RandomEnemy:
-        break;
+        for (const auto& result : results)
+        {
+            context.GetEventProcessor().ProcessCombatEffectResult(context, result);
+        }
     }
+
+    inventory->RemoveItem(m_iItemTID, 1);
 }
