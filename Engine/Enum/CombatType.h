@@ -71,8 +71,8 @@ enum class CombatEffectType //스킬, 아이템 대분류 (공격, 회복, 버프/디버프)
 
 struct CombatEffectData
 {
-    CombatEffectType eType;   // 스킬, 아이템 종류
-    StatusType eStatusType;  // 상태이상일 경우
+    CombatEffectType eType = CombatEffectType::None;   // 스킬, 아이템 종류
+    StatusType eStatusType = StatusType::None;  // 상태이상일 경우
     int iValue = 0;              // 데미지 or 회복량
     int iDuration = 0; // 상태이상 지속 시간 (턴 수)
     int iRatio = 100; // 데미지 비율 (예: 150% -> 150)

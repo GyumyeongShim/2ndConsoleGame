@@ -5,6 +5,7 @@
 
 class Player;
 class TileMap;
+struct RunGameData;
 
 class MainLevel : public Level
 {

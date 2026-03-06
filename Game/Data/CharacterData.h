@@ -6,7 +6,7 @@
 
 struct CharacterVisualData
 {
-    Wannabe::Color color;
+    Wannabe::Color color = Wannabe::Color::White;
     std::wstring name;
     std::vector<std::wstring> ascii;
 };

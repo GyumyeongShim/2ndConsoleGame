@@ -16,7 +16,7 @@ enum class State
 
 class MainLevel;
 class BattleLevel;
-class RunGameData;
+struct RunGameData;
 
 class Game : public Engine
 {

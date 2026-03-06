@@ -70,10 +70,7 @@ void AsciiParticleEvent::InitExplosionParticle(std::vector<AsciiParticle>& parti
 
         p.Position = pos;
 
-        p.Velocity = Vector2(
-            cos(angle) * speed,
-            sin(angle) * speed
-        );
+        p.Velocity = Vector2(cos(angle) * speed,sin(angle) * speed);
 
         // 약한 중력 (JRPG 스타일은 과장된 물리보다 살짝 느린 게 좋다)
         p.Acceleration = Vector2(0.f, 2.5f);
