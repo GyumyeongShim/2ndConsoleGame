@@ -70,11 +70,8 @@ void RenderSystem::DrawFieldActor(const Actor& actor)
     if (!IsInViewport(screen, actor))
         return;
 
-    CanvasCell cell;
-    cell.wch = actor.GetGlyph();
-    cell.color = actor.GetGlyphColor();
-
-    m_WorldCanvas.SetCell(screen.x, screen.y, cell);
+    m_WorldCanvas.DrawAscii(screen.x, screen.y, actor.GetGlyph(), 
+        actor.GetGlyphColor(), actor.GetSortingOrder());
 }
 
 void RenderSystem::DrawBattleActor(const Actor& actor)

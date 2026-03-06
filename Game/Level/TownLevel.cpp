@@ -89,7 +89,7 @@ void TownLevel::Init()
     // Map
     m_worldMap = std::make_unique<TileMap>();
     m_worldMap->Init(Engine::Get().GetSetting().width, Engine::Get().GetSetting().height);
-    m_worldMap->LoadFromFile("Assets/map.txt");
+    m_worldMap->LoadFromFile("Assets/town.txt");
 
     // NPC
     

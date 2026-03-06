@@ -27,7 +27,7 @@ Renderer::Renderer(const Vector2& screenSize)
 
 Renderer::~Renderer()
 {
-	SafeDelete(frame);
+	SafeDeleteArray(frame);
 	for (ScreenBuffer*& buffer : m_ScreenBuffer)
 	{
 		SafeDelete(buffer);

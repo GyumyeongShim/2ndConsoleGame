@@ -13,6 +13,17 @@ namespace Wannabe
 {
 	Engine* Engine::instance = nullptr;
 
+	BOOL WINAPI ConsoleHandler(DWORD ctrlType) 
+	{
+		if (ctrlType == CTRL_CLOSE_EVENT)
+		{
+			Engine::Get().QuitEngine();
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
 	Engine::Engine()
 	{
 		instance = this;
@@ -28,6 +39,8 @@ namespace Wannabe
 		//input manager, system이 되려면 다양하게 대응되야함
 		m_pInput = new Input();
 
+		SetConsoleCtrlHandler(ConsoleHandler, TRUE);
+
 		//커서 끄기
 		Util::TurnOffCursor();
 		Util::SetRandomSeed();
@@ -35,7 +48,7 @@ namespace Wannabe
 
 	Engine::~Engine()
 	{
-		m_pMainLevel = nullptr;
+		SafeDelete(m_pMainLevel);
 		SafeDelete(m_pInput);
 	}
 
@@ -131,12 +144,6 @@ namespace Wannabe
 	void Engine::Shutdown()
 	{
 		system("cls");
-		
-		if (m_pMainLevel != nullptr)
-		{
-			delete m_pMainLevel;
-			m_pMainLevel = nullptr;
-		}
 
 		std::cout << "Game END" << "\n"; //종료 문구
 

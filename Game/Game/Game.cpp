@@ -63,7 +63,7 @@ void Game::InitNewGame()
 
 	//위치
 	m_pRunData->m_CurLevelId = TownLevel::TypeIdClass();
-	m_pRunData->m_lastWorldPos = { 5, 5 }; // 마을 입구 좌표
+	m_pRunData->m_lastWorldPos = { 1, 1 }; // 마을 입구 좌표
 	m_pRunData->m_iGold = 0;
 }
 

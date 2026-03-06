@@ -5,6 +5,8 @@ enum class TileType
 {
     Ground,
     Wall,
+    Water,
+    Road,
     Bush,
     Portal,
     Event
@@ -14,6 +16,5 @@ struct Tile
 {
     TileType eType = TileType::Ground;
     bool bWalkable = true;
-
-    Actor* pOccupiedActor = nullptr;
+    std::wstring strSymbol;
 };

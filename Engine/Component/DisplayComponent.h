@@ -22,7 +22,7 @@ namespace Wannabe
 		Color GetAsciiColor() const { return m_AsciiColor; }
 		std::wstring GetName() const { return m_wstrName; }
 		std::wstring GetOriginName() const { return m_wstrOriginName; }
-		std::vector<std::wstring> GetAscii() const { return m_vecAscii; }
+		const std::vector<std::wstring>& GetAscii() const { return m_vecAscii; }
 
 	private:
 		Color m_AsciiColor = Color::White; // Ascii»ö»ó

@@ -11,31 +11,12 @@ namespace Wannabe
 	Level::~Level()
 	{
 		for (Actor*& actor : m_vecActors)
-		{
-			if (actor == nullptr)
-				continue;
-
-			if (actor->IsDestroyRequested())
-			{
-				delete actor;
-				actor = nullptr;
-				continue;
-			}
-
 			delete actor;
-			actor = nullptr;
-		}
 
 		m_vecActors.clear();
 
 		for (Actor*& actor : m_vecAddRequestedActors)
-		{
-			if (actor)
-			{
-				delete actor;
-				actor = nullptr;
-			}
-		}
+			delete actor;
 
 		m_vecAddRequestedActors.clear();
 

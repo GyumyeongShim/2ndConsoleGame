@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
-
-#include "Render/Renderer.h"
+#include "Render/RenderSystem.h"
 #include "Math/Vector2.h"
 #include "World/Tile.h"
 
@@ -26,4 +25,3 @@ private:
 
 	std::vector<Tile> m_vecTiles;
 };
-

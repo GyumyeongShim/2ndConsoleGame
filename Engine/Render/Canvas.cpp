@@ -64,16 +64,23 @@ void Canvas::DrawAscii(int iX, int iY, wchar_t wch, Color color, int iSortingOrd
 void Canvas::DrawTxt(int iX, int iY, const std::wstring& txt, Color color, int iSortingOrder)
 {
     int drawX = iX;
-    for (wchar_t wch : txt)
+    for (size_t i = 0; i < txt.length(); ++i)
     {
+        wchar_t wch = txt[i];
         DrawAscii(drawX, iY, wch, color, iSortingOrder);
+
         if (IsWideChar(wch))
-        {
             drawX += 1;
-            DrawAscii(drawX, iY, L' ', color, iSortingOrder);
-        }
 
         drawX += 1;
+
+        if (drawX >= m_iWidth)
+            break;
+
+        if (wch >= 0xD800 && wch <= 0xDBFF)
+        {
+            if (i + 1 < txt.length()) i++;
+        }
     }
 }
 
