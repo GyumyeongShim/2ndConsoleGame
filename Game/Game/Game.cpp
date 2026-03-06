@@ -43,33 +43,39 @@ void Game::OnFrameEnd()
 
 	if (m_eState == State::Battle)
 	{
-		if (m_vecLevels.empty() == false)
+		// 전투 레벨 제거
+		if (m_pBattleLevel != nullptr)
 		{
-			if (m_pBattleLevel != nullptr)
+			if (!m_vecLevels.empty() && m_vecLevels.back() == m_pBattleLevel)
 			{
-				delete m_pBattleLevel;
-				m_pBattleLevel = nullptr;
+				m_vecLevels.pop_back();
 			}
 
-			m_vecLevels.pop_back();
+			delete m_pBattleLevel;
+			m_pBattleLevel = nullptr;
 		}
 
-		if (m_vecLevels.empty())
+		// 이전 레벨 돌아가기
+		if (m_vecLevels.empty() == false)
 		{
-			m_pCurLevel = CreateLevel(1);
-			m_vecLevels.push_back(m_pCurLevel);
+			m_pCurLevel = m_vecLevels.back();
+
+			if (m_pRunData)
+			{
+				m_pCurLevel->OnEnterLevel(m_pRunData.get());
+			}
 		}
 		else
 		{
-			m_pCurLevel = m_vecLevels.back();
+			ChangeLevel(1); //todo 임시
 		}
 
-		Engine::Get().SetNewLevel(m_pCurLevel);
 		m_eState = State::GamePlay;
+		Engine::Get().SetNewLevel(m_pCurLevel);
 	}
 	else
 	{
-		ChangeLevel(m_nNextLevelID);
+		ChangeLevel(m_nNextLevelID); // Title -> Town <-> Field/Dungeon
 	}
 
 	m_bLevelChangeReserved = false;
@@ -115,27 +121,23 @@ void Game::RequestChangeLevel(const size_t levelID)
 
 void Game::ChangeLevel(const size_t levelID)
 {
-	if (m_pCurLevel && m_pRunData) // PlayerData 최신화해서 가져오기
-		m_pCurLevel->OnExitLevel(m_pRunData.get());
+	for (Level* pLevel : m_vecLevels)
+	{
+		if (pLevel)
+		{
+			pLevel->OnExitLevel(m_pRunData.get());
+			delete pLevel;
+		}
+	}
+
+	m_vecLevels.clear();
 
 	Level* pNewLevel = CreateLevel(levelID);
 	if (pNewLevel == nullptr)
 		return;
 
 	pNewLevel->OnEnterLevel(m_pRunData.get());
-
-	// 레벨 제거
-	if (m_pBattleLevel)
-	{
-		delete m_pBattleLevel;
-		m_pBattleLevel = nullptr;
-	}
-
-	if (m_pCurLevel)
-	{
-		delete m_pCurLevel;
-		m_pCurLevel = nullptr;
-	}
+	m_vecLevels.push_back(pNewLevel);
 
 	m_pCurLevel = pNewLevel;
 	Engine::Get().SetNewLevel(m_pCurLevel);
@@ -165,12 +167,19 @@ void Game::BattleStart(std::vector<Wannabe::Actor*> vecPlayerParty, std::vector<
 	if (vecPlayerParty.empty() || vecEnemyParty.empty())
 		return;
 
-	if (m_pBattleFactory == nullptr) // EventFactory
+	if (m_pCurLevel && m_pRunData)
+	{
+		m_pCurLevel->OnExitLevel(m_pRunData.get()); //기존 레벨, 데이터 저장
+	}
+
+	// CutscenePlayer event factory
+	if (m_pBattleFactory == nullptr)
 	{
 		m_pBattleFactory = std::make_unique<GameBattleEventFactory>();
 	}
 
-	if (m_pBattleLevel == nullptr) // Level
+	// 레벨 생성
+	if (m_pBattleLevel == nullptr)
 	{
 		m_pBattleLevel = new BattleLevel();
 		m_vecLevels.emplace_back(m_pBattleLevel);
@@ -182,38 +191,18 @@ void Game::BattleStart(std::vector<Wannabe::Actor*> vecPlayerParty, std::vector<
 	m_eState = State::Battle;
 	m_pCurLevel = m_pBattleLevel;
 	Engine::Get().SetNewLevel(m_pCurLevel);
+
 	m_bLevelChangeReserved = false;
 }
 
 void Game::BattleEnd()
 {
+	if (m_pBattleLevel && m_pRunData)
+	{
+		m_pBattleLevel->OnExitLevel(m_pRunData.get());
+	}
+
 	m_bLevelChangeReserved = true;
-	m_nNextLevelID = m_pRunData->m_CurLevelId; //전투 종료, 복귀
-	//for (Level*& level : m_vecLevels)
-	//{
-	//	if (level && level->IsTypeOf<BattleLevel>())
-	//	{
-	//		delete level;
-	//		level = nullptr;
-	//	}
-	//}
-
-	//m_vecLevels.erase(
-	//	std::remove_if(
-	//		m_vecLevels.begin(),
-	//		m_vecLevels.end(),
-	//		[](Level* level)
-	//		{
-	//			return level == nullptr
-	//				|| level->IsTypeOf<BattleLevel>();
-	//		}),
-	//	m_vecLevels.end()
-	//);
-
-	//m_pBattleLevel = nullptr;
-
-	//m_pCurLevel = m_vecLevels[0];
-	//Engine::Get().SetNewLevel(m_pCurLevel);
 }
 
 Game& Game::Get()

@@ -40,6 +40,7 @@ namespace Wannabe
 		Camera* GetCamera() const { return m_pCamera; }
 
 	protected:
+		bool m_bBegunPlay = false;
 		Camera* m_pCamera;
 		std::vector<Actor*> m_vecActors; //액터 배열
 		std::vector<Actor*> m_vecAddRequestedActors; //실행 중 추가 요청된 액터의 배열

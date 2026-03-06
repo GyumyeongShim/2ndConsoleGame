@@ -60,29 +60,40 @@ BattleLevel::BattleLevel()
 
 BattleLevel::~BattleLevel()
 {
+    //커맨드 정리
     while (!m_queBattleCmd.empty())
     {
         m_queBattleCmd.pop();
     }
 
-    m_vecDialogue.clear(); //직접 삭제는 level에서 처리한다.
-
-    m_vecPlayerHPUI.clear();
-    m_vecEnemyHPUI.clear();
-
-    m_vecPlayerParty.clear();
-    m_vecEnemyParty.clear();
-
+    // 연출 정리
     m_cutScenePlayer.ClearCutscenePlayer();
+
+    //턴 매니저 정리
+    SafeDelete(m_pTurnManager);
+    m_pTurnManager = nullptr;
+
+    m_BattleContext.GetEventProcessor().SetRemoveCallback(nullptr);
+    m_BattleContext.GetEventProcessor().SetEventFactory(nullptr);
 
     m_pMenu = nullptr;
     m_pTargetCursor = nullptr;
     m_pTurnOrder = nullptr;
 
-    SafeDelete(m_pTurnManager);
+    //actor 제거
+    m_vecPlayerParty.clear();
+    m_vecEnemyParty.clear();
+    m_vecTargets.clear();
+    m_vecPendingDestroy.clear();
 
-    m_BattleContext.GetEventProcessor().SetRemoveCallback(nullptr);
-    m_BattleContext.GetEventProcessor().SetEventFactory(nullptr);
+    m_vecPlayerHPUI.clear();
+    m_vecEnemyHPUI.clear();
+    m_vecDialogue.clear();
+
+    m_pMenu = nullptr;
+    m_pTargetCursor = nullptr;
+    m_pTurnOrder = nullptr;
+    m_pInvenMenu = nullptr;
 }
 
 void BattleLevel::SetupBattle(std::vector<Wannabe::Actor*> vecPlayer, std::vector<Wannabe::Actor*> vecEnemy)
@@ -781,7 +792,6 @@ void BattleLevel::Phase_Log()
 
 void BattleLevel::Phase_Result()
 {
-    FinishBattle();
     Game::Get().BattleEnd();
 }
 

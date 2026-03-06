@@ -45,6 +45,9 @@ namespace Wannabe
 		void Draw();
 		virtual void OnFrameEnd() = 0;
 
+	private:
+		void DrawShutdownScreen();
+
 	protected:
 		bool m_bisQuit = false; // 엔진 종료 플래그
 
@@ -55,6 +58,9 @@ namespace Wannabe
 		
 		std::unique_ptr<Renderer> m_Renderer; //콘솔 출력
 		std::unique_ptr<RenderSystem> m_RenderSystem; //렌더 시스템
+
+		bool m_bIsShutdown = false; //종료 연출
+		float m_fShutdownTimer = 2.f;
 
 		static Engine* instance; // 전역 변수
 	};

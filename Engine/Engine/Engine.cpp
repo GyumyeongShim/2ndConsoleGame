@@ -73,7 +73,7 @@ namespace Wannabe
 		m_EngineSetting.framerate = m_EngineSetting.framerate == 0.0f ? 60.0f : m_EngineSetting.framerate;
 		float oneFrameTime = 1.0f / m_EngineSetting.framerate;
 
-		while (!m_bisQuit)
+		while (true)
 		{
 			//현재 시간 구하기
 			QueryPerformanceCounter(&time);
@@ -86,33 +86,51 @@ namespace Wannabe
 
 			if (fDeltaTime >= oneFrameTime)
 			{
-				m_pInput->ProcessInput();
-
-				m_Renderer->BeginFrame();
-				m_RenderSystem->BeginFrame();
-
-				BeginPlay();
-				Tick(fDeltaTime);
-
-				m_RenderSystem->GetCamera().Update();
-
-				Draw();
-
-				m_RenderSystem->RenderFrame();
-				// 이전 시간 값 갱신
 				PreviousTime = CurrentTime;
-
-				m_pInput->SavePreviousInputStates();
-				
-				//레벨에 요청된 추가/제거 처리
-				if(m_pMainLevel)
+				if (m_bIsShutdown)
 				{
-					m_pMainLevel->ProcessAddAndDestroyActors();
-				}
+					// 종료 연출 로직
+					m_fShutdownTimer -= fDeltaTime;
 
-				//레벨 교체 요청
-				OnFrameEnd();
+					m_Renderer->BeginFrame();
+					m_RenderSystem->BeginFrame();
+					DrawShutdownScreen();
+
+					m_RenderSystem->RenderFrame();
+
+					if (m_fShutdownTimer <= 0.0f)
+						break;
+				}
+				else
+				{
+					m_pInput->ProcessInput();
+
+					m_Renderer->BeginFrame();
+					m_RenderSystem->BeginFrame();
+
+					BeginPlay();
+					Tick(fDeltaTime);
+
+					m_RenderSystem->GetCamera().Update();
+
+					Draw();
+
+					m_RenderSystem->RenderFrame();
+
+					m_pInput->SavePreviousInputStates();
+
+					if (m_pMainLevel)
+					{
+						m_pMainLevel->ProcessAddAndDestroyActors();
+					}
+
+					OnFrameEnd();
+
+					if (m_bisQuit == true)
+						m_bIsShutdown = true;
+				}
 			}
+
 		}
 
 		Shutdown();
@@ -146,11 +164,6 @@ namespace Wannabe
 
 	void Engine::Shutdown()
 	{
-		system("cls");
-
-		std::cout << "Game END" << "\n"; //종료 문구
-
-		//커서 켜기
 		Util::TurnOnCursor();
 	}
 
@@ -235,5 +248,20 @@ namespace Wannabe
 			return;
 
 		m_pMainLevel->Draw(*m_RenderSystem);
+	}
+
+	void Engine::DrawShutdownScreen()
+	{
+		int screenWidth = m_EngineSetting.width;
+		int screenHeight = m_EngineSetting.height;
+
+		std::wstring message = L"THANK YOU FOR PLAYING!";
+		std::wstring subMessage = L"Closing the engine...";
+
+		int startX = (screenWidth / 2) - (static_cast<int>(message.length()) / 2);
+		int subStartX = (screenWidth / 2) - (static_cast<int>(subMessage.length()) / 2);
+
+		m_RenderSystem->DrawUI(message, Vector2(startX, screenHeight / 2), Color::Cyan);
+		m_RenderSystem->DrawUI(subMessage, Vector2(subStartX, (screenHeight / 2) + 1), Color::White);
 	}
 }
