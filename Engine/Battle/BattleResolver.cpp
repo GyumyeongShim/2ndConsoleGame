@@ -235,7 +235,7 @@ namespace Wannabe
         return static_cast<int>(heal);
     }
 
-    bool BattleResolver::CalcRunSucess(BattleContext& context)
+    bool BattleResolver::CalcRunSucess()
     {
         return Util::Random(0, 100) < 50;
     }

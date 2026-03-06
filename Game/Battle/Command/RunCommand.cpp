@@ -14,8 +14,8 @@ void RunCommand::Execute(Wannabe::BattleContext& context)
 {
     if (!context.IsValidActor(m_pInstigator)) 
         return;
-    // 1. 도망 성공 확률 계산 (예: 아군 평균 속도 vs 적군 평균 속도)
-    bool bSuccess = context.GetResolver().CalcRunSucess(context);
+
+    bool bSuccess = context.GetResolver().CalcRunSucess();
 
     BattleLog log;
     if (bSuccess)
