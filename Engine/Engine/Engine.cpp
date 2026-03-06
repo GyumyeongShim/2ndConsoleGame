@@ -131,7 +131,13 @@ namespace Wannabe
 	void Engine::Shutdown()
 	{
 		system("cls");
-		// 정리 작업
+		
+		if (m_pMainLevel != nullptr)
+		{
+			delete m_pMainLevel;
+			m_pMainLevel = nullptr;
+		}
+
 		std::cout << "Game END" << "\n"; //종료 문구
 
 		//커서 켜기

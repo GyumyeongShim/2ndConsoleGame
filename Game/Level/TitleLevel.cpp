@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "TitleLevel.h"
 #include "Core/Input.h"
@@ -7,7 +8,7 @@
 #include "Manager/SaveManager.h"
 
 #include "UI/UI.h"
-#include "UI/UI_BattleMenu.h"
+#include "UI/UI_MenuList.h"
 #include "Level/TownLevel.h"
 #include "Level/MainLevel.h"
 
@@ -20,7 +21,7 @@ TitleLevel::TitleLevel()
 
 TitleLevel::~TitleLevel()
 {
-	SafeDelete(m_pMenuList);
+	m_pMenuList = nullptr;
 }
 
 void TitleLevel::Tick(float fDeltaTime)
@@ -46,9 +47,6 @@ void TitleLevel::Tick(float fDeltaTime)
 void TitleLevel::Draw(Wannabe::RenderSystem& renderSys)
 {
 	super::Draw(renderSys);
-
-	if(m_pMenuList)
-		m_pMenuList->Draw(renderSys);
 }
 
 void TitleLevel::ConfigureRenderer(Wannabe::RenderSystem& renderer) const
@@ -62,9 +60,10 @@ void TitleLevel::Init()
 	m_pMenuList->SetAnchor(UI::UIAnchor::Center);
 	m_pMenuList->SetBoxSize(24, 3);
 	m_pMenuList->SetPadding(4, 1);
-
 	m_pMenuList->SetActive(true);
 	SetupMainMenus();
+
+	AddNewActor(m_pMenuList);
 }
 
 void TitleLevel::SetupMainMenus()

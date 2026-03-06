@@ -5,8 +5,8 @@
 #include "Engine/Engine.h"
 #include "Math/Color.h"
 #include "Math/Vector2.h"
-#include "UI/UI_MenuList.h"
 
+class UI_MenuList;
 class TitleLevel : public Level
 {
 	RTTI_DECLARATIONS(TitleLevel, Level)
