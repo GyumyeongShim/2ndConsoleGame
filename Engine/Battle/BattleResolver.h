@@ -17,13 +17,14 @@ namespace Wannabe
 		CombatEffectResult ResolveBasicAtk(Actor* pAtker, Actor* pTarget);
 		std::vector<CombatEffectResult> ResolveAction(Actor* pAtker, Actor* pTarget, const std::vector<CombatEffectData>& data, int iPower);
 		void ResolveStatus(Actor* pActer, Actor* pTarget, StatusType eType, int iDuration, int iValue);
+		
+		bool CalcRunSucess(BattleContext& context);
 
 	private:
 		bool IsValidActor(Actor* pActor);
 		int CalcDmg(Actor* pAtker, Actor* pTarget);
 		int CalcSkillDamage(Actor* pAtaker, Actor* pTarget, int iPower, int iRatio);
 		int CalcSkillHeal(Actor* pAtaker, Actor* pTarget, int iPower, int iRatio);
-		bool CalcRunSucess(BattleContext& context);
 		bool CheckMiss(Actor* pAtker, Actor* pTarget);
 		bool CheckCritical(Actor* pAtker, Actor* pTarget);
 	};
