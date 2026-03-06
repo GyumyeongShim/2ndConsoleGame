@@ -123,6 +123,25 @@ namespace Wannabe
         if (stat == nullptr)
             return;
 
+        if(effect.bMiss == true) // 미스 발생
+        {
+            // 1. 시각적 연출 추가 (MISS 텍스트가 타겟 위치에서 위로 튀어오름)
+           Vector2 startPos = target->GetPosition();
+           Vector2 endPos = { int(startPos.x + 2.0f), int(startPos.y - 1.0f) }; // 약간 옆으로 이동하며 종료
+            context.GetCutscenePlayer().Push(m_pEventFactory->CreateVisualEffect(
+                startPos, endPos, EffectMovementType::Parabola, L'M', Color::Yellow, 0.8f
+            ));
+            // 로그 출력
+            BattleLog log;
+            log.wstrAtkerName = atker->GetDisplay()->GetOriginName();
+            log.eLogType = LogType::Miss;
+            context.GetCutscenePlayer().Push(m_pEventFactory->CreateLog(log));
+
+            // 턴 변경
+            context.GetCutscenePlayer().Push(m_pEventFactory->CreatePhaseChange(BattleState::Log));
+            return;
+        }
+
         int dmg = stat->ApplyDmg(effect.iValue);
         bool bIsDead = stat->IsDead();
         

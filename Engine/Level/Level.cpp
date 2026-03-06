@@ -28,8 +28,9 @@ namespace Wannabe
 		// 액터에 이벤트 흘리기
 		for (Actor* actor : m_vecActors)
 		{
-			// 게임 진행 도중에 생성된 경우에도 진행해야하니까.
-			//고정된 형태로 한다면 필요 없을 수 있음.
+			if (actor == nullptr) 
+				continue;
+
 			if (actor->HasBeganPlay())
 				continue;
 

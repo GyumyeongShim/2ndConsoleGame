@@ -3,10 +3,10 @@
     {
       "tid": 1,
       "baseStat": {
-        "maxHp": 60,
+        "maxHp": 55,
         "atk": 8,
-        "def": 3,
-        "spd": 8,
+        "def": 4,
+        "spd": 6,
         "accuracy": 95,
         "evasion": 2,
         "critChance": 5,
@@ -15,7 +15,7 @@
         "maxExp": 0
       },
       "expReward": 15,
-      "skillIds": [ 301, 302 ],
+      "skillIds": [301,302],
       "visual": {
         "name": "슬라임",
         "ascii": [
@@ -29,10 +29,10 @@
     {
       "tid": 2,
       "baseStat": {
-        "maxHp": 90,
+        "maxHp": 70,
         "atk": 12,
-        "def": 5,
-        "spd": 6,
+        "def": 6,
+        "spd": 5,
         "accuracy": 100,
         "evasion": 5,
         "critChance": 10,
@@ -41,7 +41,7 @@
         "maxExp": 0
       },
       "expReward": 30,
-      "skillIds": [ 303, 304 ],
+      "skillIds": [303,304],
       "visual": {
         "name": "고블린",
         "ascii": [
@@ -57,9 +57,9 @@
     {
       "tid": 3,
       "baseStat": {
-        "maxHp": 70,
-        "atk": 15,
-        "def": 4,
+        "maxHp": 65,
+        "atk": 14,
+        "def": 5,
         "spd": 9,
         "accuracy": 110,
         "evasion": 15,
@@ -69,7 +69,7 @@
         "maxExp": 0
       },
       "expReward": 35,
-      "skillIds": [ 305, 306 ],
+      "skillIds": [305,306],
       "visual": {
         "name": "늑대",
         "ascii": [
@@ -83,9 +83,9 @@
     {
       "tid": 4,
       "baseStat": {
-        "maxHp": 50,
+        "maxHp": 45,
         "atk": 10,
-        "def": 2,
+        "def": 3,
         "spd": 12,
         "accuracy": 120,
         "evasion": 20,
@@ -95,7 +95,7 @@
         "maxExp": 0
       },
       "expReward": 25,
-      "skillIds": [ 307, 308 ],
+      "skillIds": [307,308],
       "visual": {
         "name": "박쥐",
         "ascii": [

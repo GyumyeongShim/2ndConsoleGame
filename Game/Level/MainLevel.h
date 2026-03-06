@@ -14,8 +14,6 @@ public:
 	MainLevel();
 	~MainLevel();
 
-	
-
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float fDeltaTime) override;
@@ -23,7 +21,9 @@ protected:
 	virtual void ConfigureRenderer(Wannabe::RenderSystem& renderer) const override;
 	virtual void OnEnterLevel(RunGameData* pData) override;
 	virtual void OnExitLevel(RunGameData* pData) override;
-	virtual bool CanMove(const Vector2& nextPos);
+	virtual bool CanMove(const Vector2& nextPos) override;
+	virtual void CheckPortal() override;
+
 private:
 	void Init();
 	void CheckRandomEncounter();

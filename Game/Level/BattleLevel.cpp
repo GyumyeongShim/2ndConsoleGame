@@ -299,18 +299,24 @@ void BattleLevel::Init()
     m_pMenu = new UI_MenuList();
     m_pMenu->SetRenderSystem(&renderSys);
     m_pMenu->Init();
-    AddNewActor(m_pMenu);
-
+    m_pMenu->SetAnchor(UI::UIAnchor::BottomRight);
+    m_pMenu->SetBoxSize(28, 6);       // 스킬명과 MP 표기를 위해 가로 길이를 넉넉히 잡음
+    m_pMenu->SetOffset(Vector2(- 4, -2));       // 화면 오른쪽 끝(-4), 아래 끝(-2)에서 안쪽으로 띄움
+    m_pMenu->SetPadding(2, 1);
     m_pMenu->SetActive(false);
     m_pMenu->DefaultMenuItems();
+
+    AddNewActor(m_pMenu);
+
 
     // 타겟 커서
     m_pTargetCursor = new UI_TargetCursor(this);
     m_pTargetCursor->SetRenderSystem(&renderSys);
     m_pTargetCursor->Init();
+    m_pTargetCursor->SetActive(false);
+
     AddNewActor(m_pTargetCursor);
 
-    m_pTargetCursor->SetActive(false);
 
     // 턴 UI
     m_pTurnOrder = new UI_TurnOrder(m_pTurnManager, Vector2(70, 2));
@@ -322,8 +328,9 @@ void BattleLevel::Init()
     m_pInvenMenu = new UI_Inventory(nullptr);
     m_pInvenMenu->SetRenderSystem(&renderSys);
     m_pInvenMenu->Init();
-    AddNewActor(m_pInvenMenu);
     m_pInvenMenu->SetActive(false);
+
+    AddNewActor(m_pInvenMenu);
 
     // Log 출력
     for (int i = 0; i < 2; ++i)

@@ -11,6 +11,7 @@ struct RunGameData
     // Map, Pos
     size_t m_CurLevelId;
     Wannabe::Vector2 m_lastWorldPos;
+    Wannabe::Vector2 m_NextWorldPos;
 
     // stat
     Wannabe::StatData m_PlayerStat;

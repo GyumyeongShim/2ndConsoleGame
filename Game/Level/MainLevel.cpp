@@ -73,8 +73,18 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 	if (pData == nullptr)
 		return;
 
-	m_pPlayer = new Player(1, pData->m_lastWorldPos);
+	std::string mapFileName;
+	if (pData->m_CurLevelId == 1)
+	{
+		mapFileName = "Assets/dungeon.txt";
+	}
+	else if (pData->m_CurLevelId == 2)
+	{
+		mapFileName = "Assets/forest1.txt";
+	}
+	m_worldMap->LoadFromFile(mapFileName);
 
+	m_pPlayer = new Player(1, pData->m_NextWorldPos);
 	if (m_pPlayer->GetStat())
 	{
 		m_pPlayer->GetStat()->SetStatByData(pData->m_PlayerStat);
@@ -107,6 +117,22 @@ bool MainLevel::CanMove(const Vector2& nextPos)
 	return m_worldMap->IsWalkable(tilePos.x, tilePos.y);
 }
 
+void MainLevel::CheckPortal()
+{
+	Vector2 tilePos = m_worldMap->WorldToTile(m_pPlayer->GetPosition());
+	const Tile* pCurrentTile = m_worldMap->GetTile(tilePos.x, tilePos.y);
+
+	if (pCurrentTile && pCurrentTile->eType == TileType::Portal)
+	{
+		RunGameData* pRunData = Game::Get().GetRunData();
+		if (pRunData)
+		{
+			pRunData->m_NextWorldPos = Vector2(29, 15);
+			Game::Get().RequestChangeLevel(MainLevel::TypeIdClass());
+		}
+	}
+}
+
 void MainLevel::Init()
 {
 	Vector2 vScreenSize = Vector2(Engine::Get().GetSetting().width, Engine::Get().GetSetting().height);
@@ -130,7 +156,7 @@ void MainLevel::Init()
 
 	m_worldMap = std::make_unique<TileMap>();
 	m_worldMap->Init(Engine::Get().GetSetting().width, Engine::Get().GetSetting().height);
-	m_worldMap->LoadFromFile("Assets/map.txt");
+	m_worldMap->LoadFromFile("Assets/forest1.txt");
 
 	// Player Ãß°¡
 	Player* player = new Player(1, m_vPlayerStartPos);

@@ -48,7 +48,7 @@ namespace Wannabe
 
 	Engine::~Engine()
 	{
-		SafeDelete(m_pMainLevel);
+		m_pMainLevel = nullptr;
 		SafeDelete(m_pInput);
 	}
 
@@ -109,6 +109,9 @@ namespace Wannabe
 				{
 					m_pMainLevel->ProcessAddAndDestroyActors();
 				}
+
+				//레벨 교체 요청
+				OnFrameEnd();
 			}
 		}
 

@@ -105,7 +105,7 @@ void TitleLevel::ProcessConfirm(int iIdx)
 		if (iIdx == 0) // New
 		{
 			Game::Get().InitNewGame();
-			Game::Get().ChangeLevel(TownLevel::TypeIdClass());
+			Game::Get().RequestChangeLevel(TownLevel::TypeIdClass());
 		}
 		else if (iIdx == 1) // Load
 		{
@@ -122,7 +122,7 @@ void TitleLevel::ProcessConfirm(int iIdx)
 		if (SaveManager::Get().LoadData(iIdx, loadData))
 		{
 			size_t levelID = loadData.value("LevelId", TownLevel::TypeIdClass());
-			Game::Get().ChangeLevel(levelID);
+			Game::Get().RequestChangeLevel(levelID);
 		}
 		else
 		{

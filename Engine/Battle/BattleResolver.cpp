@@ -251,7 +251,7 @@ namespace Wannabe
         float evasion = static_cast<float>(pTarget->GetStat()->GetEvasion());
         float HitChance = std::max(0.05f, accuracy - evasion);
 
-        return Util::Random(0.05f, 1.0f) <= HitChance;
+        return Util::Random(0.0f, 100.0f) > HitChance;
     }
 
     bool BattleResolver::CheckCritical(Actor* pAtker, Actor* pTarget)

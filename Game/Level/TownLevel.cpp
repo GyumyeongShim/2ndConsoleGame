@@ -8,7 +8,6 @@
 
 TownLevel::TownLevel()
 {
-    Init();
 }
 
 TownLevel::~TownLevel()
@@ -119,5 +118,13 @@ void TownLevel::CheckPortal()
     const Tile* pCurrentTile = m_worldMap->GetTile(tilePos.x, tilePos.y);
 
     if (pCurrentTile && pCurrentTile->eType == TileType::Portal)
-        Game::Get().ChangeLevel(MainLevel::TypeIdClass());
+    {
+        RunGameData* pRunData = Game::Get().GetRunData();
+        if (pRunData)
+        {
+            pRunData->m_CurLevelId = 2;
+            pRunData->m_NextWorldPos = Vector2(2, 2);
+            Game::Get().RequestChangeLevel(MainLevel::TypeIdClass());
+        }
+    }
 }

@@ -36,6 +36,46 @@ Game::~Game()
 	m_pBattleLevel = nullptr;
 }
 
+void Game::OnFrameEnd()
+{
+	if (m_bLevelChangeReserved == false)
+		return;
+
+	if (m_eState == State::Battle)
+	{
+		if (m_vecLevels.empty() == false)
+		{
+			if (m_pBattleLevel != nullptr)
+			{
+				delete m_pBattleLevel;
+				m_pBattleLevel = nullptr;
+			}
+
+			m_vecLevels.pop_back();
+		}
+
+		if (m_vecLevels.empty())
+		{
+			m_pCurLevel = CreateLevel(1);
+			m_vecLevels.push_back(m_pCurLevel);
+		}
+		else
+		{
+			m_pCurLevel = m_vecLevels.back();
+		}
+
+		Engine::Get().SetNewLevel(m_pCurLevel);
+		m_eState = State::GamePlay;
+	}
+	else
+	{
+		ChangeLevel(m_nNextLevelID);
+	}
+
+	m_bLevelChangeReserved = false;
+	m_nNextLevelID = 0;
+}
+
 void Game::InitNewGame()
 {
 	m_pRunData = std::make_unique<RunGameData>();
@@ -65,6 +105,12 @@ void Game::InitNewGame()
 	m_pRunData->m_CurLevelId = TownLevel::TypeIdClass();
 	m_pRunData->m_lastWorldPos = { 1, 1 }; // 마을 입구 좌표
 	m_pRunData->m_iGold = 0;
+}
+
+void Game::RequestChangeLevel(const size_t levelID)
+{
+	m_nNextLevelID = levelID;
+	m_bLevelChangeReserved = true;
 }
 
 void Game::ChangeLevel(const size_t levelID)
@@ -97,13 +143,6 @@ void Game::ChangeLevel(const size_t levelID)
 
 void Game::Init()
 {
-	//DataManager::Get().Init();
-
-	//m_vecLevels.emplace_back(new MainLevel());
-	//m_pCurLevel = m_vecLevels[0];
-
-	//Engine::Get().SetNewLevel(m_pCurLevel);
-	
 	DataManager::Get().Init();
 
 	ChangeLevel(TitleLevel::TypeIdClass());
@@ -140,39 +179,41 @@ void Game::BattleStart(std::vector<Wannabe::Actor*> vecPlayerParty, std::vector<
 	m_pBattleLevel->SetEventFactory(m_pBattleFactory.get());
 	m_pBattleLevel->SetupBattle(vecPlayerParty, vecEnemyParty);
 
-	m_pCurLevel = m_pBattleLevel;
 	m_eState = State::Battle;
+	m_pCurLevel = m_pBattleLevel;
 	Engine::Get().SetNewLevel(m_pCurLevel);
+	m_bLevelChangeReserved = false;
 }
 
 void Game::BattleEnd()
 {
-	for (Level*& level : m_vecLevels)
-	{
-		if (level && level->IsTypeOf<BattleLevel>())
-		{
-			delete level;
-			level = nullptr;
-		}
-	}
+	m_bLevelChangeReserved = true;
+	m_nNextLevelID = m_pRunData->m_CurLevelId; //전투 종료, 복귀
+	//for (Level*& level : m_vecLevels)
+	//{
+	//	if (level && level->IsTypeOf<BattleLevel>())
+	//	{
+	//		delete level;
+	//		level = nullptr;
+	//	}
+	//}
 
-	m_vecLevels.erase(
-		std::remove_if(
-			m_vecLevels.begin(),
-			m_vecLevels.end(),
-			[](Level* level)
-			{
-				return level == nullptr
-					|| level->IsTypeOf<BattleLevel>();
-			}),
-		m_vecLevels.end()
-	);
+	//m_vecLevels.erase(
+	//	std::remove_if(
+	//		m_vecLevels.begin(),
+	//		m_vecLevels.end(),
+	//		[](Level* level)
+	//		{
+	//			return level == nullptr
+	//				|| level->IsTypeOf<BattleLevel>();
+	//		}),
+	//	m_vecLevels.end()
+	//);
 
-	m_pBattleLevel = nullptr;
+	//m_pBattleLevel = nullptr;
 
-	m_pCurLevel = m_vecLevels[0];
-	Engine::Get().SetNewLevel(m_pCurLevel);
-	m_eState = State::GamePlay;
+	//m_pCurLevel = m_vecLevels[0];
+	//Engine::Get().SetNewLevel(m_pCurLevel);
 }
 
 Game& Game::Get()

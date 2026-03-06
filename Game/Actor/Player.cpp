@@ -90,6 +90,7 @@ void Player::Tick(float fDeltaTime)
 		if (level && level->CanMove(nextPos))
 		{
 			SetPosition(nextPos);
+			level->CheckPortal();
 		}
 	}
 }

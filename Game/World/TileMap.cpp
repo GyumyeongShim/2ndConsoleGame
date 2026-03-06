@@ -105,34 +105,51 @@ void TileMap::LoadFromFile(const std::string& path)
                 tile.bWalkable = false;
                 tile.strSymbol = L"\u2593"; // wstring 출력용
                 break;
+
             case 'A': case 'B': case 'C': // 건물 벽
                 tile.eType = TileType::Wall;
                 tile.bWalkable = false;
                 tile.strSymbol = L"\u2588\u2588";
                 break;
+
             case '.': // 길
                 tile.eType = TileType::Road;
                 tile.strSymbol = L"\u2591\u2591";
                 break;
+
             case 'T': // 나무
-                tile.eType = TileType::Bush;
+                tile.eType = TileType::Wall;
                 tile.bWalkable = false;
                 tile.strSymbol = L"\u2663";
                 break;
+
+            case '=':
+                tile.eType = TileType::Bush;
+                tile.bWalkable = true;
+                tile.strSymbol = L"\U0001F33F";
+                break;
+
             case '~': case 'W': // 물
                 tile.eType = TileType::Water;
                 tile.bWalkable = false;
                 tile.strSymbol = L"\u2248\u2248";
                 break;
+
             case '*': // 광장 중앙/이벤트
                 tile.eType = TileType::Event;
-                tile.strSymbol = L"\u2605";
-                break;
-            default: // 빈 공간
-                tile.eType = TileType::Ground;
-                tile.strSymbol = L"  ";
+                tile.strSymbol = L"\u2605"; // 별
                 break;
 
+            case 'P': // Portal
+                tile.eType = TileType::Portal;
+                tile.bWalkable = true;
+                tile.strSymbol = L"\u25CE"; // ◎ (이중 원)
+                break;
+
+            default: // 빈 공간
+                tile.eType = TileType::Ground;
+                tile.strSymbol = L" ";
+                break;
             }
 
             m_vecTiles[y * m_iWidth + x] = tile;

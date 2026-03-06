@@ -43,6 +43,7 @@ namespace Wannabe
 		void BeginPlay();
 		void Tick(float fDeltaTime);
 		void Draw();
+		virtual void OnFrameEnd() = 0;
 
 	protected:
 		bool m_bisQuit = false; // 엔진 종료 플래그
@@ -58,5 +59,3 @@ namespace Wannabe
 		static Engine* instance; // 전역 변수
 	};
 }
-
-

@@ -24,7 +24,10 @@ public:
 	Game();
 	~Game();
 
+	virtual void OnFrameEnd() override;
+
 	void InitNewGame();
+	void RequestChangeLevel(const size_t levelID);
 	void ChangeLevel(const size_t levelID);
 
 	void BattleStart(std::vector<Actor*> vecPlayerParty, std::vector<Actor*>vecEnemyParty);
@@ -43,6 +46,9 @@ private:
 	static Game* instance; // 싱글톤
 
 	State m_eState = State::Title;
+	
+	size_t m_nNextLevelID = 0; // 다음 level id 예약
+	bool m_bLevelChangeReserved = false;
 
 	std::vector<Level*> m_vecLevels;
 	Level* m_pCurLevel = nullptr; //필드/던전, 마을

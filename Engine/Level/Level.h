@@ -29,6 +29,7 @@ namespace Wannabe
 		virtual void OnEnterLevel(struct RunGameData* pData) {};
 		virtual void OnExitLevel(struct RunGameData* pData) {};
 		virtual bool CanMove(const Vector2& nextPos) { return true; }
+		virtual void CheckPortal() {};
 
 		//액터 추가 함수
 		void AddNewActor(Actor* newActor); //전방선언을 여기서 해버림
@@ -40,10 +41,7 @@ namespace Wannabe
 
 	protected:
 		Camera* m_pCamera;
-		//액터 배열
-		std::vector<Actor*> m_vecActors;
-
-		//실행 중 추가 요청된 액터의 배열
-		std::vector<Actor*> m_vecAddRequestedActors;
+		std::vector<Actor*> m_vecActors; //액터 배열
+		std::vector<Actor*> m_vecAddRequestedActors; //실행 중 추가 요청된 액터의 배열
 	};
 }
