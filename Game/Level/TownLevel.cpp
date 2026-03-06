@@ -8,6 +8,7 @@
 
 TownLevel::TownLevel()
 {
+    Init();
 }
 
 TownLevel::~TownLevel()
