@@ -129,6 +129,9 @@
     <ClCompile Include="Level\TownLevel.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="UI\UI_FloatingText.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Level\MainLevel.h">
@@ -258,6 +261,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Data\RunGameData.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UI_FloatingText.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

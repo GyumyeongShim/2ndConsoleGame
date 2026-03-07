@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 #include "UI/UI.h"
 
 class BattleLevel;

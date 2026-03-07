@@ -1,7 +1,6 @@
 #include "Renderer.h"
 #include "Render/ScreenBuffer.h"
 #include "Util/Utill.h"
-#include "Manager/UIManager.h"
 
 using namespace Wannabe;
 
@@ -39,9 +38,6 @@ void Renderer::BeginFrame()
 	// Frame buffer 초기화 (dirty pipeline 시작점)
 	int total = m_vScreenSize.x * m_vScreenSize.y;
 	frame->Clear(total);
-
-	// BackBuffer도 Clear
-	//GetCurBuffer()->Clear();
 }
 
 void Renderer::Draw(Canvas& canvas)
@@ -66,11 +62,6 @@ void Renderer::Draw(Canvas& canvas)
 
 void Renderer::EndFrame(const std::vector<CHAR_INFO>& buffer)
 {
-	//// Frame -> ScreenBuffer 출력
-	//m_ScreenBuffer[m_iCurBufferIdx]->Draw(frame->m_pCharInfoArray);
-
-	//// Buffer Swap
-	//Present();
 	m_ScreenBuffer[m_iCurBufferIdx]->Draw(const_cast<CHAR_INFO*>(buffer.data()));
 
 	Present();
@@ -94,32 +85,6 @@ void Renderer::Present()
 ScreenBuffer* Renderer::GetCurBuffer()
 {
 	return m_ScreenBuffer[m_iCurBufferIdx];
-}
-
-void Renderer::Resize(const Vector2& newSize)
-{
-	if (m_vScreenSize == newSize)
-		return;
-
-	m_vScreenSize = newSize;
-
-	// 1. Frame 재생성
-	SafeDelete(frame);
-	frame = new Frame(newSize.x * newSize.y);
-	frame->Clear(newSize.x * newSize.y);
-
-	for (int i = 0; i < 2; ++i)
-	{
-		SafeDelete(m_ScreenBuffer[i]);
-		m_ScreenBuffer[i] = new ScreenBuffer(newSize);
-		m_ScreenBuffer[i]->Clear();
-	}
-
-	// 2. 활성 버퍼 갱신
-	Present();
-
-	// 3. 해상도 대응
-	UIManager::Get().OnViewportChanged();
 }
 
 void Renderer::ResetViewport()

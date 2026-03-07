@@ -1,6 +1,5 @@
 #pragma once
 #include "Actor/Actor.h"
-#include "Manager/UIManager.h"
 
 namespace Wannabe
 {

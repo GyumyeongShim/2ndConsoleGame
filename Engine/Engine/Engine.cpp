@@ -7,7 +7,6 @@
 #include "Level/Level.h"
 #include "Core/Input.h"
 #include "Util/Utill.h"
-#include "Manager/UIManager.h"
 
 namespace Wannabe
 {

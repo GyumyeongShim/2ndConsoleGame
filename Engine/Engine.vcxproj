@@ -136,7 +136,6 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClCompile Include="Math\Vector2.cpp" />
     <ClCompile Include="Render\ScreenBuffer.cpp" />
     <ClCompile Include="UI\UI.cpp" />
-    <ClCompile Include="Manager\UIManager.cpp" />
     <ClCompile Include="Util\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -187,7 +186,6 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClInclude Include="Render\Renderer.h" />
     <ClInclude Include="Render\ScreenBuffer.h" />
     <ClInclude Include="UI\UI.h" />
-    <ClInclude Include="Manager\UIManager.h" />
     <ClInclude Include="Interface\IUIAnimation.h" />
     <ClInclude Include="Enum\CombatType.h" />
     <ClInclude Include="Enum\ItemType.h" />

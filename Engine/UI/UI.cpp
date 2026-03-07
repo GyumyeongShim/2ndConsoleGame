@@ -7,7 +7,6 @@ using namespace Wannabe;
 
 UI::UI()
 {
-    UIManager::Get().Register(this);
     m_pRenderSystem = &Engine::Get().GetRenderSystem();
 }
 
@@ -20,7 +19,6 @@ UI::UI(const wchar_t* txt, Color color)
 
 UI::~UI()
 {
-    UIManager::Get().Unregister(this);
 }
 
 void UI::Tick(float fDeltaTime)
