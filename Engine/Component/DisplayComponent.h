@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 #include "../Game/Data/MonsterData.h"
 
 namespace Wannabe

@@ -1,5 +1,5 @@
 #pragma once
-#include "Common/Common.h"
+#include "Core/Common.h"
 
 #include "Math/Vector2.h"
 #include "Render/Canvas.h"

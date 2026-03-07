@@ -43,7 +43,6 @@ namespace Wannabe
 			void Draw(Canvas& canvas);
 			void EndFrame(const std::vector<CHAR_INFO>& buffer);
 
-			void Resize(const Vector2& newSize);
 			void ResetViewport();
 
 			Vector2 GetScreenSize() { return m_vScreenSize; }

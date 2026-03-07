@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-#include "Common/RTTI.h"
+#include "Core/RTTI.h"
 #include "Enum/ItemType.h"
 
 namespace Wannabe

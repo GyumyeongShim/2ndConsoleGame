@@ -2,7 +2,7 @@
 #include <string>
 #include <deque>
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 
 struct BattleLog;
 class WANNABE_API BattleLogSystem

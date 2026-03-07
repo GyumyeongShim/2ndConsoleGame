@@ -3,7 +3,7 @@
 #include <vector>
 #include <functional>
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 #include "Battle/BattleEventProcessor.h"
 #include "Battle/BattleResolver.h"
 #include "Battle/CheckChainSystem.h"

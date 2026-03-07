@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 #include "Item/ItemInstance.h"
 
 namespace Wannabe

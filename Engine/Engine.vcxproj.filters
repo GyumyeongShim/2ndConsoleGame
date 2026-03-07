@@ -137,13 +137,13 @@
     <ClInclude Include="Level\Level.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Common.h">
+    <ClInclude Include="Core\Common.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Core\Input.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Common\RTTI.h">
+    <ClInclude Include="Core\RTTI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Math\Vector2.h">

@@ -1,5 +1,5 @@
 #pragma once
-#include "Common/Common.h"
+#include "Core/Common.h"
 
 #include "Math/Vector2.h"
 #include "Render/Canvas.h"
@@ -12,6 +12,12 @@ namespace Wannabe
 {
 	class WANNABE_API RenderSystem
 	{
+		struct ShakeEffect
+		{
+			float fDuration = 0.0f;
+			float fIntensity = 0.0f;
+			Vector2 offset = { 0, 0 };
+		};
 
 		struct ScreenEffect
 		{
@@ -37,6 +43,9 @@ namespace Wannabe
 		void DrawBattleActor(const Actor& actor);
 		//void DrawEffect();
 		void DrawUI(const std::wstring& txt,Vector2 pos,Color color,int iOrder = 100);
+
+		void Shake(float fDuration, float fIntensity);
+		void Update(float fDeltaTime);
 
 		void SetRenderMode(RenderMode eMode) { m_eRenderMode = eMode; }
 		void SetFollowMode(bool bIsFollow) { m_bIsFollow = bIsFollow; }
@@ -71,5 +80,7 @@ namespace Wannabe
 
 		bool m_bIsFollow = true;
 		RenderMode m_eRenderMode = RenderMode::Field;
+
+		ShakeEffect m_Shake; // Èçµé¸² »óÅÂ °´Ã¼
 	};
 }

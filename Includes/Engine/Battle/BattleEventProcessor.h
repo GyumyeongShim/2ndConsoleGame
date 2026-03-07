@@ -4,7 +4,7 @@
 #include <string>
 #include <queue>
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 #include "Enum/CombatType.h"
 
 class CutscenePlayer;

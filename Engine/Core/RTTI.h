@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 
 // RTTI를 선언할 클래스에 추가할 매크로.
 // 아래 코드에서 Type, ParentType이 실제 타입으로 변환되어 복사/붙여넣기 됨.

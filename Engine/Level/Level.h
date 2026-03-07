@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "Common/RTTI.h"
+#include "Core/RTTI.h"
 #include "Math/Vector2.h"
 #include "Actor/Actor.h"
 #include "Render/Camera.h"

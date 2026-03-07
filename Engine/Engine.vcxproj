@@ -157,8 +157,8 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClInclude Include="Battle\ChainNode\TurnStartStatusNode.h" />
     <ClInclude Include="Battle\CheckChainSystem.h" />
     <ClInclude Include="Battle\TurnManager.h" />
-    <ClInclude Include="Common\Common.h" />
-    <ClInclude Include="Common\RTTI.h" />
+    <ClInclude Include="Core\Common.h" />
+    <ClInclude Include="Core\RTTI.h" />
     <ClInclude Include="Component\DisplayComponent.h" />
     <ClInclude Include="Component\EquipmentComponent.h" />
     <ClInclude Include="Component\InventoryComponent.h" />

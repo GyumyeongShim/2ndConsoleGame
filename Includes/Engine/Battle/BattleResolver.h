@@ -1,5 +1,5 @@
 #pragma once
-#include "Common/Common.h"
+#include "Core/Common.h"
 #include <vector>
 #include <string>
 
@@ -17,6 +17,8 @@ namespace Wannabe
 		CombatEffectResult ResolveBasicAtk(Actor* pAtker, Actor* pTarget);
 		std::vector<CombatEffectResult> ResolveAction(Actor* pAtker, Actor* pTarget, const std::vector<CombatEffectData>& data, int iPower);
 		void ResolveStatus(Actor* pActer, Actor* pTarget, StatusType eType, int iDuration, int iValue);
+
+		bool CalcRunSucess();
 
 	private:
 		bool IsValidActor(Actor* pActor);

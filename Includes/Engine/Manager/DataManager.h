@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 
 #include "../Game/Data/PlayerData.h"
 #include "../Game/Data/MonsterData.h"

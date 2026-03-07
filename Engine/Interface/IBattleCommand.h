@@ -1,5 +1,5 @@
 #pragma once
-#include "Common/Common.h"
+#include "Core/Common.h"
 #include "Actor/Actor.h"
 #include "Battle/BattleContext.h"
 

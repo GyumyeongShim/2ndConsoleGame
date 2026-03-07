@@ -1,5 +1,5 @@
 #pragma once
-#include "Common/Common.h"
+#include "Core/Common.h"
 
 #include "../Includes/ThirdParty/json.hpp"
 using json = nlohmann::json;

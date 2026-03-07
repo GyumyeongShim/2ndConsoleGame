@@ -3,7 +3,7 @@
 #define NOMINMAX
 #include <windows.h>
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 
 namespace Wannabe
 {

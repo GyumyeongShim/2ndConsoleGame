@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 #include "Enum/ItemType.h"
 
 namespace Wannabe

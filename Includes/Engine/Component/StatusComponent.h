@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "Common/Common.h"
+#include "Core/Common.h"
 #include "Interface/ICutsceneEvent.h"
 #include "Enum/CombatType.h"
 
