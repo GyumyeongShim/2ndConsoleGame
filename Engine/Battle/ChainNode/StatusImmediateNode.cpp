@@ -1,12 +1,10 @@
-#include <vector>
-
 #include "StatusImmediateNode.h"
 
-#include "Actor/Actor.h"
+#include <vector>
 
+#include "Actor/Actor.h"
 #include "Enum/CombatType.h"
 #include "Battle/BattleContext.h"
-
 #include "Component/StatusComponent.h"
 
 std::vector<CombatEffect> StatusImmediateNode::Check(const CombatEffect& effect, Wannabe::BattleContext& context)
@@ -16,15 +14,14 @@ std::vector<CombatEffect> StatusImmediateNode::Check(const CombatEffect& effect,
     if (effect.eCombatEffectType != CombatEffectType::ApplyStatus)
         return vec;
 
+    CombatEffect result;
+    result.eCombatEffectType = CombatEffectType::Damage;
+    result.pAtker = effect.pAtker;
+    result.pTarget = effect.pTarget;
+    result.iValue = effect.iValue / 2;
+
     if (effect.pTarget->GetStatus()->HasStatus(StatusType::Counter) == true)
-        return vec;
+        vec.emplace_back(std::move(result));
 
-    CombatEffect reflect;
-    reflect.eCombatEffectType = CombatEffectType::Damage;
-    reflect.pAtker = effect.pTarget;
-    reflect.pTarget = effect.pAtker;
-    reflect.iValue = effect.iValue / 2;
-
-    vec.emplace_back(std::move(reflect));
     return vec;
 }

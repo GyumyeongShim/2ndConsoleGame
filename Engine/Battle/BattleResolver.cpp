@@ -1,10 +1,10 @@
+#include "BattleResolver.h"
+
 #include <algorithm>
 #include <random>
 
-#include "BattleResolver.h"
 #include "Util/Utill.h"
 #include "Actor/Actor.h"
-
 #include "Component/StatComponent.h"
 #include "Component/StatusComponent.h"
 
@@ -93,10 +93,10 @@ namespace Wannabe
             effect.pAtker = pAtker;
             effect.pTarget = pTarget;
             effect.eCombatEffectType = effectData.eType;
-            if (CheckMiss(pAtker, pTarget))// --- 명중 판정 ---
+            if (CheckMiss(pAtker, pTarget))// 명중 판정
             {
                 effect.bMiss = true;
-                result.vecCombatEffect.push_back(effect);
+                result.vecCombatEffect.emplace_back(effect);
                 continue;
             }
 
@@ -149,10 +149,10 @@ namespace Wannabe
                 break;
             }
 
-            result.vecCombatEffect.push_back(effect);
+            result.vecCombatEffect.emplace_back(effect);
         }
 
-        results.push_back(std::move(result));
+        results.emplace_back(std::move(result));
         return results;
     }
 
@@ -206,7 +206,8 @@ namespace Wannabe
 
         // 3. 랜덤 보정 및 치명타
         float random = Util::Random(0.9f, 1.1f);
-        if (CheckCritical(pAtaker, pTarget)) finalBase *= 1.5f;
+        if (CheckCritical(pAtaker, pTarget)) 
+            finalBase *= 1.5f;
 
         return std::max(1, (int)(finalBase * random));
     }

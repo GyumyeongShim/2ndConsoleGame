@@ -1,12 +1,10 @@
-#include <vector>
-
 #include "CounterNode.h"
 
-#include "Actor/Actor.h"
+#include <vector>
 
+#include "Actor/Actor.h"
 #include "Enum/CombatType.h"
 #include "Battle/BattleContext.h"
-
 #include "Component/StatusComponent.h"
 
 std::vector<CombatEffect> CounterNode::Check(const CombatEffect& effect, Wannabe::BattleContext& context)
@@ -26,12 +24,12 @@ std::vector<CombatEffect> CounterNode::Check(const CombatEffect& effect, Wannabe
     if (status->HasStatus(StatusType::Counter) == false)
         return vec;
 
-    CombatEffect reflect;
-    reflect.eCombatEffectType = CombatEffectType::Damage;
-    reflect.pAtker = effect.pTarget;
-    reflect.pTarget = effect.pAtker;
-    reflect.iValue = effect.iValue;
+    CombatEffect result;
+    result.eCombatEffectType = CombatEffectType::Damage;
+    result.pAtker = effect.pTarget;
+    result.pTarget = effect.pAtker;
+    result.iValue = effect.iValue;
 
-    vec.emplace_back(std::move(reflect));
+    vec.emplace_back(std::move(result));
     return vec;
 }

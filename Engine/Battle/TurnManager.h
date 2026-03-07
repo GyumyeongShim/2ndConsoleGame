@@ -5,10 +5,12 @@
 namespace Wannabe 
 {
 	class Actor;
+
 	class WANNABE_API TurnManager
 	{
 	public:
 		TurnManager();
+		~TurnManager() = default;
 
 		Actor* GetNextActor(const std::vector<Actor*>& players, const std::vector<Actor*>& enemies);
 

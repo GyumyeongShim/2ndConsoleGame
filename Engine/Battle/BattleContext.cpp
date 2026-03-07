@@ -1,20 +1,16 @@
+#include "BattleContext.h"
+
 #include <memory>
-#include <string>
 #include <random>
 
-#include "BattleContext.h"
 #include "Util/Utill.h"
 #include "Actor/Actor.h"
-
 #include "Enum/ActionType.h"
-
 #include "Interface/IBattleLevel.h"
 #include "Interface/IBattleEventFactory.h"
 #include "Interface/IRemoveActorCallback.h"
-
-#include "Battle/BattleEventProcessor.h"
 #include "Battle/BattleLogSystem.h"
-
+#include "Battle/BattleEventProcessor.h"
 #include "Component/StatComponent.h"
 #include "Component/StatusComponent.h"
 

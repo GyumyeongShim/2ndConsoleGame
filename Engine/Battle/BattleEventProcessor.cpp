@@ -1,15 +1,12 @@
-#include <algorithm>
-#include <vector>
-
 #include "BattleEventProcessor.h"
+
+#include <algorithm>
+
 #include "Actor/Actor.h"
-
 #include "Battle/BattleContext.h"
-
 #include "../Game/Battle/System/CutscenePlayer.h"
 #include "Interface/IBattleEventFactory.h"
 #include "Interface/IRemoveActorCallback.h"
-
 #include "Component/StatusComponent.h"
 #include "Component/DisplayComponent.h"
 #include "Component/StatComponent.h"
@@ -123,7 +120,7 @@ namespace Wannabe
         if (stat == nullptr)
             return;
 
-        if(effect.bMiss == true) // 미스 발생
+        if(effect.bMiss == true) // 회피 판정
         {
             // 1. 시각적 연출 추가 (MISS 텍스트가 타겟 위치에서 위로 튀어오름)
            Vector2 startPos = target->GetPosition();
@@ -131,6 +128,7 @@ namespace Wannabe
             context.GetCutscenePlayer().Push(m_pEventFactory->CreateVisualEffect(
                 startPos, endPos, EffectMovementType::Parabola, L'M', Color::Yellow, 0.8f
             ));
+
             // 로그 출력
             BattleLog log;
             log.wstrAtkerName = atker->GetDisplay()->GetOriginName();
@@ -197,8 +195,7 @@ namespace Wannabe
         log.iValue = heal;
         log.bCritical = effect.bCritical;
         log.bMiss = effect.bMiss;
-        auto event = m_pEventFactory->CreateLog(log);
-        context.GetCutscenePlayer().Push(std::move(event));
+        context.GetCutscenePlayer().Push(m_pEventFactory->CreateLog(log));
     }
 
     void BattleEventProcessor::ApplyStatus(BattleContext& context, const CombatEffect& effect)
@@ -224,8 +221,7 @@ namespace Wannabe
         log.bMiss = false;
 
         // 로그 출력
-        auto event = m_pEventFactory->CreateLog(log);
-        context.GetCutscenePlayer().Push(std::move(event));
+        context.GetCutscenePlayer().Push(m_pEventFactory->CreateLog(log));
     }
 
     void BattleEventProcessor::ApplyEffect(BattleContext& context, const CombatEffect& effect)

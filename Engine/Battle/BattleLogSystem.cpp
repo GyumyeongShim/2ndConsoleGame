@@ -1,4 +1,5 @@
 #include "BattleLogSystem.h"
+
 #include "Enum/CombatType.h"
 #include "Actor/Actor.h"
 #include "Component/DisplayComponent.h"

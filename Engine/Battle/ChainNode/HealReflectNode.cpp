@@ -1,12 +1,10 @@
-#include <vector>
-
 #include "HealReflectNode.h"
 
-#include "Actor/Actor.h"
+#include <vector>
 
+#include "Actor/Actor.h"
 #include "Enum/CombatType.h"
 #include "Battle/BattleContext.h"
-
 #include "Component/StatusComponent.h"
 
 std::vector<CombatEffect> HealReflectNode::Check(const CombatEffect& effect, Wannabe::BattleContext& context)
@@ -16,15 +14,25 @@ std::vector<CombatEffect> HealReflectNode::Check(const CombatEffect& effect, Wan
     if (effect.eCombatEffectType != CombatEffectType::ApplyStatus)
         return vec;
 
-    if (effect.pTarget->GetStatus()->HasStatus(StatusType::Counter) == true)
+    if (effect.pTarget == nullptr || effect.pAtker == nullptr)
         return vec;
 
-    CombatEffect reflect;
-    reflect.eCombatEffectType = CombatEffectType::ApplyStatus;
-    reflect.pAtker = effect.pTarget;
-    reflect.pTarget = effect.pAtker;
-    reflect.iValue = effect.iValue / 2;
+    auto* targetStatus = effect.pTarget->GetStatus();
+    if (targetStatus == nullptr)
+        return vec;
 
-    vec.emplace_back(std::move(reflect));
+    if (effect.pTarget->GetStatus()->HasStatus(StatusType::Counter) == true)
+    {
+        CombatEffect result;
+        result.eCombatEffectType = CombatEffectType::ApplyStatus;
+        result.pAtker = effect.pTarget;
+        result.pTarget = effect.pAtker;
+        result.eStatus = effect.eStatus;
+        result.iDuration = effect.iDuration;
+        result.iValue = effect.iValue;
+
+        vec.emplace_back(std::move(result));
+    }
+
     return vec;
 }

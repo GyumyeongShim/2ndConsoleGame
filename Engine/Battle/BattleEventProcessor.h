@@ -2,7 +2,6 @@
 #include <functional>
 #include <vector>
 #include <string>
-#include <queue>
 
 #include "Core/Common.h"
 #include "Enum/CombatType.h"
@@ -23,6 +22,7 @@ namespace Wannabe
 		using RemoveActorFunc = IRemoveActorCallback*;
 
 		BattleEventProcessor(IBattleEventFactory* factory, IRemoveActorCallback* callback);
+
 		void ProcessCombatEffectResult(BattleContext& context, const CombatEffectResult& result, int iDepth = 0);
 
 		void MarkForRemoval(Actor* pTarget);
@@ -31,6 +31,7 @@ namespace Wannabe
 
 		void SetRemoveCallback(IRemoveActorCallback* callback);
 		void SetEventFactory(IBattleEventFactory* factory);
+
 		void OnTurnStart(BattleContext& context, Actor* pTarget);
 		void OnTurnEnd(BattleContext& context, Actor* pTarget);
 

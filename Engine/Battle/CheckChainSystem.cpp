@@ -1,10 +1,9 @@
-#include <vector>
-
 #include "CheckChainSystem.h"
+
+#include <vector>
 
 #include "Enum/CombatType.h"
 #include "Battle/BattleContext.h"
-
 #include "Battle/ChainNode/ReflectNode.h"
 #include "Battle/ChainNode/CounterNode.h"
 #include "Battle/ChainNode/DeathCheckNode.h"
@@ -22,6 +21,9 @@ std::vector<CombatEffect> Wannabe::CheckChainSystem::Run(const CombatEffect& eff
 
     for (auto& node : m_vecNodes)
     {
+        if (node == nullptr)
+            continue;
+
         auto out = node->Check(effect, context);
         result.insert(result.end(), out.begin(), out.end());
     }

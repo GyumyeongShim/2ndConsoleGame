@@ -1,8 +1,8 @@
 #pragma once
-#include "Core/Common.h"
 #include <vector>
 #include <string>
 
+#include "Core/Common.h"
 #include "Enum/CombatType.h"
 #include "Enum/ItemType.h"
 

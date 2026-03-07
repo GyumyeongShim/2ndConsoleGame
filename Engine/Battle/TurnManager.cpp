@@ -1,10 +1,10 @@
+#include "TurnManager.h"
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
 
-#include "TurnManager.h"
 #include "Actor/Actor.h"
-
 #include "Component/StatComponent.h"
 #include "Component/StatusComponent.h"
 
@@ -30,10 +30,11 @@ namespace Wannabe
         float fMaxTurn = 0.0f;
         for (auto actor : m_vecActors)
         {
-            if (actor->IsDestroyRequested() == true)
+            if (actor == nullptr || actor->IsDestroyRequested() == true)
                 continue;
 
-            if (actor->GetStat()->IsDead() == true)
+            auto* stat = actor->GetStat();
+            if (stat == nullptr || stat->IsDead() == true)
                 continue;
 
             if (actor->GetStat()->IsTurnMax())
@@ -58,19 +59,24 @@ namespace Wannabe
 
         for (Wannabe::Actor* actor : m_vecActors)
         {
-            if (actor->GetStat() == nullptr || actor->GetStat()->IsDead())
+            if (actor == nullptr)
+                continue;
+
+            auto* stat = actor->GetStat();
+            if (stat == nullptr || stat->IsDead() == true)
                 continue;
 
             // 상태이상: Stun이면 턴 스킵
-            if (actor->GetStatus() && actor->GetStatus()->HasStatus(StatusType::Stun))
+            auto* status = actor->GetStatus();
+            if (status && actor->GetStatus()->HasStatus(StatusType::Stun))
             {
                 // 스턴이면 턴 리셋 대신 진행만
-                actor->GetStat()->ResetTurn();
+                stat->ResetTurn();
                 continue;
             }
 
             // 턴 카운트 증가
-            actor->GetStat()->ProgressTurn();
+            stat->ProgressTurn();
         }
     }
 

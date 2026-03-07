@@ -18,6 +18,8 @@ namespace Wannabe
 {
     class Actor;
     class IBattleEventFactory;
+    class IRemoveActorCallback;
+
     class WANNABE_API BattleContext
     {
     public:

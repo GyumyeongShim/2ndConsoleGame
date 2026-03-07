@@ -1,9 +1,10 @@
 #include "DeathCheckNode.h"
 
+#include <vector>
+
 #include "Actor/Actor.h"
 #include "Enum/CombatType.h"
 #include "Battle/BattleContext.h"
-
 #include "Component/StatComponent.h"
 
 std::vector<CombatEffect> DeathCheckNode::Check(const CombatEffect& effect, Wannabe::BattleContext& context)
@@ -23,11 +24,11 @@ std::vector<CombatEffect> DeathCheckNode::Check(const CombatEffect& effect, Wann
     if (stat->IsDead() == true)
         return vec;
 
-    CombatEffect deathEffect;
-    deathEffect.eCombatEffectType = CombatEffectType::None;
-    deathEffect.pAtker = effect.pAtker;
-    deathEffect.pTarget = target;
+    CombatEffect result;
+    result.eCombatEffectType = CombatEffectType::None;
+    result.pAtker = effect.pAtker;
+    result.pTarget = target;
 
-    vec.emplace_back(std::move(deathEffect));
+    vec.emplace_back(std::move(result));
     return vec;
 }
