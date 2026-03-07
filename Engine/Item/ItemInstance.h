@@ -1,26 +1,29 @@
 #pragma once
-#include <memory>
-
 #include "Core/Common.h"
+#include "Core/RTTI.h"
 
 namespace Wannabe
 {
     class Item;
+    class Actor;
 
-    class WANNABE_API ItemInstance
+    class WANNABE_API ItemInstance : public RTTI
     {
+        RTTI_DECLARATIONS(ItemInstance, RTTI);
+
     public:
         ItemInstance(Item* pItem = nullptr, int iCnt = 1);
 
-        Item* GetItem() const { return m_pItem; }
-
-        int GetCnt() const { return m_iCnt; }
+        bool Use(Actor* pAtker, Actor* pTarget);
 
         void AddCount(int iValue);
         bool Consume(int iValue);
 
-        bool IsEmpty() const;
-        bool IsValid() const;
+        Item* GetItem() const { return m_pItem; }
+        int GetCnt() const { return m_iCnt; }
+
+        bool IsEmpty() const { return m_iCnt <= 0 || m_pItem == nullptr; }
+        bool IsValid() const { return m_pItem != nullptr; }
 
         bool IsStackable() const;
         bool IsConsumable() const;

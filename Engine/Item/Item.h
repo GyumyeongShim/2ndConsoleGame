@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
-#include <vector>
-#include <memory>
 
+#include "Core/Common.h"
 #include "Core/RTTI.h"
 #include "Enum/ItemType.h"
+#include "../Game/Data/ActionData.h"
 
 namespace Wannabe
 {
@@ -13,14 +13,17 @@ namespace Wannabe
 		RTTI_DECLARATIONS(Item, RTTI);
 
 	public:
-		Item(int iTID, ItemType eType);
-		int GetItemTID() const { return m_iTID; }
-		ItemType GetItemType() const { return m_eItemType; }
-		bool IsStackable() { return m_bStackable; }
+		Item(const ActionData& data);
+
+		int GetItemTID() const { return m_Data.iTid; }
+		ItemType GetItemType() const { return m_Data.eItemType; }
+		const std::wstring& GetName() { return m_Data.wstrName; }
+
+		// 데이터 기반 판정
+		bool IsStackable() const;
+		const ActionData& GetActionData() const { return m_Data; }
 
 	protected:
-		ItemType m_eItemType = ItemType::Consumable;
-		bool m_bStackable = false;
-		int m_iTID;
+		ActionData m_Data;
 	};
 }

@@ -1,8 +1,9 @@
 #pragma once
 #include <unordered_map>
+#include <vector>
 
 #include "Core/Common.h"
-
+#include "Item/Item.h"
 #include "../Game/Data/PlayerData.h"
 #include "../Game/Data/MonsterData.h"
 #include "../Game/Data/ActionData.h"
@@ -17,7 +18,9 @@ namespace Wannabe
 			static DataManager instance;
 			return instance;
 		}
+
 		void Init();
+		~DataManager();
 
 		void LoadPlayers(const std::vector<PlayerData>& players);
 		void LoadMonsters(const std::vector<MonsterData>& monsters);
@@ -27,9 +30,13 @@ namespace Wannabe
 		const MonsterData* GetMonsterData(int iTID);
 		const ActionData* GetActionData(int iTID); //스킬, 아이템 통합
 
+		Item* GetItem(int iTID);
+
 	private:
 		std::unordered_map<int, PlayerData> m_PlayerTable;
 		std::unordered_map<int, MonsterData> m_MonsterTable;
 		std::unordered_map<int, ActionData> m_ActionTable;
+
+		std::unordered_map<int, Item*> m_ItemTable;
 	};
 }

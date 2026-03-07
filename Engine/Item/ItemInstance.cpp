@@ -10,6 +10,26 @@ ItemInstance::ItemInstance(Wannabe::Item* pItem, int iCnt)
 {
 }
 
+bool ItemInstance::Use(Actor* pAtker, Actor* pTarget)
+{
+	if(IsValid() == false || pAtker == nullptr)
+		return false;
+
+	const ActionData& data = m_pItem->GetActionData();
+	if (IsConsumable() == true && m_iCnt <= 0)
+		return false;
+
+	for (const auto& effect : data.vecEffects)
+	{
+
+	}
+
+	if (IsConsumable() == true)
+		Consume(1);
+
+	return true;
+}
+
 void ItemInstance::AddCount(int iValue)
 {
 	if (iValue <= 0 || !m_pItem)
@@ -31,30 +51,21 @@ bool ItemInstance::Consume(int iValue)
 	return true;
 }
 
-bool ItemInstance::IsEmpty() const
-{
-	return m_iCnt <= 0;
-}
-
-bool ItemInstance::IsValid() const
-{
-	return m_pItem != nullptr;
-}
-
 bool ItemInstance::IsStackable() const
 {
 	if (m_pItem == nullptr)
 		return false;
 
-	return m_pItem->GetItemType() == ItemType::Consumable;
+	return m_pItem->IsStackable();
 }
 
 bool ItemInstance::IsConsumable() const
 {
-	if (m_pItem == nullptr)
+	if (m_pItem == nullptr) 
 		return false;
 
-	return m_pItem->GetItemType() == ItemType::Consumable;
+	ItemType type = m_pItem->GetItemType();
+	return type == ItemType::Consumable || type == ItemType::Throw;
 }
 
 bool ItemInstance::IsEquipment() const

@@ -7,6 +7,19 @@
 
 namespace Wannabe
 {
+    DataManager::~DataManager()
+    {
+        for (auto& pair : m_ItemTable)
+        {
+            if (pair.second != nullptr)
+            {
+                delete pair.second;
+            }
+        }
+
+        m_ItemTable.clear();
+    }
+
     void DataManager::Init()
     {
         std::string basePath = "../Assets/";
@@ -16,6 +29,7 @@ namespace Wannabe
         LoadActions(LoadActionJson(basePath + "Skill.json"));
         LoadActions(LoadActionJson(basePath + "Item.json"));
     }
+
     void DataManager::LoadPlayers(const std::vector<PlayerData>& players)
     {
         for (const auto& data : players)
@@ -50,5 +64,25 @@ namespace Wannabe
     {
         auto it = m_ActionTable.find(iTID);
         return (it != m_ActionTable.end()) ? &it->second : nullptr;
+    }
+
+    Item* DataManager::GetItem(int iTID)
+    {
+        auto it = m_ItemTable.find(iTID);
+        if (it != m_ItemTable.end())
+            return it->second;
+
+        const ActionData* pData = GetActionData(iTID);
+        if (pData != nullptr)
+        {
+            if (pData->eItemType != ItemType::None)
+            {
+                Item* pNewItem = new Item(*pData);
+                m_ItemTable[iTID] = pNewItem;
+                return pNewItem;
+            }
+        }
+
+        return nullptr;
     }
 }

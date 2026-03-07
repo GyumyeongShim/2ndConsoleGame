@@ -1,67 +1,106 @@
 #include "InventoryComponent.h"
 
 #include "Enum/ItemType.h"
+#include "Actor/Actor.h"
 #include "Item/Item.h"
 #include "Item/ItemInstance.h"
+#include "Manager/DataManager.h"
 
 using namespace Wannabe;
 
-void InventoryComponent::AddItem(Item* item, int count)
+InventoryComponent::~InventoryComponent()
 {
-    if (item == nullptr || count <= 0)
-        return;
-
-    auto* inst = FindItem(item->GetItemTID());
-    if (inst && inst->IsStackable())
+    for (ItemInstance* item : m_vecItemInstances)
     {
-        inst->AddCount(count);
-        return;
+        if (item == nullptr)
+            continue;
+
+        delete item;
     }
 
-    // ½ºÅÃ ºÒ°¡°Å³ª Ã³À½ È¹µæ
-    m_vecItemInstances.emplace_back(item, count);
+    m_vecItemInstances.clear();
 }
 
-bool InventoryComponent::RemoveItem(int iTID, int count)
+bool InventoryComponent::AddItem(int iTID, int iCnt)
 {
-    if (count <= 0)
+    const ActionData* pData = DataManager::Get().GetActionData(iTID);
+    if (pData == nullptr)
         return false;
 
-    auto* inst = FindItem(iTID);
-    if (inst == nullptr)
-        return false;
-
-    if (inst->Consume(count) == false)
-        return false;
-
-    if (inst->IsEmpty())
+    if (pData->eItemType != ItemType::Equipment);
     {
-        m_vecItemInstances.erase(
-            std::remove_if(
-                m_vecItemInstances.begin(),
-                m_vecItemInstances.end(),
-                [iTID](const ItemInstance& i)
+        ItemInstance* pItem = FindStackableItem(iTID);
+        if (pItem != nullptr)
         {
-            return i.GetItem()->GetItemTID() == iTID;
-        }),
-            m_vecItemInstances.end());
+            pItem->AddCount(iCnt);
+            return true;
+        }
     }
 
-    return true;
-}
+    if (static_cast<int>(m_vecItemInstances.size()) >= m_iMaxSlots)
+        return false;
 
-ItemInstance* InventoryComponent::FindItem(int iTID)
-{
-    for (auto& inst : m_vecItemInstances)
+    Item* pBaseItem = DataManager::Get().GetItem(iTID);
+    if (pBaseItem != nullptr)
     {
-        if (inst.GetItem()->GetItemTID() == iTID)
-            return &inst;
+        ItemInstance* pNewInstance = new ItemInstance(pBaseItem, iCnt);
+        m_vecItemInstances.emplace_back(pNewInstance);
+        return true;
     }
 
-    return nullptr;
+    return false;
 }
 
-const std::vector<ItemInstance>& InventoryComponent::GetItems() const
+bool InventoryComponent::UseItem(int iSlotIdx, Actor* pTarget)
 {
-    return m_vecItemInstances;
+    ItemInstance* pInstance = GetItemInSlot(iSlotIdx);
+    if (pInstance == nullptr)
+        return false;
+
+    Actor* pActualTarget = (pTarget != nullptr) ? pTarget : GetOwner();
+
+    if (pInstance->Use(GetOwner(), pActualTarget))
+    {
+        if (pInstance->IsEmpty())
+        {
+            RemoveItem(iSlotIdx);
+        }
+        return true;
+    }
+
+    return false;
+}
+
+void InventoryComponent::RemoveItem(int iSlotIdx, int iCnt)
+{
+    if (iSlotIdx < 0 || iSlotIdx >= static_cast<int>(m_vecItemInstances.size()))
+        return;
+
+    ItemInstance* pInstance = m_vecItemInstances[iSlotIdx];
+    if (pInstance->Consume(iCnt))
+    {
+        if (pInstance->IsEmpty())
+        {
+            delete pInstance;
+            m_vecItemInstances.erase(m_vecItemInstances.begin() + iSlotIdx);
+        }
+    }
+}
+
+ItemInstance* InventoryComponent::GetItemInSlot(int iSlotIdx)
+{
+    if (iSlotIdx < 0 || iSlotIdx >= static_cast<int>(m_vecItemInstances.size()))
+        return nullptr;
+
+    return m_vecItemInstances[iSlotIdx];
+}
+
+ItemInstance* InventoryComponent::FindStackableItem(int iTID)
+{
+    for (auto* pInstance : m_vecItemInstances)
+    {
+        if (pInstance->GetItem()->GetItemTID() == iTID)
+            return pInstance;
+    }
+    return nullptr;
 }

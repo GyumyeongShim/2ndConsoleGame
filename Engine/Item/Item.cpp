@@ -1,6 +1,11 @@
 #include "Item.h"
 
-Wannabe::Item::Item(int iTID, ItemType eType)
-	:m_iTID(iTID), m_eItemType(eType)
+Wannabe::Item::Item(const ActionData& data)
+	:m_Data(data)
 {
+}
+
+bool Wannabe::Item::IsStackable() const
+{
+	return m_Data.eItemType != ItemType::Equipment;
 }

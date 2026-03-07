@@ -2,23 +2,32 @@
 #include <vector>
 
 #include "Core/Common.h"
-#include "Item/ItemInstance.h"
+#include "Component/Component.h"
 
 namespace Wannabe
 {
-    class Item;
-	class WANNABE_API InventoryComponent
+    class Actor;
+    class ItemInstance;
+
+	class WANNABE_API InventoryComponent : public Component
 	{
     public:
         InventoryComponent* Clone() const { return new InventoryComponent(*this); }
+        virtual ~InventoryComponent() override;
 
-        void AddItem(Item * item, int count = 1);
-        bool RemoveItem(int iTID, int count = 1);
+        bool AddItem(int iTID, int iCnt = 1);
+        bool UseItem(int iSlotIdx, Actor* pTarget = nullptr);
+        void RemoveItem(int iSlotIdx, int iCnt = 1);
 
-        ItemInstance* FindItem(int iTID);
-        const std::vector<ItemInstance>& GetItems() const;
+        const std::vector<ItemInstance*>& GetItems() const { return m_vecItemInstances; }
+        ItemInstance* GetItemInSlot(int iSlotIdx);
+        int GetMaxSlots() const { return m_iMaxSlots; }
 
     private:
-        std::vector<ItemInstance> m_vecItemInstances;
+        ItemInstance* FindStackableItem(int iTID);
+
+    private:
+        std::vector<ItemInstance*> m_vecItemInstances;
+        int m_iMaxSlots = 10;
 	};
 }
