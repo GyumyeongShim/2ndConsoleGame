@@ -114,7 +114,6 @@
     <ClCompile Include="UI\UIAnimation\BlinkAnimation.cpp" />
     <ClCompile Include="UI\UIAnimation\SlideAnimation.cpp" />
     <ClCompile Include="UI\UIAnimation\TypingAnimation.cpp" />
-    <ClCompile Include="UI\UI_BattleMenu.cpp" />
     <ClCompile Include="UI\UI_BattleResult.cpp" />
     <ClCompile Include="UI\UI_Dialogue.cpp" />
     <ClCompile Include="Game\Game.cpp" />
@@ -162,7 +161,6 @@
     <ClInclude Include="UI\UIAnimation\BlinkAnimation.h" />
     <ClInclude Include="UI\UIAnimation\SlideAnimation.h" />
     <ClInclude Include="UI\UIAnimation\TypingAnimation.h" />
-    <ClInclude Include="UI\UI_BattleMenu.h" />
     <ClInclude Include="UI\UI_BattleResult.h" />
     <ClInclude Include="UI\UI_Dialogue.h" />
     <ClInclude Include="Game\Game.h" />

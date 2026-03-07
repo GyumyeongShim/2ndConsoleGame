@@ -131,8 +131,6 @@ void Player::Init()
 	pStatus->SetOwner(this);
 	AddComponent(pStatus);
 
-	AddComponent(new InventoryComponent());
-
 	//Ascii, Ascii color 입력
 	DisplayComponent* pDisplay = new DisplayComponent();
 	pDisplay->SetDisplayByData(data->visual);
@@ -145,4 +143,14 @@ void Player::Init()
 		pSkill->AddSkill(TID);
 	}
 	AddComponent(pSkill);
+
+	// 인벤토리
+	InventoryComponent* pInven = new InventoryComponent();
+	pInven->AddItem(1001, 5);
+	pInven->AddItem(1002, 15);
+	pInven->AddItem(1003, 25);
+	pInven->AddItem(1004, 100);
+	pInven->AddItem(1005, 777);
+	pInven->AddItem(1006, 3);
+	AddComponent(pInven);
 }

@@ -8,6 +8,19 @@
 
 using namespace Wannabe;
 
+InventoryComponent::InventoryComponent(const InventoryComponent& other)
+    :Component(other)
+{
+    m_iMaxSlots = other.m_iMaxSlots;
+    for (auto* pInst : other.m_vecItemInstances)
+    {
+        if (pInst == nullptr)
+            continue;
+
+        m_vecItemInstances.emplace_back(new ItemInstance(*pInst));
+    }
+}
+
 InventoryComponent::~InventoryComponent()
 {
     for (ItemInstance* item : m_vecItemInstances)
@@ -27,7 +40,7 @@ bool InventoryComponent::AddItem(int iTID, int iCnt)
     if (pData == nullptr)
         return false;
 
-    if (pData->eItemType != ItemType::Equipment);
+    if (pData->eItemType != ItemType::Equipment)
     {
         ItemInstance* pItem = FindStackableItem(iTID);
         if (pItem != nullptr)

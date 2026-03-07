@@ -589,10 +589,10 @@ void BattleLevel::Input_InvenSelect()
         return;
 
     if (Input::Get().GetKeyDown(VK_UP))
-        m_pInvenMenu->MoveCursor(-1);
+        m_pMenu->MoveCursor(-1);
 
     if (Input::Get().GetKeyDown(VK_DOWN))
-        m_pInvenMenu->MoveCursor(1);
+        m_pMenu->MoveCursor(1);
 
     // Cancle
     if (Input::Get().GetKeyDown(VK_ESCAPE))
@@ -607,7 +607,7 @@ void BattleLevel::Input_InvenSelect()
     // Confirm
     if (Input::Get().GetKeyDown(VK_RETURN))
     {
-        int idx = m_pInvenMenu->GetCursorIdx();
+        int idx = m_pMenu->GetCursorIdx();
         if (idx >= items.size())
             return;
 
@@ -876,6 +876,9 @@ void BattleLevel::EnterTargetSelect(int iTID)
 
     m_vecTargets = finalTargets;
 
+    bool bIsAll = (data->targetType == ActionTargetType::AllEnemy ||
+        data->targetType == ActionTargetType::AllAlly);
+    m_pTargetCursor->SetAllTargetMode(bIsAll);
     m_pTargetCursor->SetTargets(finalTargets);
     m_pTargetCursor->SetActive(true);
 
@@ -919,7 +922,17 @@ void BattleLevel::BuildItemMenu()
         if (data == nullptr)
             continue;
 
-        menu.emplace_back(data->wstrName);
+        std::wstring displayName = data->wstrName;
+        displayName += L" x" + std::to_wstring(itemInst->GetCnt());
+
+        menu.emplace_back(displayName);
+    }
+
+    if (m_pMenu != nullptr)
+    {
+        m_pMenu->SetBoxSize(24, 4);
+        m_pMenu->SetItems(menu);
+        m_pMenu->SetActive(true);
     }
 
     m_vecItemMenu = menu;

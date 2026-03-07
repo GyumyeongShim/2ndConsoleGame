@@ -13,6 +13,8 @@ namespace Wannabe
 	{
     public:
         InventoryComponent* Clone() const { return new InventoryComponent(*this); }
+        InventoryComponent() = default;
+        InventoryComponent(const InventoryComponent& other);
         virtual ~InventoryComponent() override;
 
         bool AddItem(int iTID, int iCnt = 1);

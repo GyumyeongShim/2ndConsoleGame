@@ -30,39 +30,31 @@ void UI_MenuList::Draw(Wannabe::RenderSystem& renderSys)
     int posY = static_cast<int>(m_cachedViewportPos.y);
     int drawCount = std::min<int>(m_iMaxShow, (int)m_wstItems.size());
 
-    //// 테두리
-    //renderSys.DrawUI(L"+------------------+", Vector2(posX, posY), Color::White, m_SortingOrder);
-    //for (int i = 1; i <= drawCount; ++i)
-    //{
-    //    renderSys.DrawUI(L"|                  |", Vector2(posX, posY + i), Color::White, m_SortingOrder);
-    //}
-    //renderSys.DrawUI(L"+------------------+", Vector2(posX, posY + drawCount + 1), Color::White, m_SortingOrder);
-
-    //// 2. 메뉴 아이템
-    //for (int i = 0; i < drawCount; i++)
-    //{
-    //    int realIndex = m_iStartIdx + i;
-    //    if (realIndex >= (int)m_wstItems.size()) break;
-
-    //    bool selected = (realIndex == m_iCursorIdx);
-    //    int drawY = posY + 1 + i;
-
-    //    // 화살표 표시
-    //    renderSys.DrawUI(selected ? L"▶" : L"  ", Vector2(posX + 2, drawY),
-    //        selected ? Color::Green : Color::White, m_SortingOrder);
-    //    renderSys.DrawUI(m_wstItems[realIndex], Vector2(posX + 5, drawY),
-    //        selected ? Color::Green : Color::White, m_SortingOrder);
-    //}
-
+    // 1. 테두리 그리기
     std::wstring horizontalLine = L"+" + std::wstring(m_iMenuWidth - 2, L'-') + L"+";
     std::wstring emptyLine = L"|" + std::wstring(m_iMenuWidth - 2, L' ') + L"|";
 
     renderSys.DrawUI(horizontalLine, Vector2(posX, posY), Color::White, m_SortingOrder);
+
+    // 스크롤 상단 화살표 (위쪽 아이템이 더 있을 때)
+    if (m_iStartIdx > 0)
+    {
+        renderSys.DrawUI(L" ▲ ", Vector2(posX + (m_iMenuWidth / 2) - 1, posY), Color::Yellow, m_SortingOrder + 1);
+    }
+
     for (int i = 1; i <= drawCount; ++i)
     {
         renderSys.DrawUI(emptyLine, Vector2(posX, posY + i), Color::White, m_SortingOrder);
     }
+
     renderSys.DrawUI(horizontalLine, Vector2(posX, posY + drawCount + 1), Color::White, m_SortingOrder);
+
+    // 스크롤 하단 화살표 (아래쪽 아이템이 더 있을 때)
+    if (m_iStartIdx + m_iMaxShow < (int)m_wstItems.size())
+    {
+        renderSys.DrawUI(L" ▼ ", Vector2(posX + (m_iMenuWidth / 2) - 1, posY + drawCount + 1),
+            Color::Yellow, m_SortingOrder + 1);
+    }
 
     // 2. 아이템 출력 (Padding 반영)
     for (int i = 0; i < drawCount; i++)
@@ -83,19 +75,6 @@ void UI_MenuList::RecalculateViewportPosition()
 {
     if (!m_pRenderSystem)
         return;
-
-    //Vector2 screen = m_pRenderSystem->GetScreenSize();
-
-    //const int menuWidth = 18;
-    //const int menuHeight = 6; 
-
-    //Vector2 pos = { screen.x - menuWidth, screen.y - menuHeight };
-
-    //pos = pos + m_offset;
-    //pos.x = std::max(0, std::min(pos.x, screen.x - menuWidth));
-    //pos.y = std::max(0, std::min(pos.y, screen.y - menuHeight));
-
-    //m_cachedViewportPos = pos;
 
     Vector2 screen = m_pRenderSystem->GetScreenSize();
     int currentDrawCount = std::min<int>(m_iMaxShow, (int)m_wstItems.size());
@@ -150,14 +129,17 @@ void UI_MenuList::SetItems(const std::vector<std::wstring>& items)
 
 void UI_MenuList::MoveCursor(int delta)
 {
-    if (m_wstItems.empty()) return;
+    if (m_wstItems.empty()) 
+        return;
 
     int size = (int)m_wstItems.size();
 
     // 순환 처리
     m_iCursorIdx += delta;
-    if (m_iCursorIdx < 0) m_iCursorIdx = size - 1;
-    else if (m_iCursorIdx >= size) m_iCursorIdx = 0;
+    if (m_iCursorIdx < 0) 
+        m_iCursorIdx = size - 1;
+    else if (m_iCursorIdx >= size) 
+        m_iCursorIdx = 0;
 
     // 스크롤 윈도우 조정
     if (m_iCursorIdx < m_iStartIdx)
@@ -170,10 +152,14 @@ void UI_MenuList::MoveCursor(int delta)
     }
 
     // 스크롤 위치 보정
-    if (m_iCursorIdx == size - 1 && size > m_iMaxShow)
-        m_iStartIdx = size - m_iMaxShow;
     if (m_iCursorIdx == 0)
+    {
         m_iStartIdx = 0;
+    }
+    else if (m_iCursorIdx == size - 1 && size > m_iMaxShow)
+    {
+        m_iStartIdx = size - m_iMaxShow;
+    }
 }
 
 void UI_MenuList::SetCursorIdx(int idx)

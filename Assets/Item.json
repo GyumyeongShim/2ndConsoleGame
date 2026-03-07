@@ -1,140 +1,172 @@
 {
-  "Items":
-  [
-    {
-      "tid": 1001,
-      "name": "Small Potion",
-      "itemType": "Consumable",
-      "value": 50,
-      "targetType": "AllySingle",
-      "maxTargetCnt": 1,
-
-      "visual":
+   "Items":[
       {
-        "asciiSymbol": "+",
-        "color": "Green",
-        "particleSpeed": 12.0,
-        "particleRange": 4
+         "tid":1001,
+         "name":"Small Potion",
+         "itemType":"Consumable",
+         "targetType":"SingleAlly",
+         "effects":[
+            {
+               "type":"Heal",
+               "power":50
+            }
+         ]
       },
-
-      "effects":
-      [
-        {
-          "type": "Heal",
-          "power": 50,
-          "duration": 0,
-          "ratio": 100
-        }
-      ]
-    },
-
-    {
-      "tid": 1002,
-      "name": "Smoke Bomb",
-      "itemType": "Consumable",
-      "value": 120,
-      "targetType": "AllEnemy",
-      "maxTargetCnt": 5,
-
-      "visual":
       {
-        "asciiSymbol": "~",
-        "color": "Cyan",
-        "particleSpeed": 8.0,
-        "particleRange": 6
+         "tid":1002,
+         "name":"Smoke Bomb",
+         "itemType":"Consumable",
+         "targetType":"AllEnemy",
+         "effects":[
+            {
+               "type":"ApplyStatus",
+               "statusType":"Blind",
+               "duration":2
+            }
+         ]
       },
-
-      "effects":
-      [
-        {
-          "type": "ApplyStatus",
-          "statusType": "Blind",
-          "power": 0,
-          "duration": 2,
-          "ratio": 75
-        }
-      ]
-    },
-	
-	{
-	  "tid": 1010,
-	  "name": "Battle Tonic",
-	  "itemType": "Consumable",
-	  "value": 200,
-	  "targetType": "Self",
-	  "maxTargetCnt": 1,
-
-	  "visual":
-	  {
-		"asciiSymbol": "!",
-		"color": "Yellow",
-		"particleSpeed": 15,
-		"particleRange": 5
-	  },
-
-	  "effects":
-	  [
-		{
-		  "type": "Heal",
-		  "power": 30
-		},
-		{
-		  "type": "ApplyStatus",
-		  "statusType": "AtkUp",
-		  "power": 5,
-		  "duration": 3,
-		  "ratio": 100
-		}
-	  ]
-	},
-	
-    {
-      "tid": 2001,
-      "name": "Iron Sword",
-      "itemType": "Equipment",
-      "value": 300,
-      "equipSlot": "Weapon",
-
-      "statModifier":
       {
-        "iAtk": 10,
-        "iAccuracy": 5
-      }
-    },
-
-    {
-      "tid": 2002,
-      "name": "Swift Boots",
-      "itemType": "Equipment",
-      "value": 450,
-      "equipSlot": "Armor",
-
-      "statModifier":
+         "tid":1010,
+         "name":"Battle Tonic",
+         "itemType":"Consumable",
+         "targetType":"Self",
+         "effects":[
+            {
+               "type":"Heal",
+               "power":30
+            },
+            {
+               "type":"ApplyStatus",
+               "statusType":"AtkUp",
+               "duration":3
+            }
+         ]
+      },
       {
-        "iSpd": 7,
-        "iEvasion": 5
-      }
-    },
-
-    {
-      "tid": 2003,
-      "name": "Assassin Ring",
-      "itemType": "Equipment",
-      "value": 800,
-      "equipSlot": "Accessory",
-
-      "statModifier":
+         "tid":1003,
+         "name":"Mega Potion",
+         "itemType":"Consumable",
+         "targetType":"SingleAlly",
+         "effects":[
+            {
+               "type":"Heal",
+               "power":150
+            }
+         ]
+      },
       {
-        "iCritChance": 15,
-        "iCritResist": -5
+         "tid":1004,
+         "name":"Ether",
+         "itemType":"Consumable",
+         "targetType":"SingleAlly",
+         "effects":[
+            {
+               "type":"MpHeal",
+               "power":50
+            }
+         ]
+      },
+      {
+         "tid":1005,
+         "name":"Antidote",
+         "itemType":"Consumable",
+         "targetType":"SingleAlly",
+         "effects":[
+            {
+               "type":"RemoveStatus",
+               "statusType":"Poison"
+            }
+         ]
+      },
+      {
+         "tid":1006,
+         "name":"Holy Water",
+         "itemType":"Consumable",
+         "targetType":"AllAlly",
+         "effects":[
+            {
+               "type":"Heal",
+               "power":40
+            },
+            {
+               "type":"RemoveStatus",
+               "statusType":"AllBad"
+            }
+         ]
+      },
+      {
+         "tid":1007,
+         "name":"Fire Crackers",
+         "itemType":"Consumable",
+         "targetType":"AllEnemy",
+         "effects":[
+            {
+               "type":"Damage",
+               "power":30
+            }
+         ]
+      },
+      {
+         "tid":1008,
+         "name":"Poison Dagger",
+         "itemType":"Consumable",
+         "targetType":"SingleEnemy",
+         "effects":[
+            {
+               "type":"Damage",
+               "power":20
+            },
+            {
+               "type":"ApplyStatus",
+               "statusType":"Poison",
+               "duration":3
+            }
+         ]
+      },
+      {
+         "tid":1009,
+         "name":"Iron Shield",
+         "itemType":"Equipment",
+         "equipSlot":"Armor",
+         "statModifier":{
+            "iDef":15,
+            "iSpd":-2
+         }
+      },
+      {
+         "tid":2004,
+         "name":"Hero Sword",
+         "itemType":"Equipment",
+         "equipSlot":"Weapon",
+         "statModifier":{
+            "iAtk":25,
+            "iCritChance":10
+         }
+      },
+      {
+         "tid":1011,
+         "name":"Phoenix Down",
+         "itemType":"Consumable",
+         "targetType":"SingleAlly",
+         "effects":[
+            {
+               "type":"Revive",
+               "power":1
+            }
+         ]
+      },
+      {
+         "tid":1012,
+         "name":"Strength Scroll",
+         "itemType":"Consumable",
+         "targetType":"AllAlly",
+         "effects":[
+            {
+               "type":"ApplyStatus",
+               "statusType":"AtkUp",
+               "duration":5
+            }
+         ]
       }
-    },
-
-    {
-      "tid": 9001,
-      "name": "Ancient Relic",
-      "itemType": "Quest",
-      "value": 0
-    }
-  ]
+   ]
 }

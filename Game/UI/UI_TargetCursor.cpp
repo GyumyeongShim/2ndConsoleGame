@@ -18,29 +18,53 @@ void UI_TargetCursor::Tick(float fDeltaTime)
         if (m_vecTarget[i] == nullptr)
             continue;
 
-        dynamic_cast<BattleActor*>(m_vecTarget[i])->SetTargeted(i == m_iCursorIdx);
+        auto* battleActor = dynamic_cast<BattleActor*>(m_vecTarget[i]);
+        if (battleActor == nullptr)
+            continue;
+
+        bool bIsTargeted = m_bAllTarget ? true : (i == m_iCursorIdx);
+        battleActor->SetTargeted(bIsTargeted);
     }
 }
 
 void UI_TargetCursor::Draw(Wannabe::RenderSystem& renderSys)
 {
-    if (m_bIsActive == false)
+    if (m_bIsActive == false || m_vecTarget.empty())
         return;
 
     if (m_iCursorIdx < 0 || m_iCursorIdx >= m_vecTarget.size())
         return;
 
-    auto* actor = dynamic_cast<BattleActor*>(m_vecTarget[m_iCursorIdx]);
-    if (actor == nullptr)
-        return;
-
-    Vector2 screenPos = actor->GetBattleScreenPosition();
-
     CanvasCell cell;
     cell.wch = L'>';
     cell.color = Color::Yellow;
 
-    renderSys.GetUICanvas().SetCell(screenPos.x - 2, screenPos.y, cell);
+    if (m_bAllTarget == true)
+    {
+        // 광역 모드: 모든 타겟 옆에 커서 표시
+        for (auto* actor : m_vecTarget)
+        {
+            auto* bActor = dynamic_cast<BattleActor*>(actor);
+            if (bActor == nullptr)
+                continue;
+
+            Vector2 screenPos = bActor->GetBattleScreenPosition();
+            renderSys.GetUICanvas().SetCell(screenPos.x - 2, screenPos.y, cell);
+        }
+    }
+    else
+    {
+        // 단일 모드
+        if (m_iCursorIdx < 0 || m_iCursorIdx >= (int)m_vecTarget.size())
+            return;
+
+        auto* actor = dynamic_cast<BattleActor*>(m_vecTarget[m_iCursorIdx]);
+        if (actor == nullptr)
+            return;
+
+        Vector2 screenPos = actor->GetBattleScreenPosition();
+        renderSys.GetUICanvas().SetCell(screenPos.x - 2, screenPos.y, cell);
+    }
 }
 
 void UI_TargetCursor::Init()
