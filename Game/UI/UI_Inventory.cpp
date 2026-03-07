@@ -53,7 +53,7 @@ void UI_Inventory::Draw(Wannabe::RenderSystem& renderSys)
 
         std::wstring prefix = selected ? L"¢º " : L"  ";
 
-        int iTID = items[i].GetItem()->GetItemTID();
+        int iTID = items[i]->GetItem()->GetItemTID();
         const ActionData* action = DataManager::Get().GetActionData(iTID);
         if (action == nullptr)
             continue;

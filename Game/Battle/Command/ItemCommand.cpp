@@ -40,7 +40,7 @@ void ItemCommand::Execute(Wannabe::BattleContext& context)
     }
 
     // 인벤토리에서 ItemInstance 가져오기
-    auto* inventory = m_pInstigator->GetInven();
+    auto* inventory = m_pInstigator->GetComponent<Wannabe::InventoryComponent>();
     if (inventory == nullptr)
         return;
 
@@ -61,7 +61,7 @@ void ItemCommand::Execute(Wannabe::BattleContext& context)
 
     // 로그
     BattleLog useLog;
-    useLog.wstrTxt = m_pInstigator->GetDisplay()->GetOriginName() + L"이(가) " + itemData->wstrName + L"을(를) 사용!";
+    useLog.wstrTxt = m_pInstigator->GetComponent<Wannabe::DisplayComponent>()->GetOriginName() + L"이(가) " + itemData->wstrName + L"을(를) 사용!";
     context.GetCutscenePlayer().Push(std::make_unique<LogEvent>(useLog));
 
     // 아이템 적용

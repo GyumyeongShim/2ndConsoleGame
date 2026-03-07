@@ -55,7 +55,7 @@ Wannabe::Actor* EnemyAI::SelectTarget_Hp(const std::vector<Wannabe::Actor*>& pla
             continue;
         }
 
-        if (p->GetStat()->GetHp() < pTarget->GetStat()->GetHp())
+        if (p->GetComponent<StatComponent>()->GetHp() < pTarget->GetComponent<StatComponent>()->GetHp())
             pTarget = p;
     }
 
@@ -71,8 +71,8 @@ Wannabe::Actor* EnemyAI::SelectTarget_Random(const std::vector<Wannabe::Actor*>&
 bool EnemyAI::ShouldUseSkill(Wannabe::Actor* self)
 {
     // 체력 50% 이하일 때 30% 확률로 스킬 사용
-    int hp = self->GetStat()->GetHp();
-    int maxHp = self->GetStat()->GetMaxHp();
+    int hp = self->GetComponent<StatComponent>()->GetHp();
+    int maxHp = self->GetComponent<StatComponent>()->GetMaxHp();
 
     if (hp < maxHp / 2)
     {
@@ -100,7 +100,7 @@ bool EnemyAI::ShouldRun(Wannabe::Actor* self)
 
 int EnemyAI::SelectUsableSkill(Wannabe::Actor* self)
 {
-    const SkillComponent* skillCompo= self->GetSKill();
+    const SkillComponent* skillCompo= self->GetComponent<SkillComponent>();
     if (skillCompo == nullptr)
         return -1;
 

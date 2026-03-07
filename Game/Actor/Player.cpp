@@ -26,11 +26,6 @@ Player::Player(int iTid, const Vector2& pos)
 
 Player::~Player()
 {
-	SafeDelete(m_pStatComponent);
-	SafeDelete(m_pStatusComponent);
-	SafeDelete(m_pInventoryComponent);
-	SafeDelete(m_pDisplayComponent);
-	SafeDelete(m_pSkillComponent);
 }
 
 void Player::BeginPlay()
@@ -42,9 +37,6 @@ void Player::BeginPlay()
 void Player::Tick(float fDeltaTime)
 {
 	super::Tick(fDeltaTime);
-
-	if(m_pStatComponent)
-		m_pStatComponent->Update(fDeltaTime);
 
 	//esc키 처리
 	if (Input::Get().GetKeyDown(VK_ESCAPE))
@@ -106,8 +98,8 @@ void Player::Init()
 	if (data == nullptr)
 		return;
 
-	m_pStatComponent = new StatComponent();
-	if (m_pStatComponent == nullptr)
+	StatComponent* pStat = new StatComponent();
+	if (pStat == nullptr)
 		return;
 
 	//스탯 입력
@@ -130,23 +122,27 @@ void Player::Init()
 	stat.iMaxTurnCnt = 10;
 	stat.iTurnCnt = 0;
 
-	m_pStatComponent->SetStatByData(stat);
-	m_pStatComponent->ResetTurn();
+	pStat->SetStatByData(stat);
+	pStat->ResetTurn();
+	AddComponent(pStat);
 
 	//상태이상
-	m_pStatusComponent = new StatusComponent();
-	m_pStatusComponent->SetOwner(this);
+	StatusComponent* pStatus = new StatusComponent();
+	pStatus->SetOwner(this);
+	AddComponent(pStatus);
 
-	m_pInventoryComponent = new InventoryComponent();
+	AddComponent(new InventoryComponent());
 
 	//Ascii, Ascii color 입력
-	m_pDisplayComponent = new DisplayComponent();
-	m_pDisplayComponent->SetDisplayByData(data->visual);
+	DisplayComponent* pDisplay = new DisplayComponent();
+	pDisplay->SetDisplayByData(data->visual);
+	AddComponent(pDisplay);
 
 	//스킬 데이터 입력
-	m_pSkillComponent = new SkillComponent();
+	SkillComponent* pSkill = new SkillComponent();
 	for (int TID : data->skillIds)
 	{
-		m_pSkillComponent->AddSkill(TID);
+		pSkill->AddSkill(TID);
 	}
+	AddComponent(pSkill);
 }

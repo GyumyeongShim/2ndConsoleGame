@@ -580,7 +580,7 @@ void BattleLevel::Input_InvenSelect()
     if (m_CurActor->GetTeam() != Team::Player)
         return;
 
-    auto inven = m_CurActor->GetInven();
+    auto inven = m_CurActor->GetComponent<InventoryComponent>();
     if (inven == nullptr)
         return;
 
@@ -611,7 +611,7 @@ void BattleLevel::Input_InvenSelect()
         if (idx >= items.size())
             return;
 
-        Wannabe::Item* item = items[idx].GetItem();
+        Wannabe::Item* item = items[idx]->GetItem();
         if (item == nullptr)
             return;
 
@@ -647,7 +647,7 @@ void BattleLevel::Input_SkillSelect()
     if (!m_CurActor || m_CurActor->GetTeam() != Team::Player)
         return;
 
-    auto skillComp = m_CurActor->GetSKill();
+    auto skillComp = m_CurActor->GetComponent<SkillComponent>();
     if (skillComp == nullptr)
         return;
 
@@ -704,7 +704,7 @@ void BattleLevel::Phase_TurnCheck()
 
     if (m_CurActor && m_CurActor->GetTeam() == Team::Player)
     {
-        m_pInvenMenu->SetInventory(m_CurActor->GetInven());
+        m_pInvenMenu->SetInventory(m_CurActor->GetComponent<InventoryComponent>());
     }
 
     m_eMenuTxt = MenuTxt::None;
@@ -863,7 +863,7 @@ void BattleLevel::EnterTargetSelect(int iTID)
     std::vector<Actor*> finalTargets; //사망 제외
     for (Actor* actor : targets)
     {
-        if (actor && actor->GetStat()->IsDead() == false)
+        if (actor && actor->GetComponent<StatComponent>()->IsDead() == false)
             finalTargets.emplace_back(actor);
     }
 
@@ -886,7 +886,7 @@ void BattleLevel::BuildSkillMenu()
 {
     std::vector<std::wstring> menu;
 
-    auto skillComp = m_CurActor->GetSKill();
+    auto skillComp = m_CurActor->GetComponent<SkillComponent>();
     if (!skillComp) return;
 
     for (auto& TID : skillComp->GetSkillList())
@@ -905,13 +905,13 @@ void BattleLevel::BuildItemMenu()
 {
     std::vector<std::wstring> menu;
 
-    auto inven = m_CurActor->GetInven();
+    auto inven = m_CurActor->GetComponent<InventoryComponent>();
     if (inven == nullptr)
         return;
 
     for (auto& itemInst : inven->GetItems())
     {
-        auto item = itemInst.GetItem();
+        auto item = itemInst->GetItem();
         if (item == nullptr)
             continue;
 
@@ -962,7 +962,7 @@ void BattleLevel::CleanupDeacActor()
         {
             Actor* actor = *it;
 
-            if (actor == nullptr || actor->GetStat()->IsDead())
+            if (actor == nullptr || actor->GetComponent<StatComponent>()->IsDead())
             {
                 // HPBar 제거
                 uiVec.erase(

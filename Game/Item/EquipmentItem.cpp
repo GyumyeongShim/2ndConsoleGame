@@ -2,8 +2,8 @@
 
 using namespace Wannabe;
 
-EquipmentItem::EquipmentItem(int tid)
-    : Item(tid, ItemType::Equipment)
+EquipmentItem::EquipmentItem(const ActionData& data)
+    : Item(data)
 {
 }
 

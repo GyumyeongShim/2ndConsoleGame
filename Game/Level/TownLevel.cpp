@@ -55,9 +55,9 @@ void TownLevel::OnEnterLevel(RunGameData* pData)
 
     m_pPlayer = new Player(1, pData->m_lastWorldPos);
 
-    if (m_pPlayer->GetStat())
+    if (m_pPlayer->GetComponent<StatComponent>())
     {
-        m_pPlayer->GetStat()->SetStatByData(pData->m_PlayerStat);
+        m_pPlayer->GetComponent<StatComponent>()->SetStatByData(pData->m_PlayerStat);
     }
 
     AddNewActor(m_pPlayer);
@@ -74,9 +74,9 @@ void TownLevel::OnExitLevel(RunGameData* pData)
     pData->m_lastWorldPos = m_pPlayer->GetPosition(); //나가서 시작할 맵 위치
 
     // 현재 스탯(HP, Exp 등) 백업은 Battle 종료 시나 특정 시점에 수행할 수도 있음
-    if (m_pPlayer->GetStat())
+    if (m_pPlayer->GetComponent<StatComponent>())
     {
-        pData->m_PlayerStat = m_pPlayer->GetStat()->GetStatData();
+        pData->m_PlayerStat = m_pPlayer->GetComponent<StatComponent>()->GetStatData();
     }
 }
 
@@ -97,7 +97,7 @@ void TownLevel::Init()
     RunGameData* pRunData = Game::Get().GetRunData();
     m_pPlayer = new Player(1, pRunData ? pRunData->m_lastWorldPos : m_vPlayerStartPos);
     if (pRunData)
-        m_pPlayer->GetStat()->SetStatByData(pRunData->m_PlayerStat);
+        m_pPlayer->GetComponent<StatComponent>()->SetStatByData(pRunData->m_PlayerStat);
 
     AddNewActor(m_pPlayer);
 

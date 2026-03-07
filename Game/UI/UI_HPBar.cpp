@@ -34,7 +34,7 @@ void UI_HPBar::Tick(float fDeltaTime)
 
 void UI_HPBar::Draw(Wannabe::RenderSystem& renderSys)
 {
-    if (m_pOwner == nullptr || m_pOwner->GetStat() == nullptr)
+    if (m_pOwner == nullptr || m_pOwner->GetComponent<StatComponent>() == nullptr)
         return;
 
     if (m_pOwner->IsDestroyRequested())
@@ -43,8 +43,8 @@ void UI_HPBar::Draw(Wannabe::RenderSystem& renderSys)
     if (m_cachedViewportPos.y < 0)
         return;
     //HP 계산
-    m_iCurHp = m_pOwner->GetStat()->GetHp();
-    m_iMaxHp = m_pOwner->GetStat()->GetMaxHp();
+    m_iCurHp = m_pOwner->GetComponent<StatComponent>()->GetHp();
+    m_iMaxHp = m_pOwner->GetComponent<StatComponent>()->GetMaxHp();
 
     // 0 방지
     if (m_iMaxHp <= 0)

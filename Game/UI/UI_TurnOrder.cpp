@@ -81,7 +81,7 @@ void UI_TurnOrder::UpdateTurnText()
             break;
 
         // 현재 턴 액터 강조
-        std::wstring name = actor->GetDisplay()->GetOriginName();
+        std::wstring name = actor->GetComponent<DisplayComponent>()->GetOriginName();
         if (actor == current)
         {
             name = L"▶" + name;

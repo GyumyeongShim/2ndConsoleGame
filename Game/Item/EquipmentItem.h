@@ -8,7 +8,7 @@ class EquipmentItem : public Wannabe::Item, public IEquipmentData
     RTTI_DECLARATIONS(EquipmentItem, Item);
 
 public:
-    EquipmentItem(int tid);
+    EquipmentItem(const ActionData& data);
 
     void SetEquipSlot(EquipSlot slot);
     void SetModifier(const StatModifier& mod);

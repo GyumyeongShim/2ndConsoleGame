@@ -19,10 +19,6 @@ Monster::Monster(int iTID)
 
 Monster::~Monster()
 {
-	SafeDelete(m_pStatComponent);
-	SafeDelete(m_pStatusComponent);
-	SafeDelete(m_pDisplayComponent);
-	SafeDelete(m_pSkillComponent);
 }
 
 void Monster::Tick(float fDeltaTime)
@@ -40,12 +36,12 @@ void Monster::Draw(Wannabe::RenderSystem& renderSys)
 
 void Monster::Init()
 {
-	m_pStatComponent = new StatComponent();
-	if (m_pStatComponent == nullptr)
-		return;
-
 	const MonsterData* data = DataManager::Get().GetMonsterData(m_iTID);
 	if(data == nullptr)
+		return;
+
+	StatComponent* pStat = new StatComponent();
+	if (pStat == nullptr)
 		return;
 
 	StatData stat;
@@ -67,18 +63,22 @@ void Monster::Init()
 	stat.iTurnCnt = 0;
 	stat.iMaxTurnCnt = 10;
 
-	m_pStatComponent->SetStatByData(stat);
+	pStat->SetStatByData(stat);
+	AddComponent(pStat);
 
 	// 시각적 데이터 초기화
-	m_pDisplayComponent = new DisplayComponent();
-	m_pDisplayComponent->SetDisplayByData(data->visual);
+	DisplayComponent* pDisplay = new DisplayComponent();
+	pDisplay->SetDisplayByData(data->visual);
+	AddComponent(pDisplay);
 
-	m_pStatusComponent = new StatusComponent();
-	m_pStatusComponent->SetOwner(this);
+	StatusComponent* pStatus = new StatusComponent();
+	pStatus->SetOwner(this);
+	AddComponent(pStatus);
 	
-	m_pSkillComponent = new SkillComponent();
+	SkillComponent* pSkill = new SkillComponent();
 	for (int TID : data->skillIds)
 	{
-		m_pSkillComponent->AddSkill(TID);
+		pSkill->AddSkill(TID);
 	}
+	AddComponent(pSkill);
 }

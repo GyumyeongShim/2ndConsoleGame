@@ -22,6 +22,7 @@ namespace Wannabe
         const std::vector<ItemInstance*>& GetItems() const { return m_vecItemInstances; }
         ItemInstance* GetItemInSlot(int iSlotIdx);
         int GetMaxSlots() const { return m_iMaxSlots; }
+        ItemInstance* FindItem(int iTID);
 
     private:
         ItemInstance* FindStackableItem(int iTID);

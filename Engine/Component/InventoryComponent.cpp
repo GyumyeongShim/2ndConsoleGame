@@ -104,3 +104,14 @@ ItemInstance* InventoryComponent::FindStackableItem(int iTID)
     }
     return nullptr;
 }
+
+ItemInstance* InventoryComponent::FindItem(int iTID)
+{
+    for (auto* pInst : m_vecItemInstances)
+    {
+        if (pInst->GetItem()->GetItemTID() == iTID)
+            return pInst;
+    }
+
+    return nullptr;
+}
