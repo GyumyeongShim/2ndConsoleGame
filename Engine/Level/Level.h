@@ -31,17 +31,15 @@ namespace Wannabe
 		virtual bool CanMove(const Vector2& nextPos) { return true; }
 		virtual void CheckPortal() {};
 
-		//액터 추가 함수
-		void AddNewActor(Actor* newActor); //전방선언을 여기서 해버림
-
-		//액터 배열 접근자
+		// 액터 관리
+		void AddNewActor(Actor* newActor);
 		void ProcessAddAndDestroyActors();
 
 		Camera* GetCamera() const { return m_pCamera; }
 
 	protected:
 		bool m_bBegunPlay = false;
-		Camera* m_pCamera;
+		Camera* m_pCamera = nullptr;
 		std::vector<Actor*> m_vecActors; //액터 배열
 		std::vector<Actor*> m_vecAddRequestedActors; //실행 중 추가 요청된 액터의 배열
 	};

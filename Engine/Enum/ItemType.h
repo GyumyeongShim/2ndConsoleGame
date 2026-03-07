@@ -29,8 +29,10 @@ enum class ItemType // 아이템 종류
 	None,
 	Equipment,
 	Consumable,
-	Throw,
-	Quest
+	Throw,			// 적 대상 소모품
+	Quest,			// 이벤트 트리거
+	Material,		// 재료
+	Currency		// 골드, 보석 (재화 수치로 변환)
 };
 
 enum class ItemTargetType // 타겟 종류

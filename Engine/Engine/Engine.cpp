@@ -56,15 +56,12 @@ namespace Wannabe
 		LARGE_INTEGER frequency; //정밀도 ms
 		QueryPerformanceFrequency(&frequency);
 
-		int64_t CurrentTime = 0;
-		int64_t PreviousTime = 0;
-
 		LARGE_INTEGER time;
 		QueryPerformanceCounter(&time); //단위가 하드웨어의 클락으로 표기됨
 
 		//엔진 시작 직전 두 시간값을 같게 맞춤, 프레임 초기화
-		CurrentTime = time.QuadPart;
-		PreviousTime = CurrentTime;
+		int64_t CurrentTime = time.QuadPart;
+		int64_t PreviousTime = CurrentTime;
 
 		//기준 프레임 설정 (초 단위)
 		//float targetFrameRate = 120.0f;
@@ -78,14 +75,13 @@ namespace Wannabe
 			QueryPerformanceCounter(&time);
 			CurrentTime = time.QuadPart;
 
-			//프레임 시간 계산
-			float fDeltaTime = static_cast<float>(CurrentTime - PreviousTime);
-			//초 단위 변환
-			fDeltaTime = fDeltaTime / static_cast<float>(frequency.QuadPart);
+			float fDeltaTime = static_cast<float>(CurrentTime - PreviousTime); //프레임 시간 계산
+			fDeltaTime /= static_cast<float>(frequency.QuadPart); //초 단위 변환
 
 			if (fDeltaTime >= oneFrameTime)
 			{
 				PreviousTime = CurrentTime;
+
 				if (m_bIsShutdown)
 				{
 					// 종료 연출 로직
@@ -93,6 +89,7 @@ namespace Wannabe
 
 					m_Renderer->BeginFrame();
 					m_RenderSystem->BeginFrame();
+
 					DrawShutdownScreen();
 
 					m_RenderSystem->RenderFrame();
@@ -129,7 +126,6 @@ namespace Wannabe
 						m_bIsShutdown = true;
 				}
 			}
-
 		}
 
 		Shutdown();

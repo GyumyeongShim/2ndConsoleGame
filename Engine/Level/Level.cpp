@@ -1,4 +1,5 @@
 #include "Level.h"
+
 #include "Actor/Actor.h"
 #include "Util/Utill.h"
 
@@ -36,6 +37,8 @@ namespace Wannabe
 
 			actor->BeginPlay();
 		}
+
+		m_bBegunPlay = true;
 	}
 
 	void Level::Tick(float fDeltaTime)
@@ -57,12 +60,18 @@ namespace Wannabe
 			if (actor->IsActive() == false)
 				continue;
 
+			if (actor->IsDestroyRequested())
+				continue;
+
 			actor->Draw(renderSys);
 		}
 	}
 
 	void Level::AddNewActor(Actor* newActor)
 	{
+		if (newActor == nullptr)
+			return;
+
 		m_vecAddRequestedActors.emplace_back(newActor);
 
 		//오너쉽 설정
@@ -71,28 +80,32 @@ namespace Wannabe
 
 	void Level::ProcessAddAndDestroyActors()
 	{
-		//추가 먼저하면 loop가 많아진 상태로 도니까 제거 처리
-		for(int ix=0;ix<static_cast<int>(m_vecActors.size());)
+		// 추가 먼저하면 loop가 많아진 상태로 도니까 제거 처리
+		for (auto it = m_vecActors.begin(); it != m_vecActors.end(); )
 		{
-			//제거 요청된 액터라면
-			if (m_vecActors[ix]->IsDestroyRequested())
+			if ((*it)->IsDestroyRequested() == true) //제거 요청된 액터라면
 			{
-				delete m_vecActors[ix];
-				m_vecActors[ix] = nullptr;
-				m_vecActors.erase(m_vecActors.begin() + ix);
-				continue;
+				delete* it;
+				it = m_vecActors.erase(it);
 			}
-
-			++ix;
+			else
+			{
+				++it;
+			}
 		}
 
-		//추가 처리
+		// 추가 처리
 		if (m_vecAddRequestedActors.empty() == true)
 			return;
 
 		for(Actor* const actor : m_vecAddRequestedActors)
 		{
 			m_vecActors.emplace_back(actor);
+
+			if (m_bBegunPlay == true && actor->HasBeganPlay() == false)
+			{
+				actor->BeginPlay();
+			}
 		}
 
 		m_vecAddRequestedActors.clear();

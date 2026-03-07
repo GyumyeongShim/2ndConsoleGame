@@ -85,5 +85,4 @@ namespace Wannabe
 			return nullptr;
 		}
 	};
-
 }
