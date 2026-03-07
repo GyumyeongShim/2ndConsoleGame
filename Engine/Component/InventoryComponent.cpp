@@ -1,7 +1,6 @@
 #include "InventoryComponent.h"
 
 #include "Enum/ItemType.h"
-
 #include "Item/Item.h"
 #include "Item/ItemInstance.h"
 
@@ -29,10 +28,10 @@ bool InventoryComponent::RemoveItem(int iTID, int count)
         return false;
 
     auto* inst = FindItem(iTID);
-    if (!inst)
+    if (inst == nullptr)
         return false;
 
-    if (!inst->Consume(count))
+    if (inst->Consume(count) == false)
         return false;
 
     if (inst->IsEmpty())

@@ -189,7 +189,7 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClInclude Include="Interface\IUIAnimation.h" />
     <ClInclude Include="Enum\CombatType.h" />
     <ClInclude Include="Enum\ItemType.h" />
-    <ClInclude Include="Util\Rul.h" />
+    <ClInclude Include="Util\Rule.h" />
     <ClInclude Include="Util\Timer.h" />
     <ClInclude Include="Util\Utill.h" />
   </ItemGroup>

@@ -17,6 +17,7 @@ struct StatModifier // 스탯 변경
 	int iAtk = 0;
 	int iDef = 0;
 	int iSpd = 0;
+
 	int iAccuracy = 0;		// 명중률
 	int iEvasion = 0;		// 회피율
 	int iCritChance = 0;	// 치명타 확률

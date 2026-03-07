@@ -42,11 +42,9 @@ namespace Wannabe
 		virtual void Tick(float fDeltaTime);
 		virtual void Draw(Wannabe::RenderSystem& renderSys);
 
-		// 삭제 요청 함수
+		// 삭제
 		void Destroy();
-
-		// 삭제가 될 때 호출될 이벤트 함수
-		virtual void OnDestroy();
+		virtual void OnDestroy(); // 삭제가 될 때 호출될 이벤트 함수
 		
 		// 충돌 여부 확인 함수
 		bool TestIntersect(const Actor* const other);
@@ -58,11 +56,11 @@ namespace Wannabe
 		void SetPosition(const Vector2& pos);
 		inline const Vector2& GetPosition() const { return m_Pos; }
 
-		//오너쉽 추가읽기 함수
+		//오너쉽
 		void SetOwner(Level* newlevel) { m_Owner = newlevel; }
 		inline Level* GetOwner() const { return m_Owner; }
 
-		// 해당 엑터가 갖고 있는 컴포넌트
+		// Getter
 		StatComponent* GetStat() const { return m_pStatComponent; }
 		StatusComponent* GetStatus() const { return m_pStatusComponent; }
 		EquipmentComponent* GetEquip() const { return m_pEquipmentComponent; }

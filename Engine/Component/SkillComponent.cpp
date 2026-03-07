@@ -2,6 +2,11 @@
 
 #include "Manager/DataManager.h"
 
+void Wannabe::SkillComponent::Update(float fDeltaTime)
+{
+    return;
+}
+
 void Wannabe::SkillComponent::AddSkill(int iSkillTID)
 {
     if (HasSkill(iSkillTID))
@@ -21,4 +26,9 @@ bool Wannabe::SkillComponent::HasSkill(int iSkillTID) const
 {
     bool bHasSkill = std::find(m_vecSkillTID.begin(), m_vecSkillTID.end(), iSkillTID) != m_vecSkillTID.end();
     return bHasSkill;
+}
+
+void Wannabe::SkillComponent::Clear()
+{
+    m_vecSkillTID.clear();
 }

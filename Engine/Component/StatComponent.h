@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "Core/Common.h"
 #include "Math/Color.h"
-#include "Item/Item.h"
+#include "Enum/ItemType.h"
 
 namespace Wannabe
 {
@@ -30,38 +31,24 @@ namespace Wannabe
         int iMaxTurnCnt;
     };
 
-    struct EquipmentBonus
-    {
-        int atk = 0;
-        int def = 0;
-        int hp = 0;
-        int spd = 0;
-
-        int accuracy = 0;    // 명중 보정
-        int evasion = 0;     // 회피 보정
-        int critChance = 0;  // 치명타 확률 보정
-        int critResist = 0;  // 치명타 저항 보정
-    };
-
     class WANNABE_API StatComponent
     {
     public:
         StatComponent* Clone() const { return new StatComponent(*this); } //깊은 복사
+        
         void Update(float fDeltaTime);
-
         void SetStatByData(const StatData& data);
 
         void ProgressTurn(float spdMultiple = 1.0f);
         void ResetTurn();
 
-        void ModifyHP(int iHp);
         int ApplyDmg(int iValue);
         int ApplyHeal(int iValue);
         void CalcExp(const int exp);
         void LevelUp();
 
-        void AddEquipmentModifier(int atk, int def, int hp, int speed);
-        void RemoveEquipmentModifier(int atk, int def, int hp, int speed);
+        void AddEquipmentModifier(const StatModifier& bonus);
+        void RemoveEquipmentModifier(const StatModifier& bonus);
 
         bool IsLevelUp() const { return m_iExp >= m_iMaxExp; }
         bool IsTurnMax() const { return m_fTurnCnt >= m_iMaxTurnCnt; }
@@ -69,16 +56,25 @@ namespace Wannabe
 
         int GetExp() const { return m_iExp; }
         int GetHp() const { return m_iHp; }
-        int GetAtk() const { return m_iAtk + m_EquipBonus.atk; }
-        int GetDef() const { return m_iDef + m_EquipBonus.def; }
-        int GetSpd() const { return m_iSpd + m_EquipBonus.spd; }
-        int GetMaxHp() const { return m_iMaxHp + m_EquipBonus.hp; }
-        int GetAccuracy() const { return m_iAccuracy + m_EquipBonus.accuracy; }
-        int GetEvasion() const { return m_iEvasion + m_EquipBonus.evasion; }
-        int GetCritChance() const { return m_iCritChance + m_EquipBonus.critChance; }
-        int GetCritResist() const { return m_iCritResist + m_EquipBonus.critResist; }
+        int GetAtk() const { return m_iAtk + m_EquipBonus.iAtk; }
+        int GetDef() const { return m_iDef + m_EquipBonus.iDef; }
+        int GetSpd() const { return m_iSpd + m_EquipBonus.iSpd; }
+        int GetMaxHp() const { return m_iMaxHp + m_EquipBonus.iHp; }
+        int GetAccuracy() const { return m_iAccuracy + m_EquipBonus.iAccuracy; }
+        int GetEvasion() const { return m_iEvasion + m_EquipBonus.iEvasion; }
+        int GetCritChance() const { return m_iCritChance + m_EquipBonus.iCritChance; }
+        int GetCritResist() const { return m_iCritResist + m_EquipBonus.iCritResist; }
         float GetTurnCnt() const { return m_fTurnCnt; }
         StatData GetStatData() const;
+
+    private:
+        template<typename T>
+        T Clamp(T val, T min, T max)
+        {
+            if (val < min) return min;
+            if (val > max) return max;
+            return val;
+        }
 
     private:
         int m_iLevel = 1;
@@ -100,6 +96,6 @@ namespace Wannabe
         float m_fTurnCnt = 1;
         int m_iMaxTurnCnt = 10;
 
-        EquipmentBonus m_EquipBonus;
+        StatModifier m_EquipBonus;
     };
 }

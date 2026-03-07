@@ -11,7 +11,6 @@
 namespace Wannabe
 {
 	class Actor;
-	class BattleContext;
 
 	struct PeriodEffect
 	{
@@ -54,6 +53,8 @@ namespace Wannabe
 	class WANNABE_API StatusComponent //상태 이상 처리하는 컴포넌트
 	{
 	public:
+		StatusComponent* Clone() const { return new StatusComponent(*this); } //깊은 복사
+
 		bool AddStatus(StatusType eType, int iDuration, int iValue, Actor* pIntstigator);
 		void Update(float fDeltaTime); // 매 턴 호출, deltaTime 기반으로 턴 진행
 		void CountDownStatus(); // 턴이 끝날 때마다 상태 지속 시간 감소
@@ -61,6 +62,7 @@ namespace Wannabe
 
 		bool HasStatus(StatusType eState);
 		void SetOwner(Actor* pOwner) { m_pOwner = pOwner; }
+
 		bool IsStackable(StatusType eStatusType) const { return GetStatusRule(eStatusType).bStackable; }
 		const std::vector<StatusState> GetCurStatusState() { return m_vecStatusState; }
 		const std::vector<StatusState> GetExpiredStatusState();

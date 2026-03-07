@@ -1,10 +1,8 @@
+#include "Actor.h"
 #include <iostream>
 
-#include "Actor.h"
 #include "Util/Utill.h"
 #include "Render/RenderSystem.h"
-#include "Engine/Engine.h"
-
 #include "Component/StatComponent.h"
 #include "Component/StatusComponent.h"
 #include "Component/DisplayComponent.h"
@@ -15,9 +13,8 @@
 namespace Wannabe
 {
 	Actor::Actor(const wchar_t* image, const Vector2& pos, Color color)
-		:m_Pos(pos), m_Color(color), m_eTeam(Team::Neutral)
+		:m_Pos(pos), m_Color(color), m_eTeam(Team::Neutral), m_strImage(image)
 	{
-		m_strImage = image;
 		m_iWidth = static_cast<int>(m_strImage.length());
 	}
 
@@ -89,18 +86,12 @@ namespace Wannabe
 
 	void Actor::ChangeImage(const wchar_t* newImage)
 	{
-		// 기존 메모리 해제.
-		m_strImage.clear();
-
-		// 새로운 문자열 복사.
 		m_strImage = newImage;
+		m_iWidth = static_cast<int>(m_strImage.length());
 	}
 
 	void Actor::SetPosition(const Vector2& pos)
 	{
-		if (m_Pos == pos)
-			return;
-		// 새로운 위치 설정
 		m_Pos = pos;
 	}
 

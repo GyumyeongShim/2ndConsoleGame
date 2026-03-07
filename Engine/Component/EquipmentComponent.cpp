@@ -1,8 +1,8 @@
 #include "EquipmentComponent.h"
+
 #include "Item/Item.h"
 #include "Item/ItemInstance.h"
 #include "Component/StatComponent.h"
-
 #include "Interface/IEquipmentData.h"
 
 using namespace Wannabe;
@@ -35,7 +35,7 @@ bool EquipmentComponent::Equip(ItemInstance* pInst, StatComponent* pStatCompo)
     m_mapEquipped[slot] = pInst; //장비 변경
 
     const StatModifier& mod = data->GetModifier(); //스탯 적용
-    pStatCompo->AddEquipmentModifier(mod.iAtk,mod.iDef,mod.iHp,mod.iSpd);
+    pStatCompo->AddEquipmentModifier(mod);
 
     return true;
 }
@@ -57,7 +57,7 @@ void EquipmentComponent::Unequip(EquipSlot eSlot, StatComponent* pStatCompo)
     if (data != nullptr)
     {
         const StatModifier& mod = data->GetModifier();
-        pStatCompo->RemoveEquipmentModifier(mod.iAtk, mod.iDef, mod.iHp, mod.iSpd);
+        pStatCompo->RemoveEquipmentModifier(mod);
     }
 
     m_mapEquipped.erase(it);

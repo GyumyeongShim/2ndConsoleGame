@@ -1,6 +1,7 @@
 #include "StatComponent.h"
 
 #include "Util/Utill.h"
+#include "Enum/ItemType.h"
 
 namespace Wannabe
 {
@@ -42,35 +43,23 @@ namespace Wannabe
 
 	void StatComponent::ResetTurn()
 	{
-		m_fTurnCnt = 0;
-	}
-
-	void StatComponent::ModifyHP(int iHp)
-	{
-		m_iHp += iHp;
-		if (m_iHp < 0)
-			m_iHp = 0;
-
-		if (m_iHp > GetMaxHp())
-			m_iHp = GetMaxHp();
+		m_fTurnCnt = 0.0f;
 	}
 
 	int StatComponent::ApplyDmg(int iValue)
 	{
-		int dmg = std::max(0, iValue - GetDef());
-		m_iHp -= dmg;
-		if (m_iHp < 0) 
-			m_iHp = 0;
+		int finalDmg = std::max(0, iValue - GetDef());
 
-		return dmg;
+		int origin = m_iHp;
+		m_iHp = Clamp(m_iHp - finalDmg, 0, GetMaxHp());
+
+		return origin - m_iHp;
 	}
 
 	int StatComponent::ApplyHeal(int iValue)
 	{
 		int origin = m_iHp;
-		m_iHp += iValue;
-		if (m_iHp > GetMaxHp())
-			m_iHp = GetMaxHp();
+		m_iHp = Clamp(m_iHp + iValue, 0, GetMaxHp());
 
 		return m_iHp - origin;
 	}
@@ -96,20 +85,28 @@ namespace Wannabe
 		m_iMaxExp = m_iLevel * 100;
 	}
 
-	void StatComponent::AddEquipmentModifier(int atk, int def, int hp, int speed)
+	void StatComponent::AddEquipmentModifier(const StatModifier& bonus)
 	{
-		m_EquipBonus.atk += atk;
-		m_EquipBonus.def += def;
-		m_EquipBonus.hp += hp;
-		m_EquipBonus.spd += speed;
+		m_EquipBonus.iAtk += bonus.iAtk;
+		m_EquipBonus.iDef += bonus.iDef;
+		m_EquipBonus.iHp += bonus.iHp;
+		m_EquipBonus.iSpd += bonus.iSpd;
+		m_EquipBonus.iAccuracy += bonus.iAccuracy;
+		m_EquipBonus.iEvasion += bonus.iEvasion;
+		m_EquipBonus.iCritChance += bonus.iCritChance;
+		m_EquipBonus.iCritResist += bonus.iCritResist;
 	}
 
-	void StatComponent::RemoveEquipmentModifier(int atk, int def, int hp, int speed)
+	void StatComponent::RemoveEquipmentModifier(const StatModifier& bonus)
 	{
-		m_EquipBonus.atk -= atk;
-		m_EquipBonus.def -= def;
-		m_EquipBonus.hp -= hp;
-		m_EquipBonus.spd -= speed;
+		m_EquipBonus.iAtk -= bonus.iAtk;
+		m_EquipBonus.iDef -= bonus.iDef;
+		m_EquipBonus.iHp -= bonus.iHp;
+		m_EquipBonus.iSpd -= bonus.iSpd;
+		m_EquipBonus.iAccuracy -= bonus.iAccuracy;
+		m_EquipBonus.iEvasion -= bonus.iEvasion;
+		m_EquipBonus.iCritChance -= bonus.iCritChance;
+		m_EquipBonus.iCritResist -= bonus.iCritResist;
 	}
 
 	StatData StatComponent::GetStatData() const

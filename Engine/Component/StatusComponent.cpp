@@ -1,8 +1,8 @@
-﻿#include <algorithm>
+﻿#include "StatusComponent.h"
 
-#include "StatusComponent.h"
+#include <algorithm>
+
 #include "Actor/Actor.h"
-
 #include "Component/StatComponent.h"
 
 namespace Wannabe
@@ -10,35 +10,41 @@ namespace Wannabe
 	bool StatusComponent::AddStatus(StatusType eType, int iDuration, int iValue, Actor* pIntstigator)
 	{
 		const StatusRule& rule = GetStatusRule(eType);
+
 		auto it = std::find_if(m_vecStatusState.begin(), m_vecStatusState.end(),
 			[eType](const StatusState& s)
 		{
 			return s.eStatusType == eType;
 		});
 
-		for (auto& state : m_vecStatusState)
+		if (it != m_vecStatusState.end())
 		{
-			if (state.eStatusType == eType)
+			if (rule.bStackable == false) //중첩 불가
 			{
-				if (rule.bStackable == false)
+				if (rule.bRefreshDurationOnApply)
 				{
-					if (rule.bRefreshDurationOnApply == true) 
-						state.iDuration = iDuration;
-					return false; // 상태이상 시간 갱신
+					it->iDuration = iDuration;
 				}
-
-				state.iStackCnt++;
-
-				if (rule.bAccumulateValue == true) //누적 여부
-					state.iValue += iValue;
-
-				if (rule.bRefreshDurationOnApply) // 갱신 여부
-					state.iDuration = iDuration;
-				return true;
+				return false;
 			}
+
+			// 중첩 처리
+			it->iStackCnt++;
+
+			if (rule.bAccumulateValue) // 누적
+			{
+				it->iValue += iValue;
+			}
+
+			if (rule.bRefreshDurationOnApply) // 갱신
+			{
+				it->iDuration = iDuration;
+			}
+
+			return true;
 		}
 
-		StatusState newState;
+		StatusState newState; //신규 상태이상의 경우
 		newState.eStatusType = eType;
 		newState.iDuration = iDuration;
 		newState.iValue = iValue;
@@ -75,7 +81,10 @@ namespace Wannabe
 	{
 		m_vecStatusState.erase(
 			std::remove_if(m_vecStatusState.begin(), m_vecStatusState.end(),
-				[](const StatusState& status) { return status.iDuration <= 0; }),
+				[](const StatusState& status) 
+		{
+			return status.iDuration <= 0; 
+		}),
 			m_vecStatusState.end());
 	}
 
@@ -93,7 +102,7 @@ namespace Wannabe
 		{
 			if (it->iDuration <= 0)
 			{
-				out.push_back(*it);
+				out.emplace_back(*it);
 				it = m_vecStatusState.erase(it);
 			}
 			else
