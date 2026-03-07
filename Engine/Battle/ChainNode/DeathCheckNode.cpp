@@ -7,6 +7,8 @@
 #include "Battle/BattleContext.h"
 #include "Component/StatComponent.h"
 
+using namespace Wannabe;
+
 std::vector<CombatEffect> DeathCheckNode::Check(const CombatEffect& effect, Wannabe::BattleContext& context)
 {
     std::vector<CombatEffect> vec;
@@ -17,7 +19,7 @@ std::vector<CombatEffect> DeathCheckNode::Check(const CombatEffect& effect, Wann
     if (context.IsValidActor(target) == false)
         return vec;
 
-    auto* stat = target->GetStat();
+    auto* stat = effect.pTarget->GetComponent<StatComponent>();
     if (stat == nullptr)
         return vec;
 

@@ -33,14 +33,15 @@ namespace Wannabe
             if (actor == nullptr || actor->IsDestroyRequested() == true)
                 continue;
 
-            auto* stat = actor->GetStat();
+            
+            auto* stat = actor->GetComponent<StatComponent>();
             if (stat == nullptr || stat->IsDead() == true)
                 continue;
 
-            if (actor->GetStat()->IsTurnMax())
+            if (stat->IsTurnMax())
             {
                 // 단순히 찼는지 확인하는 게 아니라, 누가 더 많이 찼는지(Overcharge) 비교
-                float fTurnCnt = actor->GetStat()->GetTurnCnt();
+                float fTurnCnt = stat->GetTurnCnt();
                 if (fTurnCnt > fMaxTurn)
                 {
                     fMaxTurn = fTurnCnt;
@@ -62,13 +63,13 @@ namespace Wannabe
             if (actor == nullptr)
                 continue;
 
-            auto* stat = actor->GetStat();
+            auto* stat = actor->GetComponent<StatComponent>();
             if (stat == nullptr || stat->IsDead() == true)
                 continue;
 
             // 상태이상: Stun이면 턴 스킵
-            auto* status = actor->GetStatus();
-            if (status && actor->GetStatus()->HasStatus(StatusType::Stun))
+            auto* status = actor->GetComponent<StatusComponent>();
+            if (status && status->HasStatus(StatusType::Stun))
             {
                 // 스턴이면 턴 리셋 대신 진행만
                 stat->ResetTurn();
@@ -85,8 +86,8 @@ namespace Wannabe
         if (m_CurActor == nullptr)
             return;
 
-        if (m_CurActor->GetStat())
-            m_CurActor->GetStat()->ResetTurn();
+        if (m_CurActor->GetComponent<StatComponent>())
+            m_CurActor->GetComponent<StatComponent>()->ResetTurn();
 
         m_CurActor = nullptr;
     }
@@ -113,7 +114,7 @@ namespace Wannabe
             if (actor->IsDestroyRequested())
                 continue;
             
-            if (actor->GetStat()->IsDead())
+            if (actor->GetComponent<StatComponent>()->IsDead())
                 continue;
 
             displayQueue.push_back(actor);
@@ -122,7 +123,7 @@ namespace Wannabe
         // 높은 순서대로 정렬
         std::sort(displayQueue.begin(), displayQueue.end(), [](Actor* a, Actor* b)
             {
-                return a->GetStat()->GetTurnCnt() > b->GetStat()->GetTurnCnt();
+                return a->GetComponent<StatComponent>()->GetTurnCnt() > b->GetComponent<StatComponent>()->GetTurnCnt();
             });
 
         return displayQueue;

@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "Core/Common.h"
+#include "Component/Component.h"
 #include "Interface/ICutsceneEvent.h"
 #include "Enum/CombatType.h"
 
@@ -50,13 +51,12 @@ namespace Wannabe
 		return table[type];
 	}
 
-	class WANNABE_API StatusComponent //상태 이상 처리하는 컴포넌트
+	class WANNABE_API StatusComponent : public Component//상태 이상 처리하는 컴포넌트
 	{
 	public:
 		StatusComponent* Clone() const { return new StatusComponent(*this); } //깊은 복사
 
 		bool AddStatus(StatusType eType, int iDuration, int iValue, Actor* pIntstigator);
-		void Update(float fDeltaTime); // 매 턴 호출, deltaTime 기반으로 턴 진행
 		void CountDownStatus(); // 턴이 끝날 때마다 상태 지속 시간 감소
 		void ResetStatus(); // 모든 상태 초기화
 

@@ -7,6 +7,8 @@
 #include "Battle/BattleContext.h"
 #include "Component/StatusComponent.h"
 
+using namespace Wannabe;
+
 std::vector<CombatEffect> HealReflectNode::Check(const CombatEffect& effect, Wannabe::BattleContext& context)
 {
     std::vector<CombatEffect> vec;
@@ -17,11 +19,11 @@ std::vector<CombatEffect> HealReflectNode::Check(const CombatEffect& effect, Wan
     if (effect.pTarget == nullptr || effect.pAtker == nullptr)
         return vec;
 
-    auto* targetStatus = effect.pTarget->GetStatus();
-    if (targetStatus == nullptr)
+    auto* status = effect.pTarget->GetComponent<StatusComponent>();
+    if (status == nullptr)
         return vec;
 
-    if (effect.pTarget->GetStatus()->HasStatus(StatusType::Counter) == true)
+    if (status->HasStatus(StatusType::Counter) == true)
     {
         CombatEffect result;
         result.eCombatEffectType = CombatEffectType::ApplyStatus;

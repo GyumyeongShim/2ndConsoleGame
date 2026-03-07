@@ -7,6 +7,8 @@
 #include "Battle/BattleContext.h"
 #include "Component/StatusComponent.h"
 
+using namespace Wannabe;
+
 std::vector<CombatEffect> TurnEndStatusNode::Check(const CombatEffect& effect, Wannabe::BattleContext& context)
 {
     std::vector<CombatEffect> vec;
@@ -16,11 +18,11 @@ std::vector<CombatEffect> TurnEndStatusNode::Check(const CombatEffect& effect, W
     if (context.IsValidActor(effect.pTarget) == false)
         return vec;
 
-    auto* statusComp = effect.pTarget->GetStatus();
-    if (statusComp == nullptr)
+    auto* status = effect.pTarget->GetComponent<StatusComponent>();
+    if (status == nullptr)
         return vec;
 
-    if (statusComp->HasStatus(StatusType::Counter) == true)
+    if (status->HasStatus(StatusType::Counter) == true)
     {
         CombatEffect result;
         result.eCombatEffectType = effect.eCombatEffectType;

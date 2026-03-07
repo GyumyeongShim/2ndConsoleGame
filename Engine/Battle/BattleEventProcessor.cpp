@@ -48,7 +48,7 @@ namespace Wannabe
         if (context.IsValidActor(pTarget) == false)
             return;
 
-        auto status = pTarget->GetStatus();
+        auto status = pTarget->GetComponent<StatusComponent>();
         if (status == nullptr)
             return;
 
@@ -77,7 +77,7 @@ namespace Wannabe
         if (context.IsValidActor(pTarget) == false)
             return;
 
-        auto status = pTarget->GetStatus();
+        auto status = pTarget->GetComponent<StatusComponent>();
         if (status == nullptr)
             return;
 
@@ -91,8 +91,8 @@ namespace Wannabe
         {
             // 상태 종료 로그 생성
             BattleLog log;
-            log.wstrAtkerName = state.pAtker->GetDisplay()->GetOriginName();
-            log.wstrTargetName = pTarget->GetDisplay()->GetOriginName();
+            log.wstrAtkerName = state.pAtker->GetComponent<DisplayComponent>()->GetOriginName();
+            log.wstrTargetName = pTarget->GetComponent<DisplayComponent>()->GetOriginName();
             log.eLogType = LogType::StatusExpire;
             log.iValue = 0;
             log.bCritical = false;
@@ -102,7 +102,7 @@ namespace Wannabe
         }
 
         // 3. 상태 종료 후 사망 체크 (예: 디버프 해제 후 자해형 효과 등 고려)
-        auto stat = pTarget->GetStat();
+        auto stat = pTarget->GetComponent<StatComponent>();
         if (stat && stat->IsDead())
         {
             MarkForRemoval(pTarget);
@@ -116,7 +116,7 @@ namespace Wannabe
         if (atker == nullptr || target == nullptr)
             return;
 
-        auto stat = target->GetStat();
+        auto stat = target->GetComponent<StatComponent>();
         if (stat == nullptr)
             return;
 
@@ -131,7 +131,7 @@ namespace Wannabe
 
             // 로그 출력
             BattleLog log;
-            log.wstrAtkerName = atker->GetDisplay()->GetOriginName();
+            log.wstrAtkerName = atker->GetComponent<DisplayComponent>()->GetOriginName();
             log.eLogType = LogType::Miss;
             context.GetCutscenePlayer().Push(m_pEventFactory->CreateLog(log));
 
@@ -152,8 +152,8 @@ namespace Wannabe
 
         // 로그 출력
         BattleLog log;
-        log.wstrAtkerName = atker->GetDisplay()->GetOriginName();
-        log.wstrTargetName = target->GetDisplay()->GetOriginName();
+        log.wstrAtkerName = atker->GetComponent<DisplayComponent>()->GetOriginName();
+        log.wstrTargetName = target->GetComponent<DisplayComponent>()->GetOriginName();
         log.eLogType = LogType::Damage;
         log.iValue = dmg;
         log.bCritical = effect.bCritical;
@@ -182,7 +182,7 @@ namespace Wannabe
         if (target == nullptr)
             return;
 
-        auto stat = effect.pTarget->GetStat();
+        auto stat = effect.pTarget->GetComponent<StatComponent>();
         if (stat == nullptr)
             return;
 
@@ -190,7 +190,7 @@ namespace Wannabe
 
         /// 로그 출력
         BattleLog log;
-        log.wstrTargetName = target->GetDisplay()->GetOriginName();
+        log.wstrTargetName = target->GetComponent<DisplayComponent>()->GetOriginName();
         log.eLogType = LogType::Heal;
         log.iValue = heal;
         log.bCritical = effect.bCritical;
@@ -204,7 +204,7 @@ namespace Wannabe
         if (target == nullptr)
             return;
 
-        auto status = effect.pTarget->GetStatus();
+        auto status = effect.pTarget->GetComponent<StatusComponent>();
         if (status == nullptr)
             return;
 
@@ -213,8 +213,8 @@ namespace Wannabe
             return;
 
         BattleLog log;
-        log.wstrAtkerName = effect.pAtker->GetDisplay()->GetOriginName();
-        log.wstrTargetName = effect.pTarget->GetDisplay()->GetOriginName();
+        log.wstrAtkerName = effect.pAtker->GetComponent<DisplayComponent>()->GetOriginName();
+        log.wstrTargetName = effect.pTarget->GetComponent<DisplayComponent>()->GetOriginName();
         log.eLogType = LogType::StatusApply;
         log.iValue = effect.iValue;
         log.bCritical = false;
@@ -263,7 +263,7 @@ namespace Wannabe
         if (actor == nullptr)
             return;
 
-        if (actor->GetStat()->IsDead())
+        if (actor->GetComponent<StatComponent>()->IsDead())
             return;
 
         if (actor->IsDestroyRequested())

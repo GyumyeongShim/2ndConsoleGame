@@ -33,7 +33,7 @@ namespace Wannabe
         if (pTarget->IsDestroyRequested())
             return false;
 
-        if (pTarget->GetStat() == nullptr)
+        if (pTarget->GetComponent<StatComponent>()== nullptr)
             return false;
 
         return true;
@@ -124,14 +124,16 @@ namespace Wannabe
             std::remove_if(temp.begin(), temp.end(),
                 [](Actor* actor)
         {
-            return actor == nullptr || actor->IsDestroyRequested() || actor->GetStat() == nullptr || actor->GetStat()->IsDead();
+            return actor == nullptr || actor->IsDestroyRequested() 
+                || actor->GetComponent<StatComponent>() == nullptr 
+                || actor->GetComponent<StatComponent>()->IsDead();
         }),
             temp.end());
 
         switch (eTargetType)
         {
         case ActionTargetType::Self:
-            if (IsValidActor(pAtker) && !pAtker->GetStat()->IsDead())
+            if (IsValidActor(pAtker) && !pAtker->GetComponent<StatComponent>()->IsDead())
             {
                 result.emplace_back(pAtker);
             }

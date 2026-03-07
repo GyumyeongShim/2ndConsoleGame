@@ -76,7 +76,7 @@ void RenderSystem::DrawFieldActor(const Actor& actor)
 
 void RenderSystem::DrawBattleActor(const Actor& actor)
 {
-    if (actor.GetDisplay() == nullptr)
+    if (actor.GetComponent<DisplayComponent>() == nullptr)
         return;
 
     Vector2 world = actor.GetPosition();
@@ -84,7 +84,7 @@ void RenderSystem::DrawBattleActor(const Actor& actor)
     if (IsInViewport(screen, actor) == false)
         return;
 
-    const DisplayComponent* display = actor.GetDisplay();
+    const DisplayComponent* display = actor.GetComponent<DisplayComponent>();
 
     // 1. 메인 이미지
     int yOffset = 0;
@@ -186,7 +186,7 @@ bool RenderSystem::IsInViewport(const Vector2& pos, const Actor& actor) const
     int width = m_Camera.GetWidth();
     int height = m_Camera.GetHeight();
 
-    const DisplayComponent* display = actor.GetDisplay();
+    const DisplayComponent* display = actor.GetComponent<DisplayComponent>();
     int asciiHeight = display ? static_cast<int>(display->GetAscii().size()) : 1;
 
     // 화면 밖이면 false

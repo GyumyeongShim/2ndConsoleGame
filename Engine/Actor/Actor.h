@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
+#include <vector>
 
 #include "Core/RTTI.h" 
 #include "Math/Vector2.h"
 #include "Math/Color.h"
+#include "Component/Component.h"
 
 enum class EquipSlot;
 
@@ -18,6 +20,7 @@ namespace Wannabe
 
 	class Level;
 	class RenderSystem;
+	class ItemInstance;
 
 	class StatComponent;
 	class StatusComponent;
@@ -25,8 +28,6 @@ namespace Wannabe
 	class EquipmentComponent;
 	class DisplayComponent;
 	class SkillComponent;
-
-	class ItemInstance;
 
 	//dll로 만들때 dll 밖에서 접근할때 필요한 선언 __declspec(dllexport)
 	class WANNABE_API Actor : public RTTI 
@@ -53,20 +54,14 @@ namespace Wannabe
 		void ChangeImage(const wchar_t* newImage);
 
 		// 위치 변경 및 읽기 함수
-		void SetPosition(const Vector2& pos);
+		void SetPosition(const Vector2& pos) { m_Pos = pos; }
 		inline const Vector2& GetPosition() const { return m_Pos; }
 
 		//오너쉽
 		void SetOwner(Level* newlevel) { m_Owner = newlevel; }
 		inline Level* GetOwner() const { return m_Owner; }
 
-		// Getter
-		StatComponent* GetStat() const { return m_pStatComponent; }
-		StatusComponent* GetStatus() const { return m_pStatusComponent; }
-		EquipmentComponent* GetEquip() const { return m_pEquipmentComponent; }
-		InventoryComponent* GetInven() const { return m_pInventoryComponent; }
-		DisplayComponent* GetDisplay() const { return m_pDisplayComponent; }
-		SkillComponent* GetSKill() const { return m_pSkillComponent; }
+		void AddComponent(Component* pComponent);
 
 		//Getter
 		Team GetTeam() const { return m_eTeam; }
@@ -77,6 +72,34 @@ namespace Wannabe
 		int GetWidth() const { return m_iWidth; }
 		wchar_t GetGlyph() const { return *m_strImage.c_str(); }
 		Color GetGlyphColor() const { return m_Color; }
+
+		template <typename T>
+		T* GetComponent()
+		{
+			for (auto* pComp : m_vecComponents)
+			{
+				T* pTarget = dynamic_cast<T*>(pComp);
+				if (pTarget != nullptr)
+				{
+					return pTarget;
+				}
+			}
+			return nullptr;
+		}
+
+		template <typename T>
+		const T* GetComponent() const
+		{
+			for (auto* pComp : m_vecComponents)
+			{
+				const T* pTarget = dynamic_cast<const T*>(pComp);
+				if (pTarget != nullptr)
+				{
+					return pTarget;
+				}
+			}
+			return nullptr;
+		}
 
 		bool EquipItem(ItemInstance* inst);
 		void UnequipItem(EquipSlot eSlot);
@@ -100,11 +123,6 @@ namespace Wannabe
 
 		Team m_eTeam;
 
-		StatComponent* m_pStatComponent = nullptr; // 데이터 값
-		StatusComponent* m_pStatusComponent = nullptr; //상태이상
-		EquipmentComponent* m_pEquipmentComponent = nullptr; //장비 장착
-		InventoryComponent* m_pInventoryComponent = nullptr; //아이템 소비
-		DisplayComponent* m_pDisplayComponent = nullptr; //화면에 그리는 정보 (이름, Ascii 등)
-		SkillComponent* m_pSkillComponent = nullptr; // 스킬
+		std::vector<Component*> m_vecComponents;
 	};
 }

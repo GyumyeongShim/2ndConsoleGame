@@ -55,11 +55,6 @@ namespace Wannabe
 		return true;
 	}
 
-	void StatusComponent::Update(float fDeltaTime)
-	{
-		return;
-	}
-
 	bool StatusComponent::HasStatus(StatusType eType)
 	{
 		for (const StatusState& iter : m_vecStatusState)

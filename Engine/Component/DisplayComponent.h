@@ -3,11 +3,12 @@
 #include <vector>
 
 #include "Core/Common.h"
+#include "Component/Component.h"
 #include "../Game/Data/MonsterData.h"
 
 namespace Wannabe
 {
-	class WANNABE_API DisplayComponent //화면상에 이름, Ascii를 출력처리용 컴포넌트
+	class WANNABE_API DisplayComponent : public Component//화면상에 이름, Ascii를 출력처리용 컴포넌트
 	{
 	public:
 		DisplayComponent* Clone() const { return new DisplayComponent(*this); } //깊은 복사

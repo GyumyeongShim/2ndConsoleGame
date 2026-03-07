@@ -5,6 +5,7 @@
 namespace Wannabe
 {
     class Actor;
+    class RenderSystem;
 
     class WANNABE_API Component : public RTTI
     {
@@ -12,12 +13,12 @@ namespace Wannabe
 
     public:
         Component();
-        virtual ~Component() override;
+        virtual ~Component();
 
         virtual void Init() {}
         virtual void BeginPlay() {}
-        virtual void Update(float deltaTime) {}
-        virtual void Render() {}
+        virtual void Update(float fDeltaTime) {}
+        virtual void Render(Wannabe::RenderSystem& renderSys) {}
 
         // 소유자 설정 및 접근
         void SetOwner(Actor* pOwner) { m_pOwner = pOwner; }
@@ -25,6 +26,5 @@ namespace Wannabe
 
     protected:
         Actor* m_pOwner = nullptr;
-
     };
 }

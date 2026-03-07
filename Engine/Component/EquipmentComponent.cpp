@@ -7,6 +7,15 @@
 
 using namespace Wannabe;
 
+EquipmentComponent::EquipmentComponent()
+{
+}
+
+EquipmentComponent::~EquipmentComponent()
+{
+    m_mapEquipped.clear();
+}
+
 EquipmentComponent* EquipmentComponent::Clone() const
 {
     auto* comp = new EquipmentComponent();

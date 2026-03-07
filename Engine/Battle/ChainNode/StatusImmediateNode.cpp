@@ -7,6 +7,8 @@
 #include "Battle/BattleContext.h"
 #include "Component/StatusComponent.h"
 
+using namespace Wannabe;
+
 std::vector<CombatEffect> StatusImmediateNode::Check(const CombatEffect& effect, Wannabe::BattleContext& context)
 {
     std::vector<CombatEffect> vec;
@@ -20,7 +22,7 @@ std::vector<CombatEffect> StatusImmediateNode::Check(const CombatEffect& effect,
     result.pTarget = effect.pTarget;
     result.iValue = effect.iValue / 2;
 
-    if (effect.pTarget->GetStatus()->HasStatus(StatusType::Counter) == true)
+    if (effect.pTarget->GetComponent<StatusComponent>()->HasStatus(StatusType::Counter) == true)
         vec.emplace_back(std::move(result));
 
     return vec;

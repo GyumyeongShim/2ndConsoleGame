@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "Core/Common.h"
+#include "Component/Component.h"
 #include "Math/Color.h"
 #include "Enum/ItemType.h"
 
@@ -31,12 +32,13 @@ namespace Wannabe
         int iMaxTurnCnt;
     };
 
-    class WANNABE_API StatComponent
+    class WANNABE_API StatComponent : public Component
     {
     public:
         StatComponent* Clone() const { return new StatComponent(*this); } //±Ì¿∫ ∫πªÁ
         
-        void Update(float fDeltaTime);
+        virtual void Update(float fDeltaTime) override;
+
         void SetStatByData(const StatData& data);
 
         void ProgressTurn(float spdMultiple = 1.0f);

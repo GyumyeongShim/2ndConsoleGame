@@ -99,6 +99,7 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actor\Actor.cpp" />
+    <ClCompile Include="Component\Component.cpp" />
     <ClCompile Include="Component\SkillComponent.cpp" />
     <ClCompile Include="Item\Item.cpp" />
     <ClCompile Include="Battle\BattleContext.cpp" />
@@ -140,6 +141,7 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\Actor.h" />
+    <ClInclude Include="Component\Component.h" />
     <ClInclude Include="Component\SkillComponent.h" />
     <ClInclude Include="Enum\ActionType.h" />
     <ClInclude Include="Interface\IEquipmentData.h" />

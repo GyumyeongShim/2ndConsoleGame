@@ -4,11 +4,7 @@
 #include "Util/Utill.h"
 #include "Render/RenderSystem.h"
 #include "Component/StatComponent.h"
-#include "Component/StatusComponent.h"
-#include "Component/DisplayComponent.h"
 #include "Component/EquipmentComponent.h"
-#include "Component/InventoryComponent.h"
-#include "Component/SkillComponent.h"
 
 namespace Wannabe
 {
@@ -20,12 +16,10 @@ namespace Wannabe
 
 	Actor::~Actor()
 	{
-		SafeDelete(m_pStatComponent);
-		SafeDelete(m_pStatusComponent);
-		SafeDelete(m_pEquipmentComponent);
-		SafeDelete(m_pInventoryComponent);
-		SafeDelete(m_pDisplayComponent);
-		SafeDelete(m_pSkillComponent);
+		for (auto* pComp : m_vecComponents)
+			SafeDelete(pComp);
+
+		m_vecComponents.clear();
 	}
 
 	void Actor::BeginPlay()
@@ -38,10 +32,10 @@ namespace Wannabe
 
 	void Actor::Tick(float fDeltaTime)
 	{
-		if (m_pStatComponent == nullptr)
-			return;
-
-		m_pStatComponent->Update(fDeltaTime);
+		for (auto* pComp : m_vecComponents)
+		{
+			pComp->Update(fDeltaTime);
+		}
 	}
 
 	void Actor::Draw(Wannabe::RenderSystem& renderSys)
@@ -90,24 +84,36 @@ namespace Wannabe
 		m_iWidth = static_cast<int>(m_strImage.length());
 	}
 
-	void Actor::SetPosition(const Vector2& pos)
+	void Actor::AddComponent(Component* pComponent)
 	{
-		m_Pos = pos;
+		if (pComponent == nullptr) 
+			return;
+
+		pComponent->SetOwner(this);
+		m_vecComponents.push_back(pComponent);
 	}
 
 	bool Actor::EquipItem(ItemInstance* inst)
 	{
-		if (inst == nullptr || m_pStatComponent == nullptr)
-			return false;
+		auto* pEquip = GetComponent<EquipmentComponent>();
+		auto* pStat = GetComponent<StatComponent>();
 
-		return m_pEquipmentComponent->Equip(inst, m_pStatComponent);
+		if (pEquip && pStat)
+		{
+			return pEquip->Equip(inst, pStat);
+		}
+
+		return false;
 	}
 
 	void Actor::UnequipItem(EquipSlot eSlot)
 	{
-		if (m_pStatComponent == nullptr)
-			return;
+		auto* pEquip = GetComponent<EquipmentComponent>();
+		auto* pStat = GetComponent<StatComponent>();
 
-		m_pEquipmentComponent->Unequip(eSlot, m_pStatComponent);
+		if (pEquip && pStat)
+		{
+			pEquip->Unequip(eSlot, pStat);
+		}
 	}
 }

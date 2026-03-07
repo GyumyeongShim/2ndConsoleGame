@@ -20,7 +20,7 @@ namespace Wannabe
             return result;
         }
 
-        auto status = pTarget->GetStatus();
+        auto status = pTarget->GetComponent<StatusComponent>();
         if (status == nullptr)
             return result;
 
@@ -161,7 +161,7 @@ namespace Wannabe
         if (IsValidActor(pTarget) == false)
             return;
 
-        auto* status = pTarget->GetStatus();
+        auto* status = pTarget->GetComponent<StatusComponent>();
         if (status == nullptr)
             return;
 
@@ -176,7 +176,7 @@ namespace Wannabe
         if (pActor->IsDestroyRequested())
             return false;
 
-        if (pActor->GetStat() == nullptr)
+        if (pActor->GetComponent<StatusComponent>() == nullptr)
             return false;
 
         return true;
@@ -184,7 +184,7 @@ namespace Wannabe
 
     int BattleResolver::CalcDmg(Actor* pAtker, Actor* pTarget)
     {
-        int dmg = pAtker->GetStat()->GetAtk() - pTarget->GetStat()->GetDef();
+        int dmg = pAtker->GetComponent<StatComponent>()->GetAtk() - pTarget->GetComponent<StatComponent>()->GetDef();
         return std::max(1, dmg);
     }
 
@@ -193,8 +193,8 @@ namespace Wannabe
         if (IsValidActor(pAtaker) == false || IsValidActor(pTarget) == false)
             return 0;
 
-        int atk = pAtaker->GetStat()->GetAtk();
-        int def = pTarget->GetStat()->GetDef();
+        int atk = pAtaker->GetComponent<StatComponent>()->GetAtk();
+        int def = pTarget->GetComponent<StatComponent>()->GetDef();
 
         // 1. 공격력 기본 수치 (Power와 Ratio 적용)
         float rawDamage = atk * (iPower * 0.01f) * (iRatio * 0.01f);
@@ -217,8 +217,8 @@ namespace Wannabe
         if (IsValidActor(pAtaker) == false || IsValidActor(pTarget) == false)
             return 0;
 
-        auto* atkerStat = pAtaker->GetStat();
-        auto* targetStat = pTarget->GetStat();
+        auto* atkerStat = pAtaker->GetComponent<StatComponent>();
+        auto* targetStat = pTarget->GetComponent<StatComponent>();
 
         if (atkerStat == nullptr || targetStat == nullptr)
             return 0;
@@ -246,8 +246,8 @@ namespace Wannabe
         if (IsValidActor(pAtker) == false || IsValidActor(pTarget) == false)
             return true;
 
-        float accuracy = static_cast<float>(pAtker->GetStat()->GetAccuracy());
-        float evasion = static_cast<float>(pTarget->GetStat()->GetEvasion());
+        float accuracy = static_cast<float>(pAtker->GetComponent<StatComponent>()->GetAccuracy());
+        float evasion = static_cast<float>(pTarget->GetComponent<StatComponent>()->GetEvasion());
         float HitChance = std::max(0.05f, accuracy - evasion);
 
         return Util::Random(0.0f, 100.0f) > HitChance;
@@ -258,8 +258,8 @@ namespace Wannabe
         if (IsValidActor(pAtker) == false)
             return false;
 
-        float critChance = static_cast<float>(pAtker->GetStat()->GetCritChance());
-        float critResist = static_cast<float>(pTarget->GetStat()->GetCritResist());
+        float critChance = static_cast<float>(pAtker->GetComponent<StatComponent>()->GetCritChance());
+        float critResist = static_cast<float>(pTarget->GetComponent<StatComponent>()->GetCritResist());
         float crit = std::max(0.0f, critChance - critResist);
 
         return Util::Random(0.0f, 1.0f) <= crit;

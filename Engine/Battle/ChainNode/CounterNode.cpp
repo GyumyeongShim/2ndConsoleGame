@@ -7,6 +7,8 @@
 #include "Battle/BattleContext.h"
 #include "Component/StatusComponent.h"
 
+using namespace Wannabe;
+
 std::vector<CombatEffect> CounterNode::Check(const CombatEffect& effect, Wannabe::BattleContext& context)
 {
     std::vector<CombatEffect> vec;
@@ -17,7 +19,7 @@ std::vector<CombatEffect> CounterNode::Check(const CombatEffect& effect, Wannabe
     if (context.IsValidActor(effect.pTarget) == false)
         return vec;
 
-    auto* status = effect.pTarget->GetStatus();
+    auto* status = effect.pTarget->GetComponent<StatusComponent>();
     if (status == nullptr)
         return vec;
 
