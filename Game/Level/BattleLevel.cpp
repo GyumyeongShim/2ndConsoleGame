@@ -38,6 +38,7 @@
 #include "UI/UI_TargetCursor.h"
 #include "UI/UI_TurnOrder.h"
 #include "UI/UI_Inventory.h"
+#include "UI/UI_BattleResult.h"
 
 #include "Component/StatComponent.h"
 #include "Component/DisplayComponent.h"
@@ -94,6 +95,7 @@ BattleLevel::~BattleLevel()
     m_pTargetCursor = nullptr;
     m_pTurnOrder = nullptr;
     m_pInvenMenu = nullptr;
+    m_pBattleResult = nullptr;
 }
 
 void BattleLevel::SetupBattle(std::vector<Wannabe::Actor*> vecPlayer, std::vector<Wannabe::Actor*> vecEnemy)
@@ -289,6 +291,9 @@ void BattleLevel::Tick(float fDeltaTime)
 void BattleLevel::Draw(Wannabe::RenderSystem& renderSys)
 {
     super::Draw(renderSys);
+
+    for (auto& actor : m_vecActors)
+        actor->Draw(renderSys);
 }
 
 void BattleLevel::ConfigureRenderer(Wannabe::RenderSystem& renderer) const
@@ -792,7 +797,33 @@ void BattleLevel::Phase_Log()
 
 void BattleLevel::Phase_Result()
 {
-    Game::Get().BattleEnd();
+    if (m_pBattleResult == nullptr)
+    {
+        // 승리 보상 계산 (예: 몬스터들로부터 골드/경험치 합산)
+        int totalGold = 100; // 로직에 따라 합산된 값
+        int totalExp = 50;
+
+        auto pUI = std::make_unique<UI_BattleResult>(totalGold, totalExp, 'S');
+        m_pBattleResult = pUI.get();
+
+        AddActor(std::move(pUI));
+        return;
+    }
+
+    // 종료 플래그가 세워졌다면 씬 전환
+    if (m_pBattleResult->Exit() == true)
+    {
+        Game::Get().BattleEnd();
+    }
+
+    // 연출이 Finished 상태일 때만 Enter 입력을 받음
+    if (m_pBattleResult->GetDisplayState() == UI_BattleResult::DisplayState::Finished)
+    {
+        if (Input::Get().GetKeyDown(VK_RETURN))
+        {
+            m_pBattleResult->SetExit(true);
+        }
+    }
 }
 
 void BattleLevel::ProcessStateRequest()

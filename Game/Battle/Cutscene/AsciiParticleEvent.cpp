@@ -54,34 +54,6 @@ bool AsciiParticleEvent::IsFinished() const
     return m_fElapsed >= m_fDuration;
 }
 
-void AsciiParticleEvent::InitExplosionParticle(std::vector<AsciiParticle>& particles, const Wannabe::Vector2& pos, int iParticleCnt)
-{
-    particles.clear();
-    particles.reserve(iParticleCnt);
-
-    const float PI = 3.141592f;
-
-    for (int i = 0; i < iParticleCnt; i++)
-    {
-        float angle = ((float)rand() / RAND_MAX) * 2.f * PI;
-        float speed = 3.f + ((float)rand() / RAND_MAX) * 5.f;
-
-        AsciiParticle p;
-
-        p.Position = pos;
-
-        p.Velocity = Vector2(cos(angle) * speed,sin(angle) * speed);
-
-        // 약한 중력 (JRPG 스타일은 과장된 물리보다 살짝 느린 게 좋다)
-        p.Acceleration = Vector2(0.f, 2.5f);
-
-        p.LifeTime = 0.f;
-        p.MaxLifeTime = 1.2f + ((float)rand() / RAND_MAX) * 0.8f;
-
-        particles.push_back(p);
-    }
-}
-
 void AsciiParticleEvent::InitParticles()
 {
     m_particles.clear();
@@ -100,11 +72,11 @@ void AsciiParticleEvent::InitParticles()
         p.Position = m_pos;
 
         p.Velocity = Vector2(
-            cosf(angle) * speed,
-            sinf(angle) * speed
+            static_cast<int>(cosf(angle) * speed),
+            static_cast<int>(sinf(angle) * speed)
         );
 
-        p.Acceleration = Vector2(0.f, 2.8f);
+        p.Acceleration = Vector2(0, 3);
 
         p.MaxLifeTime = 1.2f + ((float)rand() / RAND_MAX) * 0.8f;
 

@@ -34,7 +34,6 @@ public:
     virtual bool IsFinished() const override;
 
 private:
-    void InitExplosionParticle(std::vector<AsciiParticle>& particles, const Wannabe::Vector2& pos, int iParticleCnt);
     void InitParticles();
     void UpdateParticles(float dt);
     bool IsAllParticleDead() const;

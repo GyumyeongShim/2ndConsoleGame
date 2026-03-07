@@ -11,7 +11,7 @@ UI_FloatingText::UI_FloatingText(const std::wstring& text, Wannabe::Vector2 worl
 void UI_FloatingText::Tick(float fDeltaTime)
 {
     m_fLifeTime -= fDeltaTime;
-    m_vWorldPos.y -= 0.5f * fDeltaTime;
+    m_vWorldPos.y -= static_cast<int>(0.5f * fDeltaTime);
 
     RecalculateViewportPosition();
 

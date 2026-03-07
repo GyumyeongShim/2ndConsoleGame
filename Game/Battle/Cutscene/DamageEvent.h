@@ -1,6 +1,5 @@
 #pragma once
 #include "Interface/ICutsceneEvent.h"
-#include "Enum/CombatType.h"
 
 namespace Wannabe
 {

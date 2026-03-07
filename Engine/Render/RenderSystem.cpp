@@ -80,8 +80,8 @@ void RenderSystem::DrawBattleActor(const Actor& actor)
         return;
 
     Vector2 world = actor.GetPosition();
-    Vector2 screen = m_Camera.WorldToScreen(world); // 按眉 荤侩
-    if (!IsInViewport(screen, actor))
+    Vector2 screen = m_Camera.WorldToScreen(world) + m_Shake.offset; //如甸覆 贸府
+    if (IsInViewport(screen, actor) == false)
         return;
 
     const DisplayComponent* display = actor.GetDisplay();
@@ -105,6 +105,31 @@ void RenderSystem::DrawBattleActor(const Actor& actor)
 void RenderSystem::DrawUI(const std::wstring& txt, Vector2 pos, Color color, int iOrder)
 {
     m_UICanvas.DrawTxt(pos.x, pos.y, txt, color, iOrder);
+}
+
+void RenderSystem::Shake(float fDuration, float fIntensity)
+{
+    m_Shake.fDuration = fDuration;
+    m_Shake.fIntensity = fIntensity;
+}
+
+void RenderSystem::Update(float fDeltaTime)
+{
+    if (m_Shake.fDuration > 0.0f)
+    {
+        m_Shake.fDuration -= fDeltaTime;
+
+        int range = static_cast<int>(m_Shake.fIntensity);
+        if (range < 1) 
+            range = 1;
+
+        m_Shake.offset.x = (rand() % (range * 2 + 1) - range);
+        m_Shake.offset.y = (rand() % (range * 2 + 1) - range);
+    }
+    else
+    {
+        m_Shake.offset = Vector2::Zero;
+    }
 }
 
 void RenderSystem::Composite(const Canvas& canvas)

@@ -24,6 +24,7 @@ class UI_MenuList;
 class UI_TargetCursor;
 class UI_TurnOrder;
 class UI_Inventory;
+class UI_BattleResult;
 class BattleActor;
 class IBattleLevel;
 
@@ -128,6 +129,7 @@ private:
 	UI_TurnOrder* m_pTurnOrder = nullptr;
 	UI_Inventory* m_pInvenMenu = nullptr;
 	UI_MenuList* m_pMenu = nullptr;
+	UI_BattleResult* m_pBattleResult = nullptr;
 
 	MenuTxt m_eMenuTxt = MenuTxt::None;
 	std::vector<std::wstring> m_vecSkillMenu;

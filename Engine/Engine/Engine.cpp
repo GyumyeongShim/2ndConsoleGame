@@ -239,6 +239,9 @@ namespace Wannabe
 			return;
 
 		m_pMainLevel->Tick(fDeltaTime);
+
+		if(m_RenderSystem)
+			m_RenderSystem->Update(fDeltaTime);
 	}
 
 	void Engine::Draw()
