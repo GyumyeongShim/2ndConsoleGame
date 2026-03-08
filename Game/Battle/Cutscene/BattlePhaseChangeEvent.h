@@ -11,6 +11,11 @@ public:
 	bool Update(Wannabe::BattleContext& context,float fDeltaTime) override;
 	void OnEnd(Wannabe::BattleContext& context) override;
 	bool IsValid(Wannabe::BattleContext& context) const override;
+	virtual CutsceneEventType GetEventType() override
+	{
+		m_eCutsceneEventType = CutsceneEventType::BattlePhaseChange;
+		return m_eCutsceneEventType;
+	};
 
 private:
 	BattleState m_eNextState;

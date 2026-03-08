@@ -23,7 +23,11 @@ namespace Wannabe
     void BattleEventProcessor::ProcessCombatEffectResult(BattleContext& context, const CombatEffectResult& result, int iDepth /*= 0*/)
     {
         if (iDepth > iMaxDepth)
+        {
+            // 턴 변경
+            context.GetCutscenePlayer().Push(m_pEventFactory->CreatePhaseChange(BattleState::Log));
             return;
+        }
 
         for (const auto& effect : result.vecCombatEffect)
         {
@@ -40,72 +44,6 @@ namespace Wannabe
                 next.vecCombatEffect = nextEffects;
                 ProcessCombatEffectResult(context,next, iDepth + 1);
             }
-        }
-    }
-
-    void BattleEventProcessor::OnTurnStart(BattleContext& context, Actor* pTarget)
-    {
-        if (context.IsValidActor(pTarget) == false)
-            return;
-
-        auto status = pTarget->GetComponent<StatusComponent>();
-        if (status == nullptr)
-            return;
-
-        
-        const auto& states = status->GetCurStatusState();
-        for (const auto& state : states)
-        {
-            if (state.period.eType == CombatEffectType::None)
-                continue;
-
-            CombatEffect effect;
-            effect.pAtker = state.pAtker;
-            effect.pTarget = pTarget;
-            effect.eCombatEffectType = state.period.eType;
-            effect.iValue = state.period.iValue * state.iStackCnt;
-
-            CombatEffectResult temp;
-            temp.vecCombatEffect.emplace_back(effect);
-
-            ProcessCombatEffectResult(context, temp, 0);
-        }
-    }
-
-    void BattleEventProcessor::OnTurnEnd(BattleContext& context, Actor* pTarget)
-    {
-        if (context.IsValidActor(pTarget) == false)
-            return;
-
-        auto status = pTarget->GetComponent<StatusComponent>();
-        if (status == nullptr)
-            return;
-
-        // 1. 상태 지속시간 감소
-        status->CountDownStatus();
-
-        // 2. 만료된 상태 추출
-        std::vector<StatusState> expiredStates = status->GetExpiredStatusState();
-
-        for (const auto& state : expiredStates)
-        {
-            // 상태 종료 로그 생성
-            BattleLog log;
-            log.wstrAtkerName = state.pAtker->GetComponent<DisplayComponent>()->GetOriginName();
-            log.wstrTargetName = pTarget->GetComponent<DisplayComponent>()->GetOriginName();
-            log.eLogType = LogType::StatusExpire;
-            log.iValue = 0;
-            log.bCritical = false;
-            log.bMiss = false;
-
-            context.GetCutscenePlayer().Push(m_pEventFactory->CreateLog(log));
-        }
-
-        // 3. 상태 종료 후 사망 체크 (예: 디버프 해제 후 자해형 효과 등 고려)
-        auto stat = pTarget->GetComponent<StatComponent>();
-        if (stat && stat->IsDead())
-        {
-            MarkForRemoval(pTarget);
         }
     }
 
@@ -164,6 +102,7 @@ namespace Wannabe
         context.GetCutscenePlayer().Push(m_pEventFactory->CreateAsciiParticle(endPos, 50, 1.0f)); 
         
         // 연출
+        //todo test 26.03.08 여기서 색상 변경할 수 있게 하자.
         context.GetCutscenePlayer().Push(m_pEventFactory->CreateDmg(atker, target, dmg, effect.bCritical));
         
         // 사망
@@ -171,9 +110,6 @@ namespace Wannabe
         {
             context.GetCutscenePlayer().Push(m_pEventFactory->CreateDeath(target));
         }
-        
-        // 턴 변경
-        context.GetCutscenePlayer().Push(m_pEventFactory->CreatePhaseChange(BattleState::Log));
     }
 
     void BattleEventProcessor::ApplyHeal(BattleContext& context, const CombatEffect& effect)
@@ -187,6 +123,15 @@ namespace Wannabe
             return;
 
         int heal = stat->ApplyHeal(effect.iValue);
+
+        // 시각적 연출 (하단에서 위로 솟구치는 하트나 + 기호)
+        Vector2 pos = target->GetPosition();
+        Vector2 startPos = { pos.x, pos.y + 1 };
+        Vector2 endPos = { pos.x, pos.y - 2 };
+
+        context.GetCutscenePlayer().Push(m_pEventFactory->CreateVisualEffect(
+            startPos, endPos, EffectMovementType::Linear, L'+', Color::Green, 0.6f
+        ));
 
         /// 로그 출력
         BattleLog log;
@@ -212,6 +157,12 @@ namespace Wannabe
         if (applied == false)
             return;
 
+        // 2. 시각적 연출 (타겟 머리 위에서 반짝이는 느낌)
+        Vector2 pos = target->GetPosition();
+        context.GetCutscenePlayer().Push(m_pEventFactory->CreateVisualEffect(
+            pos, { pos.x, pos.y - 1 }, EffectMovementType::Parabola, L'!', Color::Cyan, 0.5f
+        ));
+
         BattleLog log;
         log.wstrAtkerName = effect.pAtker->GetComponent<DisplayComponent>()->GetOriginName();
         log.wstrTargetName = effect.pTarget->GetComponent<DisplayComponent>()->GetOriginName();
@@ -222,6 +173,9 @@ namespace Wannabe
 
         // 로그 출력
         context.GetCutscenePlayer().Push(m_pEventFactory->CreateLog(log));
+
+        // 4. 입자 연출 (상태 이상 특유의 흩뿌려지는 느낌)
+        context.GetCutscenePlayer().Push(m_pEventFactory->CreateAsciiParticle(pos, 20, 0.7f));
     }
 
     void BattleEventProcessor::ApplyEffect(BattleContext& context, const CombatEffect& effect)

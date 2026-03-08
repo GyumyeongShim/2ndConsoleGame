@@ -56,6 +56,8 @@ namespace Wannabe
 	public:
 		StatusComponent* Clone() const { return new StatusComponent(*this); } //깊은 복사
 
+		std::vector<CombatEffect> OnTurnStart();
+
 		bool AddStatus(StatusType eType, int iDuration, int iValue, Actor* pIntstigator);
 		void CountDownStatus(); // 턴이 끝날 때마다 상태 지속 시간 감소
 		void ResetStatus(); // 모든 상태 초기화
@@ -66,7 +68,6 @@ namespace Wannabe
 		bool IsStackable(StatusType eStatusType) const { return GetStatusRule(eStatusType).bStackable; }
 		const std::vector<StatusState> GetCurStatusState() { return m_vecStatusState; }
 		const std::vector<StatusState> GetExpiredStatusState();
-		std::wstring GetStatusToString(StatusType eType) const;
 
 	private:
 		void RemoveExpiredStatus(); // 지속 시간이 0이 된 상태 제거

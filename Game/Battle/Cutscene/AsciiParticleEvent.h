@@ -32,6 +32,11 @@ public:
     virtual bool Update(Wannabe::BattleContext& context, float fDeltaTime) override;
     virtual bool IsValid(Wannabe::BattleContext& context) const override;
     virtual bool IsFinished() const override;
+    virtual CutsceneEventType GetEventType() override
+    {
+        m_eCutsceneEventType = CutsceneEventType::AsciiParticle;
+        return m_eCutsceneEventType;
+    };
 
 private:
     void InitParticles();

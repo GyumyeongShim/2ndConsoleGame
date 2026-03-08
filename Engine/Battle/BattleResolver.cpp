@@ -7,6 +7,7 @@
 #include "Actor/Actor.h"
 #include "Component/StatComponent.h"
 #include "Component/StatusComponent.h"
+#include "Component/DisplayComponent.h"
 
 namespace Wannabe
 {
@@ -75,6 +76,7 @@ namespace Wannabe
             effect.bCritical = true;
         }
         effect.iValue = dmg;
+        effect.eSource = DamageSource::BasicAtk;
         result.vecCombatEffect.emplace_back(effect);
         return result;
     }
@@ -156,16 +158,81 @@ namespace Wannabe
         return results;
     }
 
-    void BattleResolver::ResolveStatus(Actor* pActer, Actor* pTarget, StatusType eType, int iDuration, int iValue)
+    std::vector<CombatEffectResult> BattleResolver::ResolveStatusEffects(Actor* pTarget)
     {
+        std::vector<CombatEffectResult> results;
         if (IsValidActor(pTarget) == false)
-            return;
+            return results;
 
-        auto* status = pTarget->GetComponent<StatusComponent>();
-        if (status == nullptr)
-            return;
+        auto* pStatus = pTarget->GetComponent<StatusComponent>();
+        if (pStatus == nullptr)
+            return results;
 
-        status->AddStatus(eType, iDuration, iValue, pActer);
+        std::vector<CombatEffect> rawEffects = pStatus->OnTurnStart();
+        if (rawEffects.empty() == true)
+            return results;
+
+        CombatEffectResult result;
+        for (auto& effect : rawEffects)
+        {
+            if (IsValidActor(effect.pTarget) == false)
+                continue;
+
+            // 효과 타입에 따른 추가 세부 계산
+            switch (effect.eCombatEffectType)
+            {
+            case CombatEffectType::Damage:
+            {
+                // 독 데미지 등도 스탯이나 내성에 의해 감쇄될 수 있다면 여기서 계산
+                // 현재는 고정 데미지 형태라면 iValue를 그대로 유지
+                // 예: effect.iValue = CalcStatusDamage(effect.iValue, pTarget);
+                break;
+            }
+
+            case CombatEffectType::Heal:
+            {
+                // 재생(Regeneration) 효과 등
+                break;
+            }
+
+            default:
+                break;
+            }
+
+            effect.eSource = DamageSource::StatusTick;
+
+            result.vecCombatEffect.emplace_back(effect);
+        }
+
+        if (result.vecCombatEffect.empty() == false)
+            results.emplace_back(std::move(result));
+
+        return results;
+    }
+
+    std::vector<BattleLog> BattleResolver::ResolveStatusExpiration(Actor* pTarget)
+    {
+        std::vector<BattleLog> vecLog;
+        auto* pStatus = pTarget->GetComponent<StatusComponent>();
+        if (pStatus == nullptr)
+            return vecLog;
+
+        // 지속 시간 감소
+        pStatus->CountDownStatus();
+
+        // 만료된 상태이상
+        std::vector<StatusState> expiredStates = pStatus->GetExpiredStatusState();
+        for (const auto& state : expiredStates)
+        {
+            BattleLog log;
+            log.wstrTargetName = pTarget->GetComponent<DisplayComponent>()->GetOriginName();
+            log.wstrTxt = GetStatusToString(state.eStatusType) + L" 효과가 사라졌습니다.";
+            log.eLogType = LogType::StatusExpire;
+
+            vecLog.emplace_back(log);
+        }
+
+        return vecLog;
     }
 
     bool BattleResolver::IsValidActor(Actor* pActor)

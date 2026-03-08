@@ -11,6 +11,11 @@ public:
 
     void OnStart(Wannabe::BattleContext& context) override;
     bool Update(Wannabe::BattleContext& context, float fDeltaTime) override;
+    virtual CutsceneEventType GetEventType() override
+    {
+        m_eCutsceneEventType = CutsceneEventType::Log;
+        return m_eCutsceneEventType;
+    };
 
 private:
     void SetDuration(float duration);
@@ -22,6 +27,7 @@ private:
     std::wstring BuildStatusLog(const BattleLog& log);
     std::wstring BuildStatusExpireLog(const BattleLog& log);  
     std::wstring BuildDeathLog(const BattleLog& log);
+    std::wstring BuildItemUseLog(const BattleLog& log);
 
 private:
     BattleLog m_eBattleLog;

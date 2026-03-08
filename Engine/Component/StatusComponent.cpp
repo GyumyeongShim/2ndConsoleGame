@@ -7,6 +7,34 @@
 
 namespace Wannabe
 {
+	std::vector<CombatEffect> StatusComponent::OnTurnStart()
+	{
+		std::vector<CombatEffect> effect;
+		for (auto& status : m_vecStatusState)
+		{
+			if (status.eStatusType == StatusType::Poison) // todo only poison, 추가 예정
+			{
+				CombatEffect eff;
+				eff.pTarget = GetOwner();
+				eff.pTarget = GetOwner();
+				eff.eCombatEffectType = CombatEffectType::Damage;
+				eff.iValue = status.iValue;
+
+				effect.emplace_back(eff);
+			}
+
+			if (status.iDuration > 0)
+				status.iDuration--;
+		}
+
+		m_vecStatusState.erase(
+			std::remove_if(m_vecStatusState.begin(), m_vecStatusState.end(),
+				[](const auto& s) { return s.iDuration <= 0; }),
+			m_vecStatusState.end());
+
+		return effect;
+	}
+
 	bool StatusComponent::AddStatus(StatusType eType, int iDuration, int iValue, Actor* pIntstigator)
 	{
 		const StatusRule& rule = GetStatusRule(eType);
@@ -107,26 +135,5 @@ namespace Wannabe
 		}
 
 		return out;
-	}
-
-	std::wstring StatusComponent::GetStatusToString(StatusType eType) const
-	{
-		switch (eType)
-		{
-		case StatusType::Burn:
-			return L"화상";
-		case StatusType::Freeze:
-			return L"빙결";
-		case StatusType::Poison:
-			return L"중독";
-		case StatusType::Shock:
-			return L"감전";
-		case StatusType::Stun:
-			return L"기절";
-		case StatusType::Sleep:
-			return L"수면";
-		default:
-			return L"";
-		}
 	}
 }

@@ -11,6 +11,7 @@ namespace Wannabe
 
 enum class BattleState
 {
+    None,
     Start,              // 시작 연출
 
     CommandSelect,      // 전투 메뉴 선택
@@ -22,7 +23,10 @@ enum class BattleState
     TurnCheck,          // 행동 순서, 명령, 데미지 계산 // 정말 로직만 필요함
     Animation,          // 스킬 이펙트, hp 감소연출, 상태 이상 표시
     Log,                // 전투 관련 모든 로그를 표기
-    Result              // 쓰러짐, 경험치, 배틀 종료 여부
+    Result,             // 쓰러짐, 경험치, 배틀 종료 여부
+
+    Victory,            // [승리] 승리 포즈, 경험치/아이템 획득 결과창 표시
+    Defeat              // [패배] 사망 연출, 게임 오버 화면, 타이틀 이동 대기
 };
 
 enum class StatusType
@@ -56,6 +60,14 @@ enum class StatusType
     HealReflect,
     Blessed,
     LifeSteal
+};
+
+enum class DamageSource
+{
+    BasicAtk,
+    Skill,
+    StatusTick, // 중독 등의 상태 이상 데미지
+    Reflect     // 반사 데미지 등
 };
 
 enum class CombatEffectType //스킬, 아이템 대분류 (공격, 회복, 버프/디버프)
@@ -95,6 +107,7 @@ struct CombatEffect //스킬 효과
     bool bMiss = false; //명중
     bool bCritical = false; //크리
     StatusType eStatus = StatusType::None; //상태 이상 종류
+    DamageSource eSource = DamageSource::BasicAtk;
 };
 
 struct CombatEffectResult //스킬, 아이템 효과들 모음
@@ -105,7 +118,8 @@ struct CombatEffectResult //스킬, 아이템 효과들 모음
 enum class EffectMovementType  //이펙트의 운동 종류
 { 
     Straight, 
-    Parabola
+    Parabola,
+    Linear
 };
 
 enum class LogType
@@ -118,6 +132,7 @@ enum class LogType
     StatusApply,
     StatusTick,
     StatusExpire,
+    ItemUse,     // 아이템 사용 시작 로그
     Death,
     SystemMessage,
     TurnStart,
@@ -135,3 +150,24 @@ struct BattleLog
     bool bCritical = false;
     bool bMiss = false;
 };
+
+static std::wstring GetStatusToString(StatusType eType)
+{
+    switch (eType)
+    {
+    case StatusType::Burn:
+        return L"화상";
+    case StatusType::Freeze:
+        return L"빙결";
+    case StatusType::Poison:
+        return L"중독";
+    case StatusType::Shock:
+        return L"감전";
+    case StatusType::Stun:
+        return L"기절";
+    case StatusType::Sleep:
+        return L"수면";
+    default:
+        return L"";
+    }
+}

@@ -13,6 +13,11 @@ public:
 
     void OnStart(Wannabe::BattleContext& context) override;
     bool Update(Wannabe::BattleContext& context, float fDeltaTime) override;
+    virtual CutsceneEventType GetEventType() override
+    {
+        m_eCutsceneEventType = CutsceneEventType::Death;
+        return m_eCutsceneEventType;
+    };
 
 private:
     Wannabe::Actor* m_pTarget;

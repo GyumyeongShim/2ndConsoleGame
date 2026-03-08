@@ -16,6 +16,11 @@ public:
     virtual bool Update(Wannabe::BattleContext& context, float fDeltaTime) override;
     virtual void OnEnd(Wannabe::BattleContext& context) override;
     virtual bool IsValid(Wannabe::BattleContext& context) const override;
+    virtual CutsceneEventType GetEventType() override
+    {
+        m_eCutsceneEventType = CutsceneEventType::VisualEffect; 
+        return m_eCutsceneEventType;
+    };
 
 private:
     Wannabe::Vector2 m_StartPos;

@@ -6,6 +6,7 @@
 #include "Enum/CombatType.h"
 #include "Battle/BattleContext.h"
 #include "Component/StatComponent.h"
+#include "Interface/ICutsceneEvent.h"
 
 using namespace Wannabe;
 
@@ -25,6 +26,24 @@ std::vector<CombatEffect> DeathCheckNode::Check(const CombatEffect& effect, Wann
 
     if (stat->IsDead() == true)
         return vec;
+
+    // 사망 로그 및 연출은 이미 ApplyDmg에서 처리되었으므로, 여기서는 판정만 수행
+    auto playerParty = context.GetPlayerParty(effect.pTarget);
+    auto enemyParty = context.GetEnemyParty(effect.pTarget);
+
+    bool bAllPlayersDead = std::all_of(playerParty.begin(), playerParty.end(),
+        [](Actor* a) { return a->GetComponent<StatComponent>()->IsDead(); });
+
+    bool bAllEnemiesDead = std::all_of(enemyParty.begin(), enemyParty.end(),
+        [](Actor* a) { return a->GetComponent<StatComponent>()->IsDead(); });
+
+    if (bAllEnemiesDead || bAllPlayersDead)
+    {
+        BattleState nextState = bAllEnemiesDead ? BattleState::Victory : BattleState::Defeat;
+        context.SetBattleState(nextState);
+
+        return vec;
+    }
 
     CombatEffect result;
     result.eCombatEffectType = CombatEffectType::None;

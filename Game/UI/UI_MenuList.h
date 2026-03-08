@@ -40,7 +40,6 @@ private:
 
 	int m_iCursorIdx = 0;		//전체 인덱스
 	int m_iStartIdx = 0;		//첫 아이템의 인덱스
-	//const int m_iMaxShow = 4;	//최대 4개까지만
 
 	int m_iMenuWidth = 20;   // 가변 너비
 	int m_iMaxShow = 4;     // 한 번에 보여줄 항목 수

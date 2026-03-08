@@ -16,8 +16,8 @@ namespace Wannabe
 		ActCheckResult CanAct(Actor* pTarget);
 		CombatEffectResult ResolveBasicAtk(Actor* pAtker, Actor* pTarget);
 		std::vector<CombatEffectResult> ResolveAction(Actor* pAtker, Actor* pTarget, const std::vector<CombatEffectData>& data, int iPower);
-		void ResolveStatus(Actor* pActer, Actor* pTarget, StatusType eType, int iDuration, int iValue);
-
+		std::vector<CombatEffectResult> ResolveStatusEffects(Actor* pTarget);
+		std::vector<BattleLog> ResolveStatusExpiration(Actor* pTarget);
 		bool CalcRunSucess();
 
 	private:

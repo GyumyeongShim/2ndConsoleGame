@@ -3,24 +3,19 @@
 
 #include "DamageEvent.h"
 
-#include "Enum/CombatType.h"
-
 #include "Math/Vector2.h"
 #include "Math/Color.h"
-
 #include "Actor/Actor.h"
 #include "Battle/BattleContext.h"
 #include "Battle/System/CutscenePlayer.h"
-
 #include "Component/StatComponent.h"
 #include "Component/DisplayComponent.h"
-
 #include "Render/RenderSystem.h"
 #include "Level/BattleLevel.h"
 #include "UI/UI_FloatingText.h"
 
-DamageEvent::DamageEvent(Wannabe::Actor* pAtker, Wannabe::Actor* pTarget, int iDmg, bool bCritical /*= 0*/)
-	: m_pAtker(pAtker), m_pTarget(pTarget), m_iDmg(iDmg), m_bCritical(bCritical)
+DamageEvent::DamageEvent(Wannabe::Actor* pAtker, Wannabe::Actor* pTarget, int iDmg, bool bCritical /*= 0*/, DamageSource eSource /*= DamageSource::BasicAtk*/)
+	: m_pAtker(pAtker), m_pTarget(pTarget), m_iDmg(iDmg), m_bCritical(bCritical), m_eDamageSource(eSource)
 {
 
 }
@@ -35,9 +30,17 @@ void DamageEvent::OnStart(Wannabe::BattleContext& context)
     Wannabe::Vector2 targetPos = m_pTarget->GetPosition();
     std::wstring dmgStr = std::to_wstring(m_iDmg);
 
-    Wannabe::Color textColor = m_bCritical ? Wannabe::Color::Red : Wannabe::Color::White;
-    if (m_bCritical) 
+    Wannabe::Color textColor = Wannabe::Color::White;
+
+    if (m_eDamageSource == DamageSource::StatusTick)
+    {
+        textColor = Wannabe::Color::Green; // 상태이상 임의로 초록색
+    }
+    else if (m_bCritical)
+    {
+        textColor = Wannabe::Color::Red;
         dmgStr = L"CRITICAL! " + dmgStr;
+    }
 
     auto pDmgText = std::make_unique<UI_FloatingText>(dmgStr, m_pTarget->GetPosition(), textColor);
 

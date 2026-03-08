@@ -100,6 +100,28 @@ void InventoryComponent::RemoveItem(int iSlotIdx, int iCnt)
     }
 }
 
+void Wannabe::InventoryComponent::RemoveItemByTID(int iTID, int iCnt)
+{
+    auto it = std::find_if(m_vecItemInstances.begin(), m_vecItemInstances.end(),
+        [iTID](ItemInstance* pInst)
+    {
+        return pInst && pInst->GetItem()->GetItemTID() == iTID;
+    });
+
+    if (it == m_vecItemInstances.end())
+        return;
+
+    ItemInstance* pInstance = *it;
+    if (pInstance->Consume(iCnt)) //수량 제거
+    {
+        if (pInstance->IsEmpty())
+        {
+            delete pInstance;
+            m_vecItemInstances.erase(it);
+        }
+    }
+}
+
 ItemInstance* InventoryComponent::GetItemInSlot(int iSlotIdx)
 {
     if (iSlotIdx < 0 || iSlotIdx >= static_cast<int>(m_vecItemInstances.size()))

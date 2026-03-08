@@ -20,6 +20,7 @@ namespace Wannabe
         bool AddItem(int iTID, int iCnt = 1);
         bool UseItem(int iSlotIdx, Actor* pTarget = nullptr);
         void RemoveItem(int iSlotIdx, int iCnt = 1);
+        void RemoveItemByTID(int iTID, int iCnt);
 
         const std::vector<ItemInstance*>& GetItems() const { return m_vecItemInstances; }
         ItemInstance* GetItemInSlot(int iSlotIdx);

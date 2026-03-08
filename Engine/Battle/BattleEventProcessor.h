@@ -32,9 +32,6 @@ namespace Wannabe
 		void SetRemoveCallback(IRemoveActorCallback* callback);
 		void SetEventFactory(IBattleEventFactory* factory);
 
-		void OnTurnStart(BattleContext& context, Actor* pTarget);
-		void OnTurnEnd(BattleContext& context, Actor* pTarget);
-
 	private:
 		void ApplyDmg(BattleContext& context, const CombatEffect& effect);
 		void ApplyHeal(BattleContext& context, const CombatEffect& effect);

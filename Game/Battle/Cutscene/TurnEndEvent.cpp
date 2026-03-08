@@ -1,6 +1,12 @@
 #include "TurnEndEvent.h"
 #include "Actor/Actor.h"
 #include "Battle/BattleContext.h"
+#include "Interface/IBattleEventFactory.h"
+#include "Battle/System/CutScenePlayer.h"
+#include "Component/StatComponent.h"
+#include "Battle/Cutscene/LogEvent.h"
+#include "Battle/Cutscene/DeathEvent.h"
+#include "Battle/Cutscene/BattlePhaseChangeEvent.h"
 
 TurnEndEvent::TurnEndEvent(Wannabe::Actor* actor)
     :m_pTarget(actor)
@@ -8,7 +14,26 @@ TurnEndEvent::TurnEndEvent(Wannabe::Actor* actor)
 }
 void TurnEndEvent::OnStart(Wannabe::BattleContext& context)
 {
-    context.GetEventProcessor().OnTurnEnd(context, m_pTarget);
+    if (m_pTarget == nullptr) return;
+
+    auto expirationLogs = context.GetResolver().ResolveStatusExpiration(m_pTarget);
+    for (const auto& log : expirationLogs)
+        context.GetCutscenePlayer().Push(std::make_unique<LogEvent>(log));
+
+    // 사망 체크
+    auto* stat = m_pTarget->GetComponent<Wannabe::StatComponent>();
+    if (stat && stat->IsDead())
+    {
+        // 이미 죽었다면 사망 연출 Push
+        context.GetCutscenePlayer().Push(std::make_unique<DeathEvent>(m_pTarget));
+
+        // Processor에 제거 예약
+        context.GetEventProcessor().MarkForRemoval(m_pTarget);
+    }
+
+    // 4. 턴 종료 후 다음 단계(보통 TurnCheck 또는 차례 교대)로 전이
+    // 이 부분은 BattleLevel의 설계에 따라 달라질 수 있습니다.
+    context.GetCutscenePlayer().Push(std::make_unique<BattlePhaseChangeEvent>(BattleState::TurnCheck));
 }
 
 bool TurnEndEvent::Update(Wannabe::BattleContext&, float)

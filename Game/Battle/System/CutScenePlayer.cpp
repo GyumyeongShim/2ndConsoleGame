@@ -1,11 +1,22 @@
 #include "CutscenePlayer.h"
 #include "Battle/BattleContext.h"
-#include "Battle/BattleLogSystem.h"
+#include "Interface/ICutsceneEvent.h"
 
 void CutscenePlayer::Push(std::unique_ptr<Wannabe::ICutsceneEvent> event)
 {
     if (event == nullptr)
         return;
+
+    // PhaseChange 이벤트인 경우 중복 체크
+    if (event->GetEventType() == Wannabe::ICutsceneEvent::CutsceneEventType::BattlePhaseChange)
+    {
+        if (m_queCutSceneEvent.empty() == false)
+        {
+            auto& lastEvent = m_queCutSceneEvent.back();
+            if (lastEvent->GetEventType() == Wannabe::ICutsceneEvent::CutsceneEventType::BattlePhaseChange)
+                return;
+        }
+    }
 
     m_queCutSceneEvent.push(std::move(event));
     if (m_eState != State::Play)

@@ -90,6 +90,14 @@ namespace Wannabe
             m_BattleEventProcessor->SetRemoveCallback(func);
     }
 
+    BattleState BattleContext::GetBattleState()
+    {
+        if (m_pLevel == nullptr)
+            return BattleState::Start;
+
+        return m_pLevel->GetBattleState();
+    }
+
     std::vector<Actor*> BattleContext::ResolveTargets(Actor* pAtker, Actor* pTarget, ActionTargetType eTargetType, int iMaxTargetCnt)
     {
         std::vector<Actor*> result;

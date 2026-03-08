@@ -17,6 +17,7 @@ public:
     virtual void AddActor(std::unique_ptr<Wannabe::Actor>actor) = 0;
     virtual void RequestBattleStateChange(BattleState state) = 0;
     virtual void PushCommand(std::unique_ptr<Wannabe::IBattleCommand> cmd) = 0;
+    virtual BattleState GetBattleState() = 0;
 
     virtual const std::vector<Wannabe::Actor*>& GetEnemyParty() const = 0;
     virtual const std::vector<Wannabe::Actor*>& GetPlayerParty() const = 0;

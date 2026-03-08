@@ -55,12 +55,16 @@ public:
 
 	void SetEventFactory(IBattleEventFactory* factory);
 	static void RemoveActorCallback(Wannabe::Actor* actor);
-	void RequestBattleStateChange(BattleState state) override;
-	void AddActor(std::unique_ptr<Wannabe::Actor>actor) override;
-	const std::vector<Actor*>& GetEnemyParty() const override { return m_vecEnemyParty; }
-	const std::vector<Actor*>& GetPlayerParty() const override { return m_vecPlayerParty; }
+
+	virtual BattleState GetBattleState() override { return m_eBattleState; }
+	virtual void RequestBattleStateChange(BattleState state) override;
+	virtual void AddActor(std::unique_ptr<Wannabe::Actor>actor) override;
 	virtual void OnRemoveActor(Actor* actor) override;
-	void PushCommand(std::unique_ptr<Wannabe::IBattleCommand> cmd) override;
+	
+	virtual const std::vector<Actor*>& GetEnemyParty() const override { return m_vecEnemyParty; }
+	virtual const std::vector<Actor*>& GetPlayerParty() const override { return m_vecPlayerParty; }
+
+	virtual void PushCommand(std::unique_ptr<Wannabe::IBattleCommand> cmd) override;
 
 protected:
 	virtual void BeginPlay() override;

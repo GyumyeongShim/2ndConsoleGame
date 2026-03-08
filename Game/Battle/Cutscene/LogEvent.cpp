@@ -65,6 +65,9 @@ std::wstring LogEvent::FormatLog(Wannabe::BattleContext& context, const BattleLo
     case LogType::TurnEnd:
         return L"=== 턴 종료 ===";
 
+    case LogType::ItemUse:
+        return BuildItemUseLog(log);
+
     case LogType::Free:
         return log.wstrTxt;
 
@@ -104,7 +107,10 @@ std::wstring LogEvent::BuildMissLog(const BattleLog& log)
 
 std::wstring LogEvent::BuildStatusLog(const BattleLog& log)
 {
-    return L"상태 이상 적용";
+    if (log.wstrTargetName.empty()) 
+        return L"상태 이상 발생";
+
+    return log.wstrTargetName + L"에게 [" + log.wstrTxt + L"] 상태가 적용되었다!";
 }
 
 std::wstring LogEvent::BuildStatusExpireLog(const BattleLog& log)
@@ -118,4 +124,14 @@ std::wstring LogEvent::BuildDeathLog(const BattleLog& log)
         return L"";
 
     return log.wstrTargetName + L" 쓰러졌다.";
+}
+
+std::wstring LogEvent::BuildItemUseLog(const BattleLog& log)
+{
+    if (log.wstrAtkerName.empty() || log.wstrTxt.empty())
+    {
+        return L"아이템 사용 정보가 부족합니다.";
+    }
+
+    return log.wstrAtkerName + L"이(가) " + log.wstrTxt + L"을(를) 사용!";
 }

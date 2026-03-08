@@ -61,7 +61,9 @@ void ItemCommand::Execute(Wannabe::BattleContext& context)
 
     // 로그
     BattleLog useLog;
-    useLog.wstrTxt = m_pInstigator->GetComponent<Wannabe::DisplayComponent>()->GetOriginName() + L"이(가) " + itemData->wstrName + L"을(를) 사용!";
+    useLog.eLogType = LogType::ItemUse;
+    useLog.wstrAtkerName = m_pInstigator->GetComponent<Wannabe::DisplayComponent>()->GetOriginName();
+    useLog.wstrTxt = itemData->wstrName;
     context.GetCutscenePlayer().Push(std::make_unique<LogEvent>(useLog));
 
     // 아이템 적용

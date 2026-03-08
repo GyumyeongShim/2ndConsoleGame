@@ -8,6 +8,11 @@ public:
     virtual ~DelayEvent() override = default;
 
     virtual bool Update(Wannabe::BattleContext& context, float fDeltaTime) override;
+    virtual CutsceneEventType GetEventType() override
+    {
+        m_eCutsceneEventType = CutsceneEventType::Delay;
+        return m_eCutsceneEventType;
+    };
 
 private:
     float m_fDelay = 0.f;
