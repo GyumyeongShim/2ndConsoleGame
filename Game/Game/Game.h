@@ -58,7 +58,7 @@ private:
 	Level* m_pCurLevel = nullptr; //필드/던전, 마을
 	BattleLevel* m_pBattleLevel = nullptr; //현재 전투 레벨
 
+	Wannabe::Actor* m_pCurEnemy = nullptr;
 	std::unique_ptr<GameBattleEventFactory> m_pBattleFactory; //log,dmg,delay 등등 이벤트
-
 	std::unique_ptr<RunGameData> m_pRunData; // 레벨전환시 해당 데이터로 재생성
 };

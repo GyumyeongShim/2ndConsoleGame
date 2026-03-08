@@ -91,10 +91,6 @@ private:
 	void Phase_Log();
 	void Phase_Result();
 
-	void RefreshTurnQueue();
-	void ProceedToNextTurn();
-	void CalcMoveRange();
-
 	void ProcessStateRequest();
 
 	void EnterTargetSelect(int iTID);
@@ -115,7 +111,6 @@ private:
 	BattleState m_eBattleState = BattleState::Start;
 
 	Wannabe::Actor* m_CurActor = nullptr; //현재 순서인 액터
-	std::deque<BattleActor*> m_turnQueue; //턴 순서
 
 	std::vector<Actor*> m_vecPlayerParty;
 	std::vector<Actor*> m_vecEnemyParty;
@@ -124,7 +119,6 @@ private:
 	std::vector<Actor*> m_vecTargets; //선택된 대상
 
 	int m_iActionTID = 0; // 스킬, 아이템 TID
-	int m_iTargetCursor = 0; // 타겟, input,select시 사용
 	CommandType m_selectedCmd = CommandType::Atk; //command
 	std::queue<std::unique_ptr<Wannabe::IBattleCommand>> m_queBattleCmd;
 
@@ -133,7 +127,6 @@ private:
 	BattleLogSystem m_logSystem; // 전투 로그
 	CutscenePlayer m_cutScenePlayer; // 전투 연출 재생기
 	IBattleEventFactory* m_EventFactory = nullptr; // 전투연출 (이벤트)
-	IRemoveActorCallback* m_RemoveCallback = nullptr; // 액터 삭제
 
 	std::vector<std::unique_ptr<Wannabe::Actor>> m_vecActors; //전투 중 생성된 actor, 특별 처리
 

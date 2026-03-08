@@ -390,7 +390,18 @@ void BattleLevel::Phase_Init()
 
 void BattleLevel::Phase_Start()
 {
-    RefreshTurnQueue();
+    m_CurActor = m_pTurnManager->GetNextActor(m_vecPlayerParty, m_vecEnemyParty);
+    if (m_CurActor == nullptr)
+    {
+        m_pTurnManager->ProgressTurns();
+        // 다시 Start로 와서 다음 액터가 있는지 재확인
+        RequestBattleStateChange(BattleState::Start);
+    }
+    else
+    {
+        // 행동할 액터가 있다면 턴 체크 단계로 진입
+        RequestBattleStateChange(BattleState::TurnCheck);
+    }
 }
 
 void BattleLevel::Phase_CommandSelect()
@@ -696,6 +707,10 @@ void BattleLevel::Phase_TurnCheck()
         return;
     }
 
+    // 강조 해제
+    if (auto* bActor = dynamic_cast<BattleActor*>(m_CurActor))
+        bActor->SetTargeted(false);
+
     // Actor 체크
     m_CurActor = m_pTurnManager->GetNextActor(m_vecPlayerParty,m_vecEnemyParty);
     if (m_CurActor == nullptr)
@@ -746,27 +761,23 @@ void BattleLevel::Phase_Animation(float fDeltaTime)
     if (m_pMenu) 
         m_pMenu->SetActive(false);
 
-    if (m_cutScenePlayer.IsPlaying() == false)
+    if (m_cutScenePlayer.IsPlaying())
+        return;
+
+    if (!m_queBattleCmd.empty())
     {
-        if (m_queBattleCmd.empty() == false)
-        {
-            std::unique_ptr<IBattleCommand> cmd = std::move(m_queBattleCmd.front());
-            m_queBattleCmd.pop();
-            cmd->Execute(m_BattleContext);
-            return;
-        }
+        std::unique_ptr<IBattleCommand> cmd = std::move(m_queBattleCmd.front());
+        m_queBattleCmd.pop();
+        cmd->Execute(m_BattleContext);
+        return;
+    }
 
-        if (m_CurActor != nullptr)
-        {
-            if (m_CurActor->GetTeam() == Team::Player)
-                RequestBattleStateChange(BattleState::CommandSelect);
-            else
-                RequestBattleStateChange(BattleState::EnemyAI);
-            return;
-        }
-
+    if (m_CurActor != nullptr)
+    {
+        m_pTurnManager->TurnEnd();
+        m_CurActor = nullptr;
         m_BattleContext.GetEventProcessor().FlushRemoval();
-        RequestBattleStateChange(BattleState::Start);
+        RequestBattleStateChange(BattleState::TurnCheck);
     }
 }
 
@@ -820,7 +831,7 @@ void BattleLevel::Phase_Log()
     if (Input::Get().GetKeyDown(VK_RETURN))
     {
         CleanupDeacActor();
-        RequestBattleStateChange(IsFinishBattle() ? BattleState::Result : BattleState::Start);
+        RequestBattleStateChange(IsFinishBattle() ? BattleState::Result : BattleState::TurnCheck);
     }
 }
 
@@ -870,88 +881,6 @@ void BattleLevel::Phase_Result()
     if (m_pBattleResult->Exit() == true)
     {
         Game::Get().BattleEnd();
-    }
-}
-
-void BattleLevel::RefreshTurnQueue()
-{
-    m_turnQueue.clear();
-
-    std::vector<BattleActor*> allParticipants;
-    for (auto* p : m_vecPlayerParty) 
-        if (p->GetComponent<StatComponent>()->IsDead() == false) 
-            allParticipants.emplace_back(dynamic_cast<BattleActor*>(p));
-
-    for (auto* e : m_vecEnemyParty) 
-        if (e->GetComponent<StatComponent>()->IsDead() == false)
-            allParticipants.emplace_back(dynamic_cast<BattleActor*>(e));
-
-    std::sort(allParticipants.begin(), allParticipants.end(), [](BattleActor* a, BattleActor* b)
-    {
-        int speedA = a->GetComponent<StatComponent>()->GetStatData().iSpd;
-        int speedB = b->GetComponent<StatComponent>()->GetStatData().iSpd;
-
-        // 속도가 같다면 플레이어 팀에게 우선권을 주거나 랜덤 처리를 할 수 있습니다.
-        if (speedA == speedB) 
-            return a->GetTeam() == Team::Player;
-
-        return speedA > speedB;
-    });
-
-    for (auto* actor : allParticipants)
-    {
-        m_turnQueue.emplace_back(actor);
-    }
-
-    m_logSystem.AddLog(L"--- 새로운 라운드가 시작되었습니다! ---");
-}
-
-void BattleLevel::ProceedToNextTurn()
-{
-    switch (m_eBattleState)
-    {
-    case BattleState::Start:
-        // 전투 시작 시 혹은 라운드 종료 시 턴을 새로 계산
-        RefreshTurnQueue();
-        RequestBattleStateChange(BattleState::TurnCheck);
-        break;
-
-    case BattleState::TurnCheck:
-        // 모든 참여자가 행동을 마쳤다면 다시 Start로 가서 라운드 갱신
-        if (m_turnQueue.empty())
-        {
-            RequestBattleStateChange(BattleState::Start);
-            break;
-        }
-
-        // 큐의 맨 앞 캐릭터를 현재 턴 주인공으로 설정
-        m_CurActor = m_turnQueue.front();
-        m_turnQueue.pop_front();
-
-        // 행동 가능한 상태인지 최종 확인 (기절, 사망 등)
-        if (m_CurActor && m_CurActor->GetComponent<StatComponent>()->IsDead() ==false)
-        {
-            m_logSystem.AddLog(m_CurActor->GetComponent<DisplayComponent>()->GetOriginName() + L"의 차례!");
-
-            // 이름 강조 효과 (Targeted 로직 활용 가능)
-            dynamic_cast<BattleActor*>(m_CurActor)->SetTargeted(true);
-
-            if (m_CurActor->GetTeam() == Team::Player)
-                RequestBattleStateChange(BattleState::CommandSelect);
-            else
-                RequestBattleStateChange(BattleState::EnemyAI);
-        }
-        else
-        {
-            // 행동 불가라면 즉시 다음 턴 체크
-            RequestBattleStateChange(BattleState::TurnCheck);
-        }
-        break;
-
-    case BattleState::Animation:
-        // 공격 애니메이션이나 스킬 로직이 실행되는 구간
-        // 연출이 끝나면 ProceedToNextTurn()을 호출하도록 설계합니다.
-        break;
     }
 }
 

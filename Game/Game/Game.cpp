@@ -44,6 +44,12 @@ void Game::OnFrameEnd()
 
 	if (m_eState == State::Battle)
 	{
+		if (m_pCurEnemy != nullptr)
+		{
+			m_pCurEnemy->Destroy();
+			m_pCurEnemy = nullptr;
+		}
+
 		// 전투 레벨 제거
 		if (m_pBattleLevel != nullptr)
 		{
@@ -196,6 +202,8 @@ void Game::BattleStart(std::vector<Wannabe::Actor*> vecPlayerParty, std::vector<
 	Engine::Get().SetNewLevel(m_pCurLevel);
 
 	m_bLevelChangeReserved = false;
+
+	m_pCurEnemy = vecEnemyParty[0];
 }
 
 void Game::BattleEnd()
