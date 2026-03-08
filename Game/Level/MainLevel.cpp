@@ -76,6 +76,16 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 		}
 	}
 
+	if (!m_vecMonsterRangeTiles.empty())
+	{
+		for (const auto& vPos : m_vecMonsterRangeTiles)
+		{
+			Vector2 vScreen = renderSys.GetCamera().WorldToScreen(vPos);
+			// 붉은색 쉐이드 타일로 위험 지역 표시
+			renderSys.GetWorldCanvas().DrawTxt((int)vScreen.x, (int)vScreen.y, L"\u2591", Color::Red);
+		}
+	}
+
 	super::Draw(renderSys);
 
 	// 2. 커서
@@ -88,18 +98,24 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 	// 3. 전환 연출 (최상단)
 	if (m_eFieldPhase == FieldState::BattleTransition)
 	{
-		auto& uiCanvas = renderSys.GetUICanvas();
-		float progress = m_fTransitionTimer / m_fTransitionDuration;
-		const std::wstring& fillStr = (progress < 0.5f) ? L"\u2592" : L"\u2588";
+		auto& effectCanvas = renderSys.GetEffectCanvas();
+		effectCanvas.Clear(); // 이전 프레임 잔상 제거
 
-		if (m_bShowFlash)
+		// 깜빡임 로직 (0.1초 주기로 반전)
+		bool bShowCurrentFlash = ((int)(m_fTransitionTimer * 10) % 2 == 0);
+
+		if (bShowCurrentFlash)
 		{
-			uiCanvas.Clear();
-		}
-		else
-		{
-			uiCanvas.Clear();
-			uiCanvas.DrawTxt(uiCanvas.GetWidth() / 2 - 7, uiCanvas.GetHeight() / 2, L"!! ENCOUNTER !!", Color::Red);
+			static std::wstring fillLine;
+			if (fillLine.length() != (size_t)effectCanvas.GetWidth())
+				fillLine.assign((size_t)effectCanvas.GetWidth(), L'#');
+
+			for (int i = 0; i < effectCanvas.GetHeight(); ++i)
+				effectCanvas.DrawTxt(0, i, fillLine, Color::Red);
+
+			int centerX = effectCanvas.GetWidth() / 2 - 8;
+			int centerY = effectCanvas.GetHeight() / 2;
+			effectCanvas.DrawTxt(centerX, centerY, L"!! ENCOUNTER !!", Color::White);
 		}
 	}
 }
@@ -246,39 +262,87 @@ void MainLevel::CheckPortal()
 	}
 }
 
-void MainLevel::Phase_PlayerTurn()
+void MainLevel::Phase_PlayerTurn(float fDeltaTime)
 {
 	if (!m_bIsRangeCalculated)
 		CalcMoveRange();
 
+	static float fCursorMoveTimer = 0.0f;
+	const float fMoveDelay = 0.1f; // 0.1초마다 한 칸씩 이동 (꾹 누를 때)
+
+	Vector2 vDir = Vector2::Zero;
+
 	// 2. 커서 이동 제어
-	if (Input::Get().GetKeyDown(VK_UP))    m_vCursorPos.y--;
-	if (Input::Get().GetKeyDown(VK_DOWN))  m_vCursorPos.y++;
-	if (Input::Get().GetKeyDown(VK_LEFT))  m_vCursorPos.x--;
-	if (Input::Get().GetKeyDown(VK_RIGHT)) m_vCursorPos.x++;
+	bool bPressed = false;
+	if (Input::Get().GetKeyDown(VK_UP))
+	{
+		bPressed = true;
+		m_vCursorPos.y--;
+	}
+	if (Input::Get().GetKeyDown(VK_DOWN))
+	{
+		bPressed = true;
+		m_vCursorPos.y++;
+	}
+	if (Input::Get().GetKeyDown(VK_LEFT))
+	{
+		bPressed = true;
+		m_vCursorPos.x--;
+	}
+	if (Input::Get().GetKeyDown(VK_RIGHT))
+	{
+		bPressed = true;
+		m_vCursorPos.x++;
+	}
+
+	if (bPressed)
+	{
+		fCursorMoveTimer += fDeltaTime;
+
+		// 처음 눌렀을 때(GetKeyDown) 즉시 이동하거나, 꾹 누르고 있어 타이머가 찼을 때 이동
+		if (Input::Get().GetKeyDown(VK_UP) || Input::Get().GetKeyDown(VK_DOWN) ||
+			Input::Get().GetKeyDown(VK_LEFT) || Input::Get().GetKeyDown(VK_RIGHT) ||
+			fCursorMoveTimer >= fMoveDelay)
+		{
+			Vector2 vNextPos = m_vCursorPos + vDir;
+
+			// 맵 경계 체크
+			if (m_worldMap->IsInMap((int)vNextPos.x, (int)vNextPos.y))
+			{
+				m_vCursorPos = vNextPos;
+				OnCursorMoved(); // 여기서 몬스터 체크 및 이동 범위 계산 수행
+			}
+
+			fCursorMoveTimer = 0.0f; // 타이머 초기화
+		}
+	}
+	else
+	{
+		fCursorMoveTimer = fMoveDelay; // 키를 떼면 다음 입력 시 즉시 반응하도록 설정
+	}
 
 	// 3. 선택 (Enter 키)
 	if (Input::Get().GetKeyDown(VK_RETURN))
 	{
-		// 커서 위치가 이동 가능 범위 내에 있는지 확인
-		auto it = std::find(m_vecMoveRangeTiles.begin(), m_vecMoveRangeTiles.end(), m_vCursorPos);
+		// 이동 범위 내에 있는지 확인 (현재 위치 포함)
+		bool bIsInRange = (std::find(m_vecMoveRangeTiles.begin(), m_vecMoveRangeTiles.end(), m_vCursorPos) != m_vecMoveRangeTiles.end());
 
-		if (it != m_vecMoveRangeTiles.end() || m_vCursorPos == m_pPlayer->GetPosition())
+		if (bIsInRange || m_vCursorPos == m_pPlayer->GetPosition())
 		{
-			// 만약 현재 위치라면 이동 생략하고 바로 다음 단계로
 			if (m_vCursorPos == m_pPlayer->GetPosition())
 			{
-				m_eFieldPhase = FieldState::EnemyTurn; // 혹은 메뉴 오픈
+				// 제자리 대기 시 바로 적 턴으로 (추후 메뉴 팝업으로 변경 가능)
+				m_eFieldPhase = FieldState::EnemyTurn;
 				return;
 			}
 
-			// A*를 이용해 실제 이동 경로 생성
+			// A* 경로 생성 및 이동 상태 전환
 			m_vecPath = m_worldMap->FindPath(m_pPlayer->GetPosition(), m_vCursorPos);
 
 			if (!m_vecPath.empty())
 			{
 				m_eFieldPhase = FieldState::Move;
-				m_bIsRangeCalculated = false; // 이동 완료 후 다음 턴을 위해 초기화
+				m_bIsRangeCalculated = false;
 			}
 		}
 	}
@@ -503,7 +567,8 @@ void MainLevel::CheckMonsterEncounter()
 	Vector2 playerPos = m_pPlayer->GetPosition();
 	for (auto* pEnemy : m_vecMonsters)
 	{
-		if (pEnemy->IsDestroyRequested()) continue;
+		if (pEnemy == nullptr || pEnemy->IsDestroyRequested())
+			continue;
 
 		Vector2 monsterPos = pEnemy->GetPosition();
 
@@ -612,25 +677,73 @@ void MainLevel::CalcMoveRange()
 	m_bIsRangeCalculated = true;
 }
 
-void MainLevel::UpdateCursorInput()
+void MainLevel::CalcMonsterMoveRange(Actor* pTarget)
 {
-	if (Input::Get().GetKeyDown(VK_UP))    m_vCursorPos.y -= 1;
-	if (Input::Get().GetKeyDown(VK_DOWN))  m_vCursorPos.y += 1;
-	if (Input::Get().GetKeyDown(VK_LEFT))  m_vCursorPos.x -= 1;
-	if (Input::Get().GetKeyDown(VK_RIGHT)) m_vCursorPos.x += 1;
+	if (pTarget == nullptr)
+		return;
 
-	if (Input::Get().GetKeyDown(VK_RETURN))
+	int iRange = pTarget->GetMoveRange();
+	Vector2 vStart = pTarget->GetPosition();
+
+	m_vecMonsterRangeTiles.clear();
+
+	Vector2 startPos = pTarget->GetPosition();
+	int maxRange = pTarget->GetMoveRange();
+
+	// BFS를 위한 큐와 방문 체크 맵
+	std::queue<std::pair<Vector2, int>> q;
+	std::set<std::pair<int, int>> visited;
+
+	q.push({ startPos, 0 });
+	visited.insert({ (int)startPos.x, (int)startPos.y });
+
+	while (!q.empty())
 	{
-		Vector2 cursorGridPos = m_vCursorPos;
+		Vector2 vCurr = q.front().first;
+		int iDist = q.front().second;
+		q.pop();
 
-		// 선택한 커서 위치가 미리 계산한 이동 범위 안에 있는지 확인
-		auto it = std::find(m_vecMoveRangeTiles.begin(), m_vecMoveRangeTiles.end(), cursorGridPos);
-		if (it != m_vecMoveRangeTiles.end() || cursorGridPos == m_pPlayer->GetPosition())
+		if (iDist > 0) 
+			m_vecMonsterRangeTiles.push_back(vCurr);
+
+		if (iDist >= iRange) 
+			continue;
+
+		Vector2 vDirs[] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
+		for (const auto& vDir : vDirs)
 		{
-			m_pPlayer->MoveTo(cursorGridPos);
-			m_bIsRangeCalculated = false;
-			// 이동 페이즈로 전환
-			m_eFieldPhase = FieldState::Move;
+			Vector2 vNext = vCurr + vDir;
+			// 맵 안이고, 갈 수 있는 타일인 경우
+			if (m_worldMap->IsWalkable((int)vNext.x, (int)vNext.y))
+			{
+				if (visited.find({ (int)vNext.x, (int)vNext.y }) == visited.end())
+				{
+					visited.insert({ (int)vNext.x, (int)vNext.y });
+					q.push({ vNext, iDist + 1 });
+				}
+			}
 		}
+	}
+}
+
+void MainLevel::OnCursorMoved()
+{
+	m_pFocusedMonster = nullptr;
+	m_vecMonsterRangeTiles.clear();
+
+	// 2. 현재 커서 위치에 몬스터가 있는지 확인
+	for (auto* pActor : m_vecMonsters)
+	{
+		if (pActor->GetPosition() == m_vCursorPos)
+		{
+			m_pFocusedMonster = static_cast<Monster*>(pActor);
+			break;
+		}
+	}
+
+	// 3. 몬스터를 찾았다면 이동 반경 계산
+	if (m_pFocusedMonster)
+	{
+		CalcMonsterMoveRange(m_pFocusedMonster);
 	}
 }

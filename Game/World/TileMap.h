@@ -15,11 +15,12 @@ public:
 
     void LoadFromFile(const std::string& path);
     
+    bool IsInMap(int x, int y) const;
+
     const Tile* GetTile(int x, int y);
     Vector2 WorldToTile(const Vector2& worldPos) const;
     Vector2 TileToWorld(const Vector2& tilePos) const;
     std::vector<Vector2> FindPath(const Vector2& start, const Vector2& end);
-
 private:
 	int m_iWidth = 0;
 	int m_iHeight = 0;

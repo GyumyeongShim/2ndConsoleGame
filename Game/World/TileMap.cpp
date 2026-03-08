@@ -46,12 +46,7 @@ bool TileMap::IsValidTile(int x, int y)
 
 bool TileMap::IsWalkable(int x, int y) const
 {
-    if (x < 0 || y < 0 || x >= m_iWidth || y >= m_iHeight)
-        return false;
-
-    int index = (y * m_iWidth) + x;
-
-    if (index < 0 || index >= (int)m_vecTiles.size())
+    if (!IsInMap(x, y))
         return false;
 
     return m_vecTiles[y * m_iWidth + x].bWalkable;
@@ -161,6 +156,24 @@ void TileMap::LoadFromFile(const std::string& path)
             m_vecTiles[y * m_iWidth + x] = tile;
         }
     }
+}
+
+bool TileMap::IsInMap(int x, int y) const
+{
+    // 1. x 좌표가 0보다 작거나 너비(m_iWidth)보다 크거나 같으면 거짓
+    if (x < 0 || x >= m_iWidth)
+    {
+        return false;
+    }
+
+    // 2. y 좌표가 0보다 작거나 높이(m_iHeight)보다 크거나 같으면 거짓
+    if (y < 0 || y >= m_iHeight)
+    {
+        return false;
+    }
+
+    // 모든 조건을 통과하면 유효한 좌표
+    return true;
 }
 
 const Tile* TileMap::GetTile(int x, int y)
