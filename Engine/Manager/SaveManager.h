@@ -4,6 +4,8 @@
 #include "../Includes/ThirdParty/json.hpp"
 using json = nlohmann::json;
 
+struct RunGameData;
+
 namespace Wannabe
 {
 	class WANNABE_API SaveManager
@@ -16,7 +18,7 @@ namespace Wannabe
 		}
 
 		bool Check(int iSlotIdx);
-		bool SaveData(int iSlotIdx, const json& data);
+		bool SaveData(int iSlotIdx, const RunGameData& data);
 		bool LoadData(int iSlotIdx, json& data);
 
 	private:

@@ -799,9 +799,17 @@ void BattleLevel::Phase_Result()
 {
     if (m_pBattleResult == nullptr)
     {
+        int totalGold = 0;
+        int totalExp = 0;
+
         // 승리 보상 계산 (예: 몬스터들로부터 골드/경험치 합산)
-        int totalGold = 100; // 로직에 따라 합산된 값
-        int totalExp = 50;
+        for (auto* enemy : m_vecEnemyParty)
+        {
+            if (auto stat = enemy->GetComponent<StatComponent>())
+                totalExp += stat->GetStatData().iMaxExp;
+        }
+
+        Game::Get().ProcessBattleReward(totalGold, totalExp);
 
         auto pUI = std::make_unique<UI_BattleResult>(totalGold, totalExp, 'S');
         m_pBattleResult = pUI.get();

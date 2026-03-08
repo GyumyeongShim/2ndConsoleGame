@@ -3,6 +3,7 @@
 
 #include "Game.h"
 #include "Manager/DataManager.h"
+#include "Manager/SaveManager.h"
 
 #include "Level/TitleLevel.h"
 #include "Level/TownLevel.h"
@@ -203,6 +204,50 @@ void Game::BattleEnd()
 	}
 
 	m_bLevelChangeReserved = true;
+}
+
+void Game::ProcessBattleReward(int gold, int exp)
+{
+	if (m_pRunData == nullptr)
+		return;
+
+	// 재화 반영
+	m_pRunData->m_iGold += gold;
+
+	// 스탯 반영
+	StatComponent tempStat;
+	tempStat.SetStatByData(m_pRunData->m_PlayerStat);
+	tempStat.CalcExp(exp);
+	// 덮어쓰기
+	m_pRunData->m_PlayerStat = tempStat.GetStatData();
+}
+
+void Game::SaveGame(int iSlotIdx)
+{
+	if (m_pRunData == nullptr)
+		return;
+
+	// 현재 플레이 중인 레벨의 최신 위치를 업데이트하고 저장
+	if (m_pCurLevel)
+		m_pCurLevel->OnExitLevel(m_pRunData.get());
+
+	if (SaveManager::Get().SaveData(iSlotIdx, *m_pRunData))
+	{
+		std::cout << "Game Saved in Slot " << iSlotIdx << std::endl;
+	}
+}
+
+void Game::LoadGame(int iSlotIdx)
+{
+	json loadJson;
+	if (SaveManager::Get().LoadData(iSlotIdx, loadJson))
+	{
+		m_pRunData = std::make_unique<RunGameData>();
+		m_pRunData->FromJson(loadJson);
+
+		// 로드된 레벨 ID로 즉시 이동
+		ChangeLevel(m_pRunData->m_CurLevelId);
+	}
 }
 
 Game& Game::Get()

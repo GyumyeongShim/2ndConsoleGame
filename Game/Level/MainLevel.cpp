@@ -35,9 +35,9 @@ void MainLevel::Tick(float fDeltaTime)
 	m_fTickCollisionTime += fDeltaTime * 0.5f;
 
 	if (m_pPlayer)
-	{
 		CheckRandomEncounter();
-	}
+
+	CheckPortal();
 }
 
 void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
@@ -73,6 +73,7 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 	if (pData == nullptr)
 		return;
 
+	// 맵 불러오기
 	std::string mapFileName;
 	if (pData->m_CurLevelId == 1)
 	{
@@ -80,15 +81,15 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 	}
 	else if (pData->m_CurLevelId == 2)
 	{
-		mapFileName = "Assets/forest1.txt";
+		mapFileName = "Assets/forest.txt";
 	}
+
 	m_worldMap->LoadFromFile(mapFileName);
 
+	//player stat
 	m_pPlayer = new Player(1, pData->m_NextWorldPos);
 	if (m_pPlayer->GetComponent<StatComponent>())
-	{
 		m_pPlayer->GetComponent<StatComponent>()->SetStatByData(pData->m_PlayerStat);
-	}
 
 	AddNewActor(m_pPlayer);
 
@@ -101,13 +102,10 @@ void MainLevel::OnExitLevel(RunGameData* pData)
 	if (pData == nullptr || m_pPlayer == nullptr)
 		return;
 
-	pData->m_lastWorldPos = m_pPlayer->GetPosition(); //나가서 시작할 맵 위치
-
+	pData->m_NextWorldPos = m_pPlayer->GetPosition();
 	// 현재 스탯(HP, Exp 등) 백업은 Battle 종료 시나 특정 시점에 수행할 수도 있음
 	if (m_pPlayer->GetComponent<StatComponent>())
-	{
 		pData->m_PlayerStat = m_pPlayer->GetComponent<StatComponent>()->GetStatData();
-	}
 }
 
 bool MainLevel::CanMove(const Vector2& nextPos)
@@ -192,7 +190,7 @@ void MainLevel::CheckRandomEncounter()
 	if (tile == nullptr)
 		return;
 
-	if (tile->eType == TileType::Ground || tile->eType == TileType::Bush)
+	if (tile->eType == TileType::Bush)
 	{
 		int chance = Util::Random(1, 100);
 

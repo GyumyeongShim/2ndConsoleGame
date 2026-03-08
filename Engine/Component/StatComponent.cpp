@@ -67,14 +67,20 @@ namespace Wannabe
 	void StatComponent::CalcExp(const int exp)
 	{
 		m_iExp += exp;
+		// 레벨업 체크 루프 (한 번에 여러 레벨이 오를 수도 있음)
+		while (m_iExp >= m_iMaxExp)
+		{
+			LevelUp();
+		}
 	}
 
 	void StatComponent::LevelUp()
 	{
+		m_iExp -= m_iMaxExp;
 		++m_iLevel;
 
 		// 기본 성장
-		m_iMaxHp += 2;
+		m_iMaxHp += 20;
 		m_iHp = m_iMaxHp;
 
 		m_iAtk += 1;

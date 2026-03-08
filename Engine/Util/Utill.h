@@ -1,6 +1,9 @@
 #pragma once
 #include <time.h>
 #include <string>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
 
 #include "Math/Vector2.h"
 #include "Math/Color.h"
@@ -50,6 +53,23 @@ namespace Util
 	inline void SetRandomSeed()
 	{
 		srand(static_cast<unsigned int>(time(nullptr)));
+	}
+
+	inline std::string GetCurrentDateTimeString()
+	{
+		// 1. 시스템 현재 시간 획득
+		auto now = std::chrono::system_clock::now();
+		std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+		// 2. 시간 정보를 구조체로 변환 (localtime_s는 Windows 환경에서 안전함)
+		struct tm timeInfo;
+		localtime_s(&timeInfo, &now_c);
+
+		// 3. 문자열 스트림을 이용해 포맷팅 (YYYY-MM-DD HH:MM:SS)
+		std::stringstream ss;
+		ss << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S");
+
+		return ss.str();
 	}
 
 	inline int Random(int min, int max)

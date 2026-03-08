@@ -32,6 +32,10 @@ public:
 
 	void BattleStart(std::vector<Actor*> vecPlayerParty, std::vector<Actor*>vecEnemyParty);
 	void BattleEnd();
+	void ProcessBattleReward(int gold, int exp);
+
+	void SaveGame(int iSlotIdx);
+	void LoadGame(int iSlotIdx);
 
 	BattleLevel* GetBattleLevel() { return m_pBattleLevel; }
 	RunGameData* GetRunData() { return m_pRunData.get(); }
