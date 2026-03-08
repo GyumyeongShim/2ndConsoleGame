@@ -117,8 +117,7 @@ int EnemyAI::SelectUsableSkill(Wannabe::Actor* self)
             continue;
 
         // 조건 목록
-
-        usableSkills.push_back(tid); //todo 임시로 다 추가
+        usableSkills.emplace_back(tid); //todo 임시로 다 추가
     }
 
     if (usableSkills.empty() == true)

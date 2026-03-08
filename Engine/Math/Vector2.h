@@ -32,6 +32,7 @@ namespace Wannabe
 
 		float Length() const;
 		Vector2 Normalized() const;
+		float Distance(const Vector2& v1, const Vector2& v2);
 
 		//벡터 기본 값
 		static Vector2 Zero;

@@ -90,7 +90,7 @@ namespace Wannabe
 			return;
 
 		pComponent->SetOwner(this);
-		m_vecComponents.push_back(pComponent);
+		m_vecComponents.emplace_back(pComponent);
 	}
 
 	bool Actor::EquipItem(ItemInstance* inst)

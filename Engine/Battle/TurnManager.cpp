@@ -117,7 +117,7 @@ namespace Wannabe
             if (actor->GetComponent<StatComponent>()->IsDead())
                 continue;
 
-            displayQueue.push_back(actor);
+            displayQueue.emplace_back(actor);
         }
 
         // 높은 순서대로 정렬

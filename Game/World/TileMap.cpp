@@ -81,7 +81,7 @@ void TileMap::LoadFromFile(const std::string& path)
             line.pop_back();
 
         // 빈 줄 무시 방지 (공백 줄도 맵의 일부일 수 있음)
-        lines.push_back(line);
+        lines.emplace_back(line);
         if ((int)line.size() > m_iWidth)
             m_iWidth = (int)line.size();
     }
@@ -173,4 +173,80 @@ Vector2 TileMap::WorldToTile(const Vector2& worldPos) const
 Vector2 TileMap::TileToWorld(const Vector2& tilePos) const
 {
     return tilePos;
+}
+
+std::vector<Vector2> TileMap::FindPath(const Vector2& start, const Vector2& end)
+{
+    struct Node
+    {
+        Vector2 pos;
+        float g, h;
+        Node* parent;
+        float f() const { return g + h; }
+    };
+
+    std::vector<Vector2> path;
+    if (!IsWalkable((int)end.x, (int)end.y)) return path;
+
+    std::vector<Node*> openList;
+    std::vector<Node*> closedList;
+
+    Vector2 startTemp;
+    Node* startNode = new Node{ start, 0, startTemp.Distance(start, end), nullptr };
+    openList.emplace_back(startNode);
+
+    while (!openList.empty())
+    {
+        // F값이 가장 낮은 노드 선택
+        auto it = std::min_element(openList.begin(), openList.end(),
+            [](Node* a, Node* b) { return a->f() < b->f(); });
+
+        Node* current = *it;
+        if (current->pos == end)
+        {
+            // 경로 복원
+            while (current)
+            {
+                path.emplace_back(current->pos);
+                current = current->parent;
+            }
+            std::reverse(path.begin(), path.end());
+            break;
+        }
+
+        openList.erase(it);
+        closedList.emplace_back(current);
+
+        Vector2 neighbors[] = { {0,-1}, {0,1}, {-1,0}, {1,0} };
+        for (auto& dir : neighbors)
+        {
+            Vector2 nextPos = current->pos + dir;
+            if (!IsWalkable((int)nextPos.x, (int)nextPos.y)) continue;
+
+            auto isClosed = std::find_if(closedList.begin(), closedList.end(),
+                [&](Node* n) { return n->pos == nextPos; });
+            if (isClosed != closedList.end()) continue;
+
+            float newG = current->g + 1;
+            auto isOpen = std::find_if(openList.begin(), openList.end(),
+                [&](Node* n) { return n->pos == nextPos; });
+
+            Vector2 temp;
+            if (isOpen == openList.end())
+            {
+                openList.emplace_back(new Node{ nextPos, newG,  temp.Distance(nextPos, end), current });
+            }
+            else if (newG < (*isOpen)->g)
+            {
+                (*isOpen)->g = newG;
+                (*isOpen)->parent = current;
+            }
+        }
+    }
+
+    // 메모리 정리
+    for (auto n : openList) delete n;
+    for (auto n : closedList) delete n;
+
+    return path;
 }

@@ -5,8 +5,10 @@
 #include "Engine/Engine.h"
 #include "Manager/DataManager.h"
 #include "Util/Utill.h"
+#include "Enum/WorldType.h"
 
 #include "Level/Level.h"
+#include "Level/TownLevel.h"
 #include "Level/MainLevel.h"
 #include "Level/BattleLevel.h"
 
@@ -38,6 +40,27 @@ void Player::Tick(float fDeltaTime)
 {
 	super::Tick(fDeltaTime);
 
+	if (m_bIsMoving)
+	{
+		// 선형 보간(Lerp)으로 부드럽게 이동하거나, 
+		// 한 칸씩 끊어서 이동하는 연출을 수행합니다.
+		Vector2 curPos = GetPosition();
+		Vector2 dir = m_vTargetPos - curPos;
+
+		if (dir.Length() < 0.1f)
+		{
+			SetPosition(m_vTargetPos);
+			m_bIsMoving = false;
+		}
+		else
+		{
+			dir.Normalized();
+			SetPosition(curPos + dir * 5.0f * fDeltaTime);
+		}
+
+		return;
+	}
+
 	//esc키 처리
 	if (Input::Get().GetKeyDown(VK_ESCAPE))
 	{
@@ -46,45 +69,11 @@ void Player::Tick(float fDeltaTime)
 	}
 
 	// 배틀레벨이라면 키입력 막기
-	if (GetOwner()->IsTypeOf<BattleLevel>() == true)
+	Level* pCurrentLevel = GetOwner();
+	if (pCurrentLevel->IsTypeOf<BattleLevel>() == true)
 		return;
-
-	m_MoveIntent.bMoveRequested = false;
-	//이동
-	Vector2 currentPos = GetPosition();
-	Vector2 nextPos = currentPos;
-
-	if (Input::Get().GetKeyDown(VK_LEFT))
-	{
-		nextPos.x -= 1;
-		m_MoveIntent.bMoveRequested = true;
-	}
-	else if (Input::Get().GetKeyDown(VK_RIGHT))
-	{
-		nextPos.x += 1;
-		m_MoveIntent.bMoveRequested = true;
-	}
-	else if (Input::Get().GetKeyDown(VK_UP))
-	{
-		nextPos.y -= 1;
-		m_MoveIntent.bMoveRequested = true;
-	}
-	else if (Input::Get().GetKeyDown(VK_DOWN))
-	{
-		nextPos.y += 1;
-		m_MoveIntent.bMoveRequested = true;
-	}
-
-	if (m_MoveIntent.bMoveRequested)
-	{
-		Level* level = GetOwner();
-
-		if (level && level->CanMove(nextPos))
-		{
-			SetPosition(nextPos);
-			level->CheckPortal();
-		}
-	}
+	else
+		MoveLogic(fDeltaTime);
 }
 
 void Player::Draw(Wannabe::RenderSystem& renderSys)
@@ -153,4 +142,61 @@ void Player::Init()
 	pInven->AddItem(1005, 777);
 	pInven->AddItem(1006, 3);
 	AddComponent(pInven);
+}
+
+void Player::MoveLogic(float fDeltaTime)
+{
+	Level* pCurrentLevel = GetOwner();
+	if (pCurrentLevel->IsTypeOf<TownLevel>() == true) // 마을, 자유 이동
+	{
+		MainLevelMovement(); // 실시간 이동 (기존 로직)
+	}
+	else
+	{
+		// 던전/필드
+	}
+}
+
+void Player::MainLevelMovement()
+{
+	m_MoveIntent.bMoveRequested = false;
+	Vector2 currentPos = GetPosition();
+	Vector2 nextPos = currentPos;
+
+	if (Input::Get().GetKeyDown(VK_LEFT))
+	{
+		nextPos.x -= 1;
+		m_MoveIntent.bMoveRequested = true;
+	}
+	else if (Input::Get().GetKeyDown(VK_RIGHT))
+	{
+		nextPos.x += 1;
+		m_MoveIntent.bMoveRequested = true;
+	}
+	else if (Input::Get().GetKeyDown(VK_UP))
+	{
+		nextPos.y -= 1;
+		m_MoveIntent.bMoveRequested = true;
+	}
+	else if (Input::Get().GetKeyDown(VK_DOWN))
+	{
+		nextPos.y += 1;
+		m_MoveIntent.bMoveRequested = true;
+	}
+
+	if (m_MoveIntent.bMoveRequested)
+	{
+		Level* level = GetOwner();
+		if (level && level->CanMove(nextPos))
+		{
+			SetPosition(nextPos);
+			level->CheckPortal();
+		}
+	}
+}
+
+void Player::MoveTo(const Vector2& targetPos)
+{
+	m_vTargetPos = targetPos;
+	m_bIsMoving = true;
 }

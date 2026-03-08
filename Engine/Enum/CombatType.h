@@ -12,17 +12,22 @@ namespace Wannabe
 enum class BattleState
 {
     None,
-    Start,              // 시작 연출
+    Init,               // 시작 연출
+
+    Start,              //
+
+    TurnCheck,          // 행동 순서, 명령, 데미지 계산 // 정말 로직만 필요함
 
     CommandSelect,      // 전투 메뉴 선택
     InventorySelect,    // 아이템 선택
     SkillSelect,        // 스킬 선택
-
     TargetSelect,       // 목표 선택
 
-    TurnCheck,          // 행동 순서, 명령, 데미지 계산 // 정말 로직만 필요함
+    EnemyAI,
+
     Animation,          // 스킬 이펙트, hp 감소연출, 상태 이상 표시
     Log,                // 전투 관련 모든 로그를 표기
+
     Result,             // 쓰러짐, 경험치, 배틀 종료 여부
 
     Victory,            // [승리] 승리 포즈, 경험치/아이템 획득 결과창 표시

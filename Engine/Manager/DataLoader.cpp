@@ -138,7 +138,7 @@ void from_json(const json& j, CharacterVisualData& visual)
     {
         visual.ascii.clear();
         for (auto& line : j["ascii"].get<std::vector<std::string>>())
-            visual.ascii.push_back(ToWString(line));
+            visual.ascii.emplace_back(ToWString(line));
     }
 }
 

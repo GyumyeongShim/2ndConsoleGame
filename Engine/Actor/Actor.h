@@ -104,6 +104,11 @@ namespace Wannabe
 		bool EquipItem(ItemInstance* inst);
 		void UnequipItem(EquipSlot eSlot);
 
+		int GetMoveRange() const { return m_iMoveRange; }
+		int GetSightRange() const { return m_iSightRange; }
+		void SetMovePath(const std::vector<Vector2>& path) { m_vecMovePath = path; }
+		std::vector<Vector2>& GetMovePath() { return m_vecMovePath; }
+
 	protected:
 		bool m_bHasBeganPlay = false; // begin 이벤트 받았는지 여부
 		bool m_bIsActive = true; //활성화 여부
@@ -124,5 +129,9 @@ namespace Wannabe
 		Team m_eTeam;
 
 		std::vector<Component*> m_vecComponents;
+
+		int m_iMoveRange = 3;
+		int m_iSightRange = 5;
+		std::vector<Vector2> m_vecMovePath;
 	};
 }

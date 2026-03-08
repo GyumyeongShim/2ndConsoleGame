@@ -31,6 +31,8 @@ public:
 	bool UseItem(Wannabe::Item* pItem, Wannabe::Actor* pTarget, Wannabe::BattleContext& eContext);
 	bool EquipItem(Wannabe::Item* pItem, Wannabe::BattleContext& eContext);
 
+	void MoveTo(const Wannabe::Vector2& targetGridPos);
+
 private:
 	void SetSlotPos(int slotNum = 0);
 
@@ -40,4 +42,8 @@ private:
 	Wannabe::Actor* m_pOrigin = nullptr;
 	int m_iActorNum = 0;
 	Wannabe::Vector2 m_BattleScreenPos;
+
+	Wannabe::Vector2 m_vTargetPos;	// 이동할 목표 그리드 좌표
+	bool m_bIsMoving = false;		// 현재 이동 중인가?
+	float m_fMoveSpeed = 5.0f;		// 이동 속도
 };

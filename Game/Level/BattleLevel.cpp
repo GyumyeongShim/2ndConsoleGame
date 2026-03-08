@@ -63,15 +63,15 @@ BattleLevel::~BattleLevel()
 {
     //커맨드 정리
     while (!m_queBattleCmd.empty())
-    {
         m_queBattleCmd.pop();
-    }
 
     // 연출 정리
     m_cutScenePlayer.ClearCutscenePlayer();
 
     //턴 매니저 정리
     SafeDelete(m_pTurnManager);
+    SafeDelete(m_pCamera);
+
     m_pTurnManager = nullptr;
 
     m_BattleContext.GetEventProcessor().SetRemoveCallback(nullptr);
@@ -111,7 +111,6 @@ void BattleLevel::SetupBattle(std::vector<Wannabe::Actor*> vecPlayer, std::vecto
         BattleActor* clone = new BattleActor();
         clone->CloneStat(vecPlayer[i], i, Team::Player);
         AddNewActor(clone);
-
         m_vecPlayerParty.emplace_back(clone);
 
         //HP bar
@@ -122,32 +121,24 @@ void BattleLevel::SetupBattle(std::vector<Wannabe::Actor*> vecPlayer, std::vecto
         m_vecPlayerHPUI.emplace_back(hpUI);
     }
 
-    int cnt = 0;
-    int maxEnemies = 4; //test 최대 4마리 todo test
-    int monsterCnt = Util::Random(1, maxEnemies); //몬스터 개수
-    while (cnt < monsterCnt)
+    for (int i = 0; i < vecEnemy.size(); ++i)
     {
-        // 랜덤하게 적 선택
-        int idx = Util::Random(0, static_cast<int>(vecEnemy.size()) - 1);
-
         BattleActor* clone = new BattleActor();
-        clone->CloneStat(vecEnemy[idx], cnt, Team::Enemy);
+        clone->CloneStat(vecEnemy[i], i, Team::Enemy);
         AddNewActor(clone);
         m_vecEnemyParty.emplace_back(clone);
 
         //HP bar
-        UI_HPBar* hpUI = new UI_HPBar(clone,cnt,Team::Enemy);
+        UI_HPBar* hpUI = new UI_HPBar(clone, i, Team::Enemy);
         hpUI->SetRenderSystem(&renderSys);
         hpUI->Init();
         AddNewActor(hpUI);
         m_vecEnemyHPUI.emplace_back(hpUI);
-
-        ++cnt;
     }
-
+ 
     m_logSystem.AddLog(L"적과의 조우!");
     m_logSystem.AddLog(std::to_wstring(m_vecEnemyParty.size()) + L"명의 적 발견!");
-    RequestBattleStateChange(BattleState::Start);
+    RequestBattleStateChange(BattleState::Init);
 }
 
 void BattleLevel::FinishBattle()
@@ -173,13 +164,13 @@ void BattleLevel::FinishBattle()
     for (auto* actor : m_vecPlayerParty)
     {
         if (actor)
-            m_vecPendingDestroy.push_back(actor);
+            m_vecPendingDestroy.emplace_back(actor);
     }
 
     for (auto* actor : m_vecEnemyParty)
     {
         if (actor)
-            m_vecPendingDestroy.push_back(actor);
+            m_vecPendingDestroy.emplace_back(actor);
     }
 
     m_vecPlayerParty.clear();
@@ -244,8 +235,16 @@ void BattleLevel::Tick(float fDeltaTime)
 
     switch (m_eBattleState)
     {
+    case BattleState::Init:
+        Phase_Init();
+        break;
+
     case BattleState::Start:
         Phase_Start();
+        break;
+
+    case BattleState::TurnCheck:
+        Phase_TurnCheck();
         break;
 
     case BattleState::CommandSelect:
@@ -257,13 +256,12 @@ void BattleLevel::Tick(float fDeltaTime)
     case BattleState::SkillSelect:
         Phase_SkillSelect();
         break;
-
     case BattleState::TargetSelect:
         Phase_TargetSelect();
         break;
 
-    case BattleState::TurnCheck:
-        Phase_TurnCheck();
+    case BattleState::EnemyAI:
+        Phase_EnemyAI();
         break;
 
     case BattleState::Animation:
@@ -362,7 +360,7 @@ void BattleLevel::Init()
     m_BattleContext.GetEventProcessor().SetRemoveCallback(this);
 }
 
-void BattleLevel::Phase_Start()
+void BattleLevel::Phase_Init()
 {
     const auto& logs = m_logSystem.GetLog(); // 로그 목록
     int iCnt = std::min(2, (int)logs.size()); //최대 2개까지만 보여준다.
@@ -386,8 +384,13 @@ void BattleLevel::Phase_Start()
             pUI->ChangeTxt(L"");
         }
 
-        RequestBattleStateChange(BattleState::TurnCheck);
+        RequestBattleStateChange(BattleState::Start);
     }
+}
+
+void BattleLevel::Phase_Start()
+{
+    RefreshTurnQueue();
 }
 
 void BattleLevel::Phase_CommandSelect()
@@ -697,54 +700,73 @@ void BattleLevel::Phase_TurnCheck()
     m_CurActor = m_pTurnManager->GetNextActor(m_vecPlayerParty,m_vecEnemyParty);
     if (m_CurActor == nullptr)
     {
-        // 모든 액터가 턴을 진행했으면 턴 카운트 증가 후 다시 체크
-        m_pTurnManager->ProgressTurns();
+        RequestBattleStateChange(BattleState::Start);
         return;
-    }
-
-    if (m_CurActor && m_CurActor->GetTeam() == Team::Player)
-    {
-        m_pInvenMenu->SetInventory(m_CurActor->GetComponent<InventoryComponent>());
     }
 
     m_eMenuTxt = MenuTxt::None;
     m_iActionTID = 0;
     m_vecTargets.clear();
+
     // 턴 체크
     m_cutScenePlayer.Push(std::make_unique<TurnStartEvent>(m_CurActor));
+
+    if (auto* bActor = dynamic_cast<BattleActor*>(m_CurActor))
+        bActor->SetTargeted(true);
+
+    RequestBattleStateChange(BattleState::Animation);
+}
+
+void BattleLevel::Phase_EnemyAI()
+{
+    if (m_CurActor == nullptr) 
+        return;
+
+    std::vector<Actor*> targets;
+    for (auto* p : m_vecPlayerParty)
+        if (p && p->GetComponent<StatComponent>()->IsDead() == false)
+            targets.push_back(p);
+
+    if (targets.empty()) 
+        return;
+
+    int randIdx = Util::Random(0, (int)targets.size() - 1);
+    Actor* target = targets[randIdx];
+
+    auto cmd = std::make_unique<AtkCommand>(m_CurActor, target);
+    m_queBattleCmd.push(std::move(cmd));
+
     RequestBattleStateChange(BattleState::Animation);
 }
 
 void BattleLevel::Phase_Animation(float fDeltaTime)
 {
-    if (m_pMenu)
-        m_pMenu->SetActive(false);
-
     m_cutScenePlayer.Update(m_BattleContext, fDeltaTime);
 
-    // 연출 종료 + 명령 있음
-    if (m_cutScenePlayer.IsPlaying() == false && m_queBattleCmd.empty() == false)
-    {
-        std::unique_ptr<Wannabe::IBattleCommand> cmd = std::move(m_queBattleCmd.front());
-        m_queBattleCmd.pop();
+    if (m_pMenu) 
+        m_pMenu->SetActive(false);
 
-        cmd->Execute(m_BattleContext);
-        return;
-    }
-    // 연출 종료
-    if (m_cutScenePlayer.IsPlaying() == false && m_queBattleCmd.empty() == true)
+    if (m_cutScenePlayer.IsPlaying() == false)
     {
-        if (m_pTurnManager->GetCurBattleActor() != nullptr)
+        if (m_queBattleCmd.empty() == false)
         {
-            m_pTurnManager->TurnEnd();
-            m_cutScenePlayer.Push(std::make_unique<TurnEndEvent>(m_CurActor));
-            m_CurActor = nullptr;
+            std::unique_ptr<IBattleCommand> cmd = std::move(m_queBattleCmd.front());
+            m_queBattleCmd.pop();
+            cmd->Execute(m_BattleContext);
+            return;
+        }
+
+        if (m_CurActor != nullptr)
+        {
+            if (m_CurActor->GetTeam() == Team::Player)
+                RequestBattleStateChange(BattleState::CommandSelect);
+            else
+                RequestBattleStateChange(BattleState::EnemyAI);
             return;
         }
 
         m_BattleContext.GetEventProcessor().FlushRemoval();
-        m_eMenuTxt = MenuTxt::None;
-        RequestBattleStateChange(BattleState::TurnCheck);
+        RequestBattleStateChange(BattleState::Start);
     }
 }
 
@@ -763,17 +785,24 @@ void BattleLevel::Phase_Log()
     {
         if (m_logSystem.IsEmptyLog() == true)
         {
-            // UI 텍스트 초기화
-            for (auto* pUI : m_vecDialogue)
-            {
-                pUI->ChangeTxt(L"");
-            }
-
+            ClearDialogue();
             CleanupDeacActor();
-            RequestBattleStateChange(IsFinishBattle() ? BattleState::Result : BattleState::TurnCheck);
+            // 승리/패배 여부에 따라 결과창 혹은 다음 턴으로
+            if (IsFinishBattle())
+                RequestBattleStateChange(BattleState::Result);
+            else
+                RequestBattleStateChange(BattleState::Start);
+            return;
         }
-        // 로그가 남아있다면 다음 프레임/입력에서 위 if문이 다시 실행되어 다음 줄이 출력됩니다.
+        else
+        {
+            // 다음 로그를 보여주기 위해 갱신
+            std::wstring nextLog = m_logSystem.PopFrontLog();
+            m_vecDialogue[0]->ChangeTxt(m_vecDialogue[1]->GetTxt().c_str());
+            m_vecDialogue[1]->ChangeTxt(nextLog.c_str());
+        }
     }
+
     const auto& logs = m_logSystem.GetLog(); // 로그 목록
     int iCnt = std::min(2, (int)logs.size()); //최대 2개까지만 보여준다.
     if (iCnt >= 1)
@@ -791,7 +820,7 @@ void BattleLevel::Phase_Log()
     if (Input::Get().GetKeyDown(VK_RETURN))
     {
         CleanupDeacActor();
-        RequestBattleStateChange(IsFinishBattle() ? BattleState::Result : BattleState::TurnCheck);
+        RequestBattleStateChange(IsFinishBattle() ? BattleState::Result : BattleState::Start);
     }
 }
 
@@ -801,27 +830,31 @@ void BattleLevel::Phase_Result()
     {
         int totalGold = 0;
         int totalExp = 0;
+        char rank = 'F';
 
-        // 승리 보상 계산 (예: 몬스터들로부터 골드/경험치 합산)
-        for (auto* enemy : m_vecEnemyParty)
+        if (IsPlayerWin())
         {
-            if (auto stat = enemy->GetComponent<StatComponent>())
-                totalExp += stat->GetStatData().iMaxExp;
+            // 승리 보상 계산 (예: 몬스터들로부터 골드/경험치 합산)
+            for (auto* enemy : m_vecEnemyParty)
+            {
+                if (auto stat = enemy->GetComponent<StatComponent>())
+                    totalExp += stat->GetStatData().iMaxExp;
+            }
+
+            Game::Get().ProcessBattleReward(totalGold, totalExp);
+        }
+        else
+        {
+            // 패배 시 로그 출력 혹은 게임 오버 처리
+            m_logSystem.AddLog(L"파티가 전멸했습니다...");
+            rank = 'F';
         }
 
-        Game::Get().ProcessBattleReward(totalGold, totalExp);
-
-        auto pUI = std::make_unique<UI_BattleResult>(totalGold, totalExp, 'S');
+        auto pUI = std::make_unique<UI_BattleResult>(totalGold, totalExp, rank);
         m_pBattleResult = pUI.get();
 
         AddActor(std::move(pUI));
         return;
-    }
-
-    // 종료 플래그가 세워졌다면 씬 전환
-    if (m_pBattleResult->Exit() == true)
-    {
-        Game::Get().BattleEnd();
     }
 
     // 연출이 Finished 상태일 때만 Enter 입력을 받음
@@ -831,6 +864,94 @@ void BattleLevel::Phase_Result()
         {
             m_pBattleResult->SetExit(true);
         }
+    }
+
+    // 종료 플래그가 세워졌다면 씬 전환
+    if (m_pBattleResult->Exit() == true)
+    {
+        Game::Get().BattleEnd();
+    }
+}
+
+void BattleLevel::RefreshTurnQueue()
+{
+    m_turnQueue.clear();
+
+    std::vector<BattleActor*> allParticipants;
+    for (auto* p : m_vecPlayerParty) 
+        if (p->GetComponent<StatComponent>()->IsDead() == false) 
+            allParticipants.emplace_back(dynamic_cast<BattleActor*>(p));
+
+    for (auto* e : m_vecEnemyParty) 
+        if (e->GetComponent<StatComponent>()->IsDead() == false)
+            allParticipants.emplace_back(dynamic_cast<BattleActor*>(e));
+
+    std::sort(allParticipants.begin(), allParticipants.end(), [](BattleActor* a, BattleActor* b)
+    {
+        int speedA = a->GetComponent<StatComponent>()->GetStatData().iSpd;
+        int speedB = b->GetComponent<StatComponent>()->GetStatData().iSpd;
+
+        // 속도가 같다면 플레이어 팀에게 우선권을 주거나 랜덤 처리를 할 수 있습니다.
+        if (speedA == speedB) 
+            return a->GetTeam() == Team::Player;
+
+        return speedA > speedB;
+    });
+
+    for (auto* actor : allParticipants)
+    {
+        m_turnQueue.emplace_back(actor);
+    }
+
+    m_logSystem.AddLog(L"--- 새로운 라운드가 시작되었습니다! ---");
+}
+
+void BattleLevel::ProceedToNextTurn()
+{
+    switch (m_eBattleState)
+    {
+    case BattleState::Start:
+        // 전투 시작 시 혹은 라운드 종료 시 턴을 새로 계산
+        RefreshTurnQueue();
+        RequestBattleStateChange(BattleState::TurnCheck);
+        break;
+
+    case BattleState::TurnCheck:
+        // 모든 참여자가 행동을 마쳤다면 다시 Start로 가서 라운드 갱신
+        if (m_turnQueue.empty())
+        {
+            RequestBattleStateChange(BattleState::Start);
+            break;
+        }
+
+        // 큐의 맨 앞 캐릭터를 현재 턴 주인공으로 설정
+        m_CurActor = m_turnQueue.front();
+        m_turnQueue.pop_front();
+
+        // 행동 가능한 상태인지 최종 확인 (기절, 사망 등)
+        if (m_CurActor && m_CurActor->GetComponent<StatComponent>()->IsDead() ==false)
+        {
+            m_logSystem.AddLog(m_CurActor->GetComponent<DisplayComponent>()->GetOriginName() + L"의 차례!");
+
+            // 이름 강조 효과 (Targeted 로직 활용 가능)
+            dynamic_cast<BattleActor*>(m_CurActor)->SetTargeted(true);
+
+            if (m_CurActor->GetTeam() == Team::Player)
+                RequestBattleStateChange(BattleState::CommandSelect);
+            else
+                RequestBattleStateChange(BattleState::EnemyAI);
+        }
+        else
+        {
+            // 행동 불가라면 즉시 다음 턴 체크
+            RequestBattleStateChange(BattleState::TurnCheck);
+        }
+        break;
+
+    case BattleState::Animation:
+        // 공격 애니메이션이나 스킬 로직이 실행되는 구간
+        // 연출이 끝나면 ProceedToNextTurn()을 호출하도록 설계합니다.
+        break;
     }
 }
 
@@ -854,7 +975,7 @@ void BattleLevel::EnterTargetSelect(int iTID)
     switch (data->targetType)
     {
     case ActionTargetType::Self:
-        targets.push_back(m_CurActor);
+        targets.emplace_back(m_CurActor);
         break;
 
     case ActionTargetType::SingleEnemy:
@@ -954,14 +1075,47 @@ void BattleLevel::RequestBattleStateChange(BattleState state)
 
 bool BattleLevel::IsFinishBattle()
 {
-    bool bFinished = false;
-    if (m_vecPlayerParty.empty() == true)
-        bFinished = true;
+    return IsPlayerWin() || IsEnemyWin();
+}
 
-    if (m_vecEnemyParty.empty() == true)
-        bFinished = true;
+bool BattleLevel::IsPlayerWin() const
+{
+    for (auto* enemy : m_vecEnemyParty)
+    {
+        if (enemy && !enemy->GetComponent<StatComponent>()->IsDead())
+            return false;
+    }
 
-    return bFinished;
+    return true;
+}
+
+bool BattleLevel::IsEnemyWin() const
+{
+    for (auto* player : m_vecPlayerParty)
+    {
+        if (player && !player->GetComponent<StatComponent>()->IsDead())
+            return false;
+    }
+
+    return true;
+}
+
+void BattleLevel::ClearDialogue()
+{
+    // 로그 UI 벡터에 담긴 모든 대화창의 텍스트를 빈 문자열로 초기화합니다.
+    for (auto* pUI : m_vecDialogue)
+    {
+        if (pUI != nullptr)
+        {
+            pUI->ChangeTxt(L"");
+        }
+    }
+
+    // 내부 로그 시스템의 큐도 함께 비워주어 다음 페이즈에 영향이 없도록 합니다.
+    while (!m_logSystem.IsEmptyLog())
+    {
+        m_logSystem.PopFrontLog();
+    }
 }
 
 void BattleLevel::RemoveActor(Wannabe::Actor* actor)
@@ -996,7 +1150,7 @@ void BattleLevel::CleanupDeacActor()
                     uiVec.end()
                 );
 
-                m_vecPendingDestroy.push_back(actor);
+                m_vecPendingDestroy.emplace_back(actor);
                 it = party.erase(it);
             }
             else

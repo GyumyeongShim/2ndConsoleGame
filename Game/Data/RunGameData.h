@@ -3,6 +3,7 @@
 #include <string>
 #include "Math/Vector2.h"
 #include "Util/Utill.h"
+#include "Actor/Actor.h"
 
 #include "Component/StatComponent.h"
 
@@ -23,6 +24,13 @@ struct RunGameData
     // Inven
     int m_iGold = 0;
     std::vector<int> m_vecInevenItemTids;
+
+    // 전투로 넘길 타겟 정보
+    std::vector<Actor*> m_vecBattlePlayers;
+    std::vector<Actor*> m_vecBattleMonsters;
+
+    // 전투 종료 후 필드에서 제거해야 할 몬스터의 ID나 포인터 기록
+    Actor* m_pEncounteredEnemy = nullptr;
 
     json ToJson() const
     {

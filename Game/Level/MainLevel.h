@@ -1,6 +1,7 @@
 #pragma once
 #include "Level/Level.h"
 #include "Engine/Engine.h"
+#include "Enum/WorldType.h"
 #include "Math/Vector2.h"
 
 class Player;
@@ -24,15 +25,38 @@ protected:
 	virtual bool CanMove(const Vector2& nextPos) override;
 	virtual void CheckPortal() override;
 
+	void Phase_PlayerTurn();
+	void Phase_Move(float fDeltaTime);
+	void Phase_EnemyTurn();
+	void Phase_EnemyMove(float fDeltaTime);
+	void Phase_Transition(float fDeltaTime);
+
 private:
 	void Init();
 	void CheckRandomEncounter();
+	void CheckMonsterEncounter();
+	void StartBattleTransition(Actor* pTarget);
+	void CalcMoveRange();
+	void UpdateCursorInput();
 
 private:
 	std::unique_ptr<TileMap> m_worldMap;
 	Player* m_pPlayer = nullptr;
 	bool m_RequestBattleTransition;
 	Actor* m_BattleTarget;
+
+	FieldState m_eFieldPhase = FieldState::PlayerTurn; // 기본 상태 설정
+	Vector2 m_vCursorPos = { 1, 1 };
+	std::vector<Vector2> m_vecPath;
+	std::vector<Vector2> m_vecMoveRangeTiles;
+	bool m_bIsRangeCalculated = false;
+
+	// 연출용 변수
+	float m_fTransitionTimer = 0.0f;
+	const float m_fTransitionDuration = 1.0f;
+	bool m_bShowFlash = false;
+	float m_fMoveTimer = 0.0f;
+	int m_iCurEnemyIdx = 0;
 
 	Vector2 m_vPlayerStartPos = {1,1};
 	Vector2 m_vLastPlayerPos;

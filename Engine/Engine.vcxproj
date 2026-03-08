@@ -145,6 +145,7 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClInclude Include="Component\Component.h" />
     <ClInclude Include="Component\SkillComponent.h" />
     <ClInclude Include="Enum\ActionType.h" />
+    <ClInclude Include="Enum\WorldType.h" />
     <ClInclude Include="Interface\IEquipmentData.h" />
     <ClInclude Include="Item\Item.h" />
     <ClInclude Include="Battle\BattleContext.h" />

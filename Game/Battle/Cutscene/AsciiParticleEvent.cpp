@@ -82,7 +82,7 @@ void AsciiParticleEvent::InitParticles()
 
         p.Symbol = "*+o."[rand() % 4];
 
-        m_particles.push_back(p);
+        m_particles.emplace_back(p);
     }
 }
 

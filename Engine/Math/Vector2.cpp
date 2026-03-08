@@ -98,4 +98,10 @@ namespace Wannabe
 		return Vector2(static_cast<int>(x / len), static_cast<int>(y / len));
 	}
 
+	float Vector2::Distance(const Vector2& v1, const Vector2& v2)
+	{
+		float dx = static_cast<float>(v1.x - v2.x);
+		float dy = static_cast<float>(v1.y - v2.y);
+		return sqrtf(dx * dx + dy * dy);
+	}
 }

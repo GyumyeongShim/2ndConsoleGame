@@ -138,7 +138,7 @@ void Game::ChangeLevel(const size_t levelID)
 		return;
 
 	pNewLevel->OnEnterLevel(m_pRunData.get());
-	m_vecLevels.push_back(pNewLevel);
+	m_vecLevels.emplace_back(pNewLevel);
 
 	m_pCurLevel = pNewLevel;
 	Engine::Get().SetNewLevel(m_pCurLevel);

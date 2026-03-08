@@ -75,6 +75,7 @@ protected:
 private:
 	void Init();
 
+	void Phase_Init();
 	void Phase_Start();
 	void Phase_CommandSelect();
 	void Input_MenuSelect();
@@ -85,9 +86,14 @@ private:
 	void Phase_SkillSelect();
 	void Input_SkillSelect();
 	void Phase_TurnCheck();
+	void Phase_EnemyAI();
 	void Phase_Animation(float fDeltaTime);
 	void Phase_Log();
 	void Phase_Result();
+
+	void RefreshTurnQueue();
+	void ProceedToNextTurn();
+	void CalcMoveRange();
 
 	void ProcessStateRequest();
 
@@ -96,6 +102,10 @@ private:
 	void BuildItemMenu();
 
 	bool IsFinishBattle();
+	bool IsPlayerWin() const;
+	bool IsEnemyWin() const;
+	void ClearDialogue();
+
 	void RemoveActor(Wannabe::Actor* actor);
 	void CleanupDeacActor();
 
@@ -105,12 +115,13 @@ private:
 	BattleState m_eBattleState = BattleState::Start;
 
 	Wannabe::Actor* m_CurActor = nullptr; //현재 순서인 액터
+	std::deque<BattleActor*> m_turnQueue; //턴 순서
 
 	std::vector<Actor*> m_vecPlayerParty;
 	std::vector<Actor*> m_vecEnemyParty;
 	std::vector<Actor*> m_vecPendingDestroy;
 
-	std::vector<Actor*> m_vecTargets; //선택된 태상
+	std::vector<Actor*> m_vecTargets; //선택된 대상
 
 	int m_iActionTID = 0; // 스킬, 아이템 TID
 	int m_iTargetCursor = 0; // 타겟, input,select시 사용
