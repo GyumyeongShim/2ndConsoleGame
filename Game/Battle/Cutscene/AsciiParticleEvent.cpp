@@ -34,7 +34,7 @@ bool AsciiParticleEvent::Update(Wannabe::BattleContext& context, float fDeltaTim
 
         std::wstring txt(1, static_cast<wchar_t>(p.Symbol));
         renderSys.DrawUI(txt,Vector2((int)p.Position.x, (int)p.Position.y),
-            Color::RightCyan,100 // Particle Layer Sorting Order (높게)
+            Color::Cyan,100 // Particle Layer Sorting Order (높게)
         );
     }
 

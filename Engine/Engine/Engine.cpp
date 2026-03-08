@@ -3,6 +3,10 @@
 #include <windows.h>
 #include <iostream>
 
+#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+#endif
+
 #include "Engine.h"
 #include "Level/Level.h"
 #include "Core/Input.h"
@@ -39,6 +43,14 @@ namespace Wannabe
 		m_pInput = new Input();
 
 		SetConsoleCtrlHandler(ConsoleHandler, TRUE);
+
+		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		DWORD dwMode = 0;
+		if (GetConsoleMode(hOut, &dwMode))
+		{
+			dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+			SetConsoleMode(hOut, dwMode);
+		}
 
 		//Ä¿¼­ ²ô±â
 		Util::TurnOffCursor();

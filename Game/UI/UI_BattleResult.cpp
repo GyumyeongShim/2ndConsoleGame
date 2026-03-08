@@ -59,7 +59,7 @@ void UI_BattleResult::Draw(Wannabe::RenderSystem& renderSys)
     }
 
     // 2. 테두리 및 제목
-    renderSys.DrawUI(L"┏━━━━━━━━━━━━  VICTORY  ━━━━━━━━━━━━┓", Vector2(cx - 18, cy - 5), Color::RightMagenta);
+    renderSys.DrawUI(L"┏━━━━━━━━━━━━  VICTORY  ━━━━━━━━━━━━┓", Vector2(cx - 18, cy - 5), Color::Magenta);
 
     if (m_eDisplayState >= DisplayState::Stats)
     {

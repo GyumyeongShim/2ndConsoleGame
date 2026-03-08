@@ -41,7 +41,6 @@ namespace Wannabe
 		void DrawActor(const Actor& actor);
 		void DrawFieldActor(const Actor& actor);
 		void DrawBattleActor(const Actor& actor);
-		//void DrawEffect();
 		void DrawUI(const std::wstring& txt,Vector2 pos,Color color,int iOrder = 100);
 
 		void Shake(float fDuration, float fIntensity);
@@ -62,9 +61,6 @@ namespace Wannabe
 	
 	private:
 		void Composite(const Canvas& canvas); //All canvas 합성
-		void ApplyEffect(); //composite 이후 후처리
-		Color InvertColor(WORD color);
-
 		bool IsInViewport(const Vector2& pos, const Actor& actor) const;
 
 	private:

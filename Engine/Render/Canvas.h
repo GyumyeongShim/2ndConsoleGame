@@ -8,7 +8,7 @@ namespace Wannabe
 {
 	struct CanvasCell
 	{
-		wchar_t wch = L' ';
+		wchar_t wch = L'\0';
 		Color color = Color::White;
 		int sortingOrder = -1;
 		bool bDirty = true;
@@ -29,11 +29,12 @@ namespace Wannabe
 		void SetCell(int iX, int iY, const CanvasCell& newCell);
 		const int GetHeight() const { return m_iHeight; }
 		const int GetWidth() const { return m_iWidth; }
-		std::vector<CanvasCell>& GetMutableBuffer() { return m_vecBuffer; }
-		const std::vector<CanvasCell>& GetBuffer() const { return m_vecBuffer; };
 		
 		const CanvasCell& GetCell(int iX, int iY) const;
 		CanvasCell& GetMutableCell(int iX, int iy);
+
+		const std::vector<CanvasCell>& GetMutableBuffer() const { return m_vecBuffer; }
+
 	private:
 		int Idx(int x, int y) const;
 

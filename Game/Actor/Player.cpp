@@ -17,7 +17,7 @@
 #include "Component/SkillComponent.h"
 
 Player::Player(int iTid, const Vector2& pos)
-	: super(L"P", pos, Color::RightBlue), m_iTid(iTid)
+	: super(L"P", pos, Color::Blue), m_iTid(iTid)
 {
 	m_SortingOrder = 10;
 	m_eTeam = Team::Player;

@@ -130,7 +130,7 @@ namespace Wannabe
         Vector2 endPos = { pos.x, pos.y - 2 };
 
         context.GetCutscenePlayer().Push(m_pEventFactory->CreateVisualEffect(
-            startPos, endPos, EffectMovementType::Linear, L'+', Color::Green, 0.6f
+            startPos, endPos, EffectMovementType::Straight, L'+', Color::Green, 0.6f
         ));
 
         /// 로그 출력

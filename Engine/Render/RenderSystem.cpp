@@ -31,23 +31,42 @@ void RenderSystem::RenderFrame()
     Composite(m_DebugCanvas);
     Composite(m_EffectCanvas);
 
-    //ApplyEffect();
+    const std::vector<CanvasCell>& buffer = m_FinalCanvas.GetMutableBuffer();
 
-    const auto& buffer = m_FinalCanvas.GetMutableBuffer();
+    int width = m_FinalCanvas.GetWidth();
+    int height = m_FinalCanvas.GetHeight();
 
-    std::vector<CHAR_INFO> charInfoBuffer;
-    charInfoBuffer.reserve(buffer.size());
+    std::wstring frameStream;
+    frameStream.reserve(width * height * 12); // ANSI 코드를 고려해 넉넉하게 예약
 
-    for (const auto& cell : buffer)
+    Color lastColor = { 1, 1, 1 }; // 절대 나올 수 없는 초기값
+    for (int y = 0; y < height; ++y)
     {
-        CHAR_INFO info{};
-        info.Char.UnicodeChar = cell.wch;
-        info.Attributes = static_cast<WORD>(cell.color);
+        frameStream += L"\x1b[" + std::to_wstring(y + 1) + L";1H";
 
-        charInfoBuffer.emplace_back(info);
+        for (int x = 0; x < width; ++x)
+        {
+            int index = y * width + x;
+            if (index >= buffer.size()) 
+                break;
+
+            const auto& cell = buffer[index];
+
+            if (cell.color != lastColor)
+            {
+                frameStream += cell.color.ToAnsiFG();
+                lastColor = cell.color;
+            }
+
+            frameStream += (cell.wch == L'\0' ? L' ' : cell.wch);
+        }
     }
 
-    m_Renderer.EndFrame(charInfoBuffer);
+    // ANSI 리셋 코드로 마무리
+    frameStream += Color::Reset();
+
+    // 렌더러에 최종 스트림 전달
+    m_Renderer.EndFrame(frameStream);
 }
 
 void RenderSystem::DrawActor(const Actor& actor)
@@ -156,31 +175,6 @@ void RenderSystem::Composite(const Canvas& canvas)
     }
 }
 
-void RenderSystem::ApplyEffect()
-{
-    auto& buffer = m_FinalCanvas.GetMutableBuffer();
-    int cnt = static_cast<int>(buffer.size());
-
-    for (int i = 0; i < cnt; ++i)
-    {
-        CanvasCell& cell = buffer[i];
-        //조건문 추가해서 진행할 것
-        cell.color = InvertColor((WORD)cell.color);
-        cell.bDirty = true;
-    }
-}
-
-Color RenderSystem::InvertColor(WORD color)
-{
-    //foreground  background swap
-    Color fg = static_cast<Color>(color & 0x0F);
-    Color bg = static_cast<Color>((color & 0xF0) >> 4);
-    Color newFg = bg;
-    Color newBg = fg;
-
-    return static_cast<Color>((static_cast<unsigned short>(newBg) << 4) | static_cast<unsigned short>(newFg));
-}
-
 bool RenderSystem::IsInViewport(const Vector2& pos, const Actor& actor) const
 {
     int width = m_Camera.GetWidth();
@@ -196,18 +190,4 @@ bool RenderSystem::IsInViewport(const Vector2& pos, const Actor& actor) const
         return false;
 
     return true;
-}
-
-std::vector<CHAR_INFO> ConvertCanvasBufferToCharInfo(const std::vector<Wannabe::CanvasCell>& buffer)
-{
-    std::vector<CHAR_INFO> charInfoBuffer;
-    charInfoBuffer.reserve(buffer.size());
-    for (const auto& cell : buffer)
-    {
-        CHAR_INFO info{};
-        info.Char.UnicodeChar = cell.wch;
-        info.Attributes = static_cast<WORD>(cell.color);
-        charInfoBuffer.emplace_back(info);
-    }
-    return charInfoBuffer;
 }

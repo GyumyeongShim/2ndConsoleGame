@@ -106,7 +106,7 @@ void BattleActor::SetTargeted(bool bIsTargeted)
     if (display == nullptr)
         return;
 
-    display->SetNameColor(bIsTargeted == true ? Color::RightMagenta : m_OrignColor);
+    display->SetNameColor(bIsTargeted == true ? Color::Magenta : m_OrignColor);
 
     // 항상 원본 이름 기준으로 설정
     std::wstring name = display->GetOriginName();

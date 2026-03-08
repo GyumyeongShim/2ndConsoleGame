@@ -14,7 +14,7 @@ namespace Wannabe
 		~ScreenBuffer();
 
 		void Clear();
-		void Draw(CHAR_INFO* charInfo);
+		void Draw(const std::wstring& fullFrameStream);
 		inline HANDLE GetBuffer() const { return m_hBuffer; }
 		void Resize(const Vector2& newSize);
 

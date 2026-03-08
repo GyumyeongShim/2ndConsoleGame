@@ -125,6 +125,7 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClCompile Include="Interface\IBattleCommand.cpp" />
     <ClCompile Include="Item\ItemInstance.cpp" />
     <ClCompile Include="Manager\SaveManager.cpp" />
+    <ClCompile Include="Math\Color.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Core\Input.cpp" />
     <ClCompile Include="Render\RenderSystem.cpp" />

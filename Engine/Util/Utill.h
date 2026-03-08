@@ -18,12 +18,6 @@ namespace Util
 			GetStdHandle(STD_OUTPUT_HANDLE), static_cast<COORD>(position));
 	}
 
-	inline void SetConsoleTextColor(Color color)
-	{
-		SetConsoleTextAttribute(
-			GetStdHandle(STD_OUTPUT_HANDLE), static_cast<WORD>(color));
-	}
-
 	//Ä¿¼­ ²ô±â
 	inline void TurnOffCursor()
 	{
