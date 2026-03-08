@@ -1,0 +1,44 @@
+[전투 시뮬레이션 흐름 (Battle Simulation Flow)]
+
+1. 전체 구조 (System Architecture)
+   - [Engine Layer]: BattleContext, BattleResolver, TurnManager, BattleEventProcessor, CutscenePlayer
+   - [Game Layer]: BattleLevel, BattleActor, IBattleCommand (Atk, Skill, Item, Run), EnemyAI
+   - [Data Layer]: BattleResult (CombatEffectResult), StatComponent, StatusComponent
+
+2. 상세 프로세스 (Detailed Process)
+
+   Phase 1: 턴 확인 (Phase_TurnCheck)
+   - TurnManager가 모든 생존 Actor의 행동 게이지(TurnCnt)를 확인합니다.
+   - 행동 게이지가 최대치(100)를 넘은 Actor 중 가장 높은 수치를 가진 Actor를 선정(m_CurActor)합니다.
+   - 만약 행동 가능한 Actor가 없다면, 모든 Actor의 행동 게이지를 속도(Speed)에 비례하여 증가시킵니다.
+   - Actor가 선정되면 TurnStartEvent를 생성하여 CutscenePlayer에 Push하고, 상태를 Animation으로 전환합니다.
+
+   Phase 2: 턴 시작 연출 및 상태 이상 처리 (TurnStartEvent)
+   - TurnStartEvent 실행 시, BattleResolver가 해당 Actor의 상태 이상 효과(DoT 데미지 등)를 계산합니다.
+   - BattleEventProcessor가 계산된 결과를 데이터에 반영하고, 피격 및 로그 연출을 생성합니다.
+   - [Player]: 상태를 CommandSelect로 변경하여 사용자 입력을 기다립니다.
+   - [Enemy]: EnemyAI가 타겟과 행동을 결정(Decide)하고, Command를 생성하여 큐에 넣은 뒤 Animation 상태를 유지합니다.
+
+   Phase 3: 명령 선택 (Command/Target Select) - 플레이어 전용
+   - 플레이어가 메뉴에서 공격, 스킬, 아이템 중 하나를 선택합니다.
+   - 선택한 행동의 타겟 타입에 따라 대상(Target)을 지정합니다.
+   - 최종적으로 IBattleCommand 객체가 생성되어 명령 큐(m_queBattleCmd)에 쌓입니다.
+   - 상태를 Animation으로 전환합니다.
+
+   Phase 4: 연출 및 명령 실행 (Phase_Animation)
+   - CutscenePlayer가 큐에 쌓인 연출(Damage, VisualEffect, Log 등)을 순차적으로 재생합니다.
+   - 현재 재생 중인 연출이 없고 명령 큐에 명령이 있다면, 명령을 꺼내어 Execute()를 호출합니다.
+   - Command::Execute() 내부 동작:
+     a. BattleResolver를 통해 데미지, 명중, 크리티컬 여부를 계산 (CombatEffectResult 생성).
+     b. BattleEventProcessor가 결과를 전달받아 실제 데이터를 수정하고, 이에 따른 시각적 연출과 로그 이벤트를 생성하여 CutscenePlayer에 Push합니다.
+   - 모든 연출과 명령이 소모되면 TurnManager::TurnEnd()를 호출하여 해당 Actor의 행동 게이지를 리셋합니다.
+   - TurnEndEvent를 거쳐 다시 Phase_TurnCheck로 돌아갑니다.
+
+   Phase 5: 로그 확인 및 결과 (Phase_Log / Phase_Result)
+   - 전투 중 발생하는 모든 상황은 LogSystem에 기록되며, Phase_Log에서 순차적으로 출력됩니다.
+   - 모든 적이 전멸하거나 아군이 전멸하면 Phase_Result로 진입하여 승리/패배 연출 및 보상을 처리합니다.
+
+3. 핵심 원칙 (Core Principles)
+   - [데이터와 연출의 분리]: BattleResolver는 순수 계산만 담당하며, BattleEventProcessor가 데이터 반영과 연출 생성을 중개합니다.
+   - [명령 패턴]: 모든 전투 행동은 Command 객체로 캡슐화되어 실행 시점이 관리됩니다.
+   - [이벤트 기반 연출]: 모든 시각적 피드백은 CutsceneEvent로 추상화되어 순차적으로 재생됩니다.
