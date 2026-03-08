@@ -11,7 +11,7 @@
 #include "Component/SkillComponent.h"
 
 Monster::Monster(int iTID)
-	:super(L" ", Vector2::Zero, Color::Magenta), m_iTID(iTID)
+	:super(L"M", Vector2::Zero, Color::Magenta), m_iTID(iTID)
 {
 	m_eTeam = Team::Enemy;
 	Init();
@@ -28,9 +28,6 @@ void Monster::Tick(float fDeltaTime)
 
 void Monster::Draw(Wannabe::RenderSystem& renderSys)
 {
-	if (GetOwner()->IsTypeOf<BattleLevel>() == false)
-		return;
-
 	super::Draw(renderSys);
 }
 

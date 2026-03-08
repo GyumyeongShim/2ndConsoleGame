@@ -289,9 +289,15 @@ void MainLevel::Phase_Move(float fDeltaTime)
 	if (m_vecPath.empty())
 	{
 		CheckMonsterEncounter();
+
+		if (m_eFieldPhase == FieldState::BattleTransition)
+			return;
+
 		CheckPortal();
 
-		m_eFieldPhase = FieldState::EnemyTurn; // 적 턴으로 넘김
+		if (m_eFieldPhase != FieldState::BattleTransition)
+			m_eFieldPhase = FieldState::EnemyTurn;
+
 		return;
 	}
 
@@ -368,7 +374,12 @@ void MainLevel::Phase_EnemyMove(float fDeltaTime)
 	// 이동할 경로가 없거나 이미 파괴된 몬스터는 즉시 다음으로 패스
 	if (pCurrentMonster->IsDestroyRequested() || pCurrentMonster->GetMovePath().empty())
 	{
+		CheckMonsterEncounter();
+		if (m_eFieldPhase == FieldState::BattleTransition)
+			return;
+
 		m_iCurEnemyIdx++;
+		m_fMoveTimer = 0.0f;
 		return;
 	}
 
@@ -486,21 +497,23 @@ void MainLevel::CheckRandomEncounter()
 
 void MainLevel::CheckMonsterEncounter()
 {
-	if (m_pPlayer == nullptr) return;
+	if (m_pPlayer == nullptr) 
+		return;
 
-	for (auto it = m_vecMonsters.begin(); it != m_vecMonsters.end(); ++it)
+	Vector2 playerPos = m_pPlayer->GetPosition();
+	for (auto* pEnemy : m_vecMonsters)
 	{
-		Actor* pEnemy = *it;
 		if (pEnemy->IsDestroyRequested()) continue;
 
-		// 플레이어와 몬스터 사이의 거리 체크 (거리가 1.0f 미만이면 접촉으로 간주)
-		Vector2 temp;
-		float fDist = temp.Distance(m_pPlayer->GetPosition(), pEnemy->GetPosition());
+		Vector2 monsterPos = pEnemy->GetPosition();
 
-		if (fDist < 1.0f)
+		Vector2 temp;
+		float fDist = temp.Distance(playerPos, monsterPos);
+
+		if (fDist < 0.8f) // 같은 칸에 겹쳤을 때
 		{
 			StartBattleTransition(pEnemy);
-			break;
+			return;
 		}
 	}
 }
@@ -508,7 +521,8 @@ void MainLevel::CheckMonsterEncounter()
 void MainLevel::StartBattleTransition(Actor* pTarget)
 {
 	RunGameData* pRunData = Game::Get().GetRunData();
-	if (pRunData == nullptr) return;
+	if (pRunData == nullptr) 
+		return;
 
 	// 1. 전투에 참여할 멤버 확정
 	pRunData->m_vecBattlePlayers.clear();
