@@ -267,76 +267,81 @@ void MainLevel::Phase_PlayerTurn(float fDeltaTime)
 	if (!m_bIsRangeCalculated)
 		CalcMoveRange();
 
+	// 1. 커서 이동 변수 관리
 	static float fCursorMoveTimer = 0.0f;
-	const float fMoveDelay = 0.1f; // 0.1초마다 한 칸씩 이동 (꾹 누를 때)
+	const float fInitialDelay = 0.25f; // 처음 눌렀을 때 다음 칸으로 넘어가기 전 대기 시간
+	const float fRepeatDelay = 0.05f;  // 꾹 누르고 있을 때 이동 속도 (값이 작을수록 빠름)
 
 	Vector2 vDir = Vector2::Zero;
+	bool bIsMoving = false;
 
-	// 2. 커서 이동 제어
-	bool bPressed = false;
-	if (Input::Get().GetKeyDown(VK_UP))
-	{
-		bPressed = true;
-		m_vCursorPos.y--;
+	// 2. 입력 감지 (GetKey를 사용하여 누르고 있는 상태를 체크)
+	if (Input::Get().GetKey(VK_UP)) 
+	{ 
+		vDir.y = -1; 
+		bIsMoving = true;
 	}
-	if (Input::Get().GetKeyDown(VK_DOWN))
-	{
-		bPressed = true;
-		m_vCursorPos.y++;
+	else if (Input::Get().GetKey(VK_DOWN)) 
+	{ 
+		vDir.y = 1;  
+		bIsMoving = true;
 	}
-	if (Input::Get().GetKeyDown(VK_LEFT))
-	{
-		bPressed = true;
-		m_vCursorPos.x--;
+	else if (Input::Get().GetKey(VK_LEFT)) 
+	{ 
+		vDir.x = -1; 
+		bIsMoving = true;
 	}
-	if (Input::Get().GetKeyDown(VK_RIGHT))
-	{
-		bPressed = true;
-		m_vCursorPos.x++;
+	else if (Input::Get().GetKey(VK_RIGHT)) 
+	{ 
+		vDir.x = 1;  
+		bIsMoving = true;
 	}
 
-	if (bPressed)
+	if (bIsMoving)
 	{
+		// 처음 누르는 순간(Down)이거나, 누르고 있는 시간이 딜레이를 초과했을 때
+		bool bInitialHit = (Input::Get().GetKeyDown(VK_UP) || Input::Get().GetKeyDown(VK_DOWN) ||
+			Input::Get().GetKeyDown(VK_LEFT) || Input::Get().GetKeyDown(VK_RIGHT));
+
 		fCursorMoveTimer += fDeltaTime;
 
-		// 처음 눌렀을 때(GetKeyDown) 즉시 이동하거나, 꾹 누르고 있어 타이머가 찼을 때 이동
-		if (Input::Get().GetKeyDown(VK_UP) || Input::Get().GetKeyDown(VK_DOWN) ||
-			Input::Get().GetKeyDown(VK_LEFT) || Input::Get().GetKeyDown(VK_RIGHT) ||
-			fCursorMoveTimer >= fMoveDelay)
+		// 꾹 누르기 시작할 때는 fInitialDelay만큼 기다렸다가, 그 뒤부터는 fRepeatDelay 속도로 연사
+		float currentDelay = (fCursorMoveTimer < fInitialDelay) ? fInitialDelay : fRepeatDelay;
+
+		if (bInitialHit || fCursorMoveTimer >= currentDelay)
 		{
 			Vector2 vNextPos = m_vCursorPos + vDir;
 
-			// 맵 경계 체크
 			if (m_worldMap->IsInMap((int)vNextPos.x, (int)vNextPos.y))
 			{
 				m_vCursorPos = vNextPos;
-				OnCursorMoved(); // 여기서 몬스터 체크 및 이동 범위 계산 수행
+				OnCursorMoved(); // 몬스터 범위 갱신 등
 			}
 
-			fCursorMoveTimer = 0.0f; // 타이머 초기화
+			// 초기 입력을 감지했다면 타이머를 약간 진행시켜 쾌적하게 만듦
+			if (bInitialHit) fCursorMoveTimer = 0.0f;
+			else fCursorMoveTimer = fInitialDelay; // 반복 구간으로 진입
 		}
 	}
 	else
 	{
-		fCursorMoveTimer = fMoveDelay; // 키를 떼면 다음 입력 시 즉시 반응하도록 설정
+		fCursorMoveTimer = 0.0f; // 키를 떼면 타이머 초기화
 	}
 
 	// 3. 선택 (Enter 키)
 	if (Input::Get().GetKeyDown(VK_RETURN))
 	{
-		// 이동 범위 내에 있는지 확인 (현재 위치 포함)
-		bool bIsInRange = (std::find(m_vecMoveRangeTiles.begin(), m_vecMoveRangeTiles.end(), m_vCursorPos) != m_vecMoveRangeTiles.end());
+		bool bIsInRange = (std::find(m_vecMoveRangeTiles.begin(), m_vecMoveRangeTiles.end(),
+			m_vCursorPos) != m_vecMoveRangeTiles.end());
 
 		if (bIsInRange || m_vCursorPos == m_pPlayer->GetPosition())
 		{
 			if (m_vCursorPos == m_pPlayer->GetPosition())
 			{
-				// 제자리 대기 시 바로 적 턴으로 (추후 메뉴 팝업으로 변경 가능)
 				m_eFieldPhase = FieldState::EnemyTurn;
 				return;
 			}
 
-			// A* 경로 생성 및 이동 상태 전환
 			m_vecPath = m_worldMap->FindPath(m_pPlayer->GetPosition(), m_vCursorPos);
 
 			if (!m_vecPath.empty())
