@@ -38,6 +38,33 @@ namespace Wannabe
         static const Color Cyan;
         static const Color Magenta;
         static const Color Yellow;
-        static const Color Purple; // 우리가 원하던 RGB 보라색
+        static const Color Purple;
+
+        static Color BrightRed;
+        static Color BrightGreen;
+        static Color BrightBlue;
+
+        static Color BrightCyan;
+        static Color BrightMagenta;
+        static Color BrightYellow;
+        static Color BrightPurple;
+
+        static Color DarkGray;
+        static Color Gray;
+        static Color LightGray;
+        static Color BrightGray;
+
+        static Color Orange;
+        static Color BrightOrange;
+        static Color Pink;
+        static Color BrightPink;
+        static Color SkyBlue;
+        static Color BrightSkyBlue;
+        static Color Lime;
+        static Color BrightLime;
+        static Color Gold;
+        static Color BrightGold;
+        static Color Teal;
+        static Color BrightTeal;
     };
 }
