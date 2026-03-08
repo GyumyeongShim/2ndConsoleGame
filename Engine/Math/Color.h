@@ -40,31 +40,31 @@ namespace Wannabe
         static const Color Yellow;
         static const Color Purple;
 
-        static Color BrightRed;
-        static Color BrightGreen;
-        static Color BrightBlue;
+        static const Color BrightRed;
+        static const Color BrightGreen;
+        static const Color BrightBlue;
 
-        static Color BrightCyan;
-        static Color BrightMagenta;
-        static Color BrightYellow;
-        static Color BrightPurple;
+        static const Color BrightCyan;
+        static const Color BrightMagenta;
+        static const Color BrightYellow;
+        static const Color BrightPurple;
 
-        static Color DarkGray;
-        static Color Gray;
-        static Color LightGray;
-        static Color BrightGray;
+        static const Color DarkGray;
+        static const Color Gray;
+        static const Color LightGray;
+        static const Color BrightGray;
 
-        static Color Orange;
-        static Color BrightOrange;
-        static Color Pink;
-        static Color BrightPink;
-        static Color SkyBlue;
-        static Color BrightSkyBlue;
-        static Color Lime;
-        static Color BrightLime;
-        static Color Gold;
-        static Color BrightGold;
-        static Color Teal;
-        static Color BrightTeal;
+        static const Color Orange;
+        static const Color BrightOrange;
+        static const Color Pink;
+        static const Color BrightPink;
+        static const Color SkyBlue;
+        static const Color BrightSkyBlue;
+        static const Color Lime;
+        static const Color BrightLime;
+        static const Color Gold;
+        static const Color BrightGold;
+        static const Color Teal;
+        static const Color BrightTeal;
     };
 }
