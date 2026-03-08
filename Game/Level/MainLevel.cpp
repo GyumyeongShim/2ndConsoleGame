@@ -39,7 +39,7 @@ void MainLevel::Tick(float fDeltaTime)
 	switch (m_eFieldPhase)
 	{
 	case FieldState::PlayerTurn:      
-		Phase_PlayerTurn(); 
+		Phase_PlayerTurn(fDeltaTime); 
 		break;
 
 	case FieldState::Move:            
