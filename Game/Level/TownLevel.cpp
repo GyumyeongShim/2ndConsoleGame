@@ -124,7 +124,6 @@ void TownLevel::CheckPortal()
         if (pRunData)
         {
             pRunData->m_CurLevelId = 2;
-            pRunData->m_NextWorldPos = Vector2(2, 2);
             Game::Get().RequestChangeLevel(MainLevel::TypeIdClass());
         }
     }

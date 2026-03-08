@@ -122,24 +122,26 @@ void Game::RequestChangeLevel(const size_t levelID)
 
 void Game::ChangeLevel(const size_t levelID)
 {
+	// 종료 처리
 	for (Level* pLevel : m_vecLevels)
 	{
 		if (pLevel)
-		{
 			pLevel->OnExitLevel(m_pRunData.get());
-			delete pLevel;
-		}
 	}
 
-	m_vecLevels.clear();
-
+	// 신규 레벨
 	Level* pNewLevel = CreateLevel(levelID);
 	if (pNewLevel == nullptr)
 		return;
 
 	pNewLevel->OnEnterLevel(m_pRunData.get());
-	m_vecLevels.emplace_back(pNewLevel);
 
+	// 기존 level 삭제
+	for (Level* pLevel : m_vecLevels)
+		delete pLevel;
+	m_vecLevels.clear();
+
+	m_vecLevels.emplace_back(pNewLevel);
 	m_pCurLevel = pNewLevel;
 	Engine::Get().SetNewLevel(m_pCurLevel);
 }

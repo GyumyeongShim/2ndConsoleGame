@@ -19,7 +19,6 @@ using namespace Wannabe;
 
 MainLevel::MainLevel()
 {
-	Init();
 }
 
 MainLevel::~MainLevel()
@@ -121,11 +120,18 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 	std::vector<int> spawnMonsterTIDs;
 	std::vector<Vector2> spawnPoints;
 
+	if (m_worldMap == nullptr)
+	{
+		// Init에서 할당되지 않았을 경우에 대비
+		m_worldMap = std::make_unique<TileMap>();
+		m_worldMap->Init(Engine::Get().GetSetting().width, Engine::Get().GetSetting().height);
+	}
+
 	if (pData->m_CurLevelId == 1)
 	{
 		mapFileName = "Assets/dungeon.txt";
-		spawnMonsterTIDs = { 2, 2, 3 };
-		spawnPoints = { {15, 8}, {40, 6}, {30, 15} };
+		spawnMonsterTIDs = { 2, 2, 3, 3 };
+		spawnPoints = { {15, 8}, {40, 6}, {30, 15},{5, 15} };
 
 		if (pData->m_NextWorldPos == Vector2::Zero)
 			pData->m_NextWorldPos = Vector2(2, 2); // 던전 입구
@@ -134,7 +140,7 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 	{
 		mapFileName = "Assets/forest.txt";
 		spawnMonsterTIDs = { 1, 1, 4, 4 };
-		spawnPoints = { {5, 5}, {10, 5}, {15, 12}, {45, 16} };
+		spawnPoints = { {5, 5}, {10, 5}, {45, 16}, {50, 5} };
 
 		if (pData->m_NextWorldPos == Vector2::Zero)
 			pData->m_NextWorldPos = Vector2(30, 11); // 포탈 근처
@@ -160,8 +166,23 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 		m_vecMonsters.emplace_back(pMonster);
 	}
 
+	if (m_pCamera == nullptr)
+	{
+		Vector2 vScreenSize = Vector2(Engine::Get().GetSetting().width, Engine::Get().GetSetting().height);
+		m_pCamera = new Camera(vScreenSize.x, vScreenSize.y);
+	}
+
+	if (m_pCamera != nullptr)
+	{
+		m_pCamera->SetFollowMode(true);
+		if (m_pPlayer != nullptr)
+		{
+			m_pCamera->SetFollowTarget(&m_pPlayer->GetPosition());
+		}
+	}
+
 	m_pCamera->SetFollowMode(true);
-	m_pCamera->SetFollowTarget(&m_pPlayer->GetPosition());
+	Engine::Get().GetRenderSystem().SetCamera(*m_pCamera);
 
 	if (pData->m_pEncounteredEnemy != nullptr)
 	{
@@ -267,8 +288,10 @@ void MainLevel::Phase_Move(float fDeltaTime)
 {
 	if (m_vecPath.empty())
 	{
-		// 이동이 끝나면 이벤트(포탈, 인카운터) 체크 단계로
-		m_eFieldPhase = FieldState::EventProcessing;
+		CheckMonsterEncounter();
+		CheckPortal();
+
+		m_eFieldPhase = FieldState::EnemyTurn; // 적 턴으로 넘김
 		return;
 	}
 

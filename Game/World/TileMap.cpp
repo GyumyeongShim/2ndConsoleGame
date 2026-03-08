@@ -60,9 +60,7 @@ bool TileMap::IsWalkable(int x, int y) const
 void TileMap::LoadFromFile(const std::string& path)
 {
     std::string fullPath = "../" + path;
-
     std::ifstream file(fullPath);
-
     if (!file.is_open())
     {
         std::cout << "Map file open failed : " << fullPath << std::endl;
@@ -80,11 +78,19 @@ void TileMap::LoadFromFile(const std::string& path)
         if (!line.empty() && line.back() == '\r')
             line.pop_back();
 
+        if (line == "dungeon" || line == "forest")
+            continue;
+
+        if (line.empty() && m_iWidth == 0)
+            continue;
+
         // 빈 줄 무시 방지 (공백 줄도 맵의 일부일 수 있음)
         lines.emplace_back(line);
+
         if ((int)line.size() > m_iWidth)
             m_iWidth = (int)line.size();
     }
+
     m_iHeight = (int)lines.size();
 
     m_vecTiles.resize(m_iWidth * m_iHeight);
