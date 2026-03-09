@@ -14,13 +14,13 @@
       },
       {
          "tid":1002,
-         "name":"Smoke Bomb",
+         "name":"Poison Bomb",
          "itemType":"Consumable",
          "targetType":"AllEnemy",
          "effects":[
             {
                "type":"ApplyStatus",
-               "statusType":"Blind",
+               "statusType":"Poison",
                "duration":2
             }
          ]
@@ -108,7 +108,7 @@
       },
       {
          "tid":1008,
-         "name":"Poison Dagger",
+         "name":"Fire Dagger",
          "itemType":"Consumable",
          "targetType":"SingleEnemy",
          "effects":[
@@ -118,7 +118,7 @@
             },
             {
                "type":"ApplyStatus",
-               "statusType":"Poison",
+               "statusType":"Burn",
                "duration":3
             }
          ]
