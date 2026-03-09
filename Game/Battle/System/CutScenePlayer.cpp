@@ -25,16 +25,16 @@ void CutscenePlayer::Push(std::unique_ptr<Wannabe::ICutsceneEvent> event)
 
 void CutscenePlayer::Update(Wannabe::BattleContext& context, float fDeltaTime)
 {
-    if (m_eState != State::Play)
+    if (m_eState != State::Play) //재생 여부
         return;
 
-    if (m_queCutSceneEvent.empty() == true)
+    if (m_queCutSceneEvent.empty() == true) // 재생 완료
     {
         m_eState = State::Idle;
         return;
     }
 
-    if (m_bSkipRequested)
+    if (m_bSkipRequested) //스킵
     {
         while (!m_queCutSceneEvent.empty())
             m_queCutSceneEvent.pop();
@@ -45,7 +45,7 @@ void CutscenePlayer::Update(Wannabe::BattleContext& context, float fDeltaTime)
         return;
     }
 
-    m_fEventCooldown -= fDeltaTime;
+    m_fEventCooldown -= fDeltaTime; //이벤트 간 최소 간격 대기
     if (m_fEventCooldown > 0)
         return;
 
@@ -57,14 +57,15 @@ void CutscenePlayer::Update(Wannabe::BattleContext& context, float fDeltaTime)
         return;
     }
 
-    if (m_bIsStarted == false)
+    if (m_bIsStarted == false) //이벤트 시작 처리
     {
         event->OnStart(context);
         m_bIsStarted = true;
         return;
     }
 
-    if (event->Update(context, fDeltaTime))
+    bool bIsPlay = event->Update(context, fDeltaTime); //이벤트 업데이트 (재생 true / 종료 false)
+    if (bIsPlay == false || event->IsFinished())  //종료 판정
     {
         event->OnEnd(context);
 

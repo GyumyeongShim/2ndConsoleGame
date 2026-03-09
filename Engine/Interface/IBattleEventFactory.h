@@ -4,6 +4,8 @@
 
 #include "Interface/ICutsceneEvent.h"
 
+enum class EAniType;
+
 namespace Wannabe
 {
 	class Actor;
@@ -12,9 +14,7 @@ namespace Wannabe
 	{
 	public:
 			virtual ~IBattleEventFactory() = default;
-		
-			virtual std::unique_ptr<ICutsceneEvent> CreateAsciiAnimation(const std::vector<std::vector<std::wstring>>& frames,
-				float fFrameDelay) = 0;
+			virtual std::unique_ptr<ICutsceneEvent> CreateAsciiAnimation(Actor* pOwner, EAniType eType, float fFrameDelay = 0.4f) = 0;
 			virtual std::unique_ptr<ICutsceneEvent> CreateAsciiParticle(const Vector2& pos, int iParticleCnt, float fDuration) = 0;
 			virtual std::unique_ptr<ICutsceneEvent> CreatePhaseChange(BattleState nextState) = 0;
 			virtual std::unique_ptr<ICutsceneEvent> CreateDmg(Actor* pAtker, Actor* pTarget,

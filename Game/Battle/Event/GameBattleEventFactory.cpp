@@ -12,9 +12,9 @@
 #include "Battle/Cutscene/TurnEndEvent.h"
 #include "Battle/Cutscene/TurnStartEvent.h"
 
-std::unique_ptr<Wannabe::ICutsceneEvent> GameBattleEventFactory::CreateAsciiAnimation(const std::vector<std::vector<std::wstring>>& frames, float fFrameDelay)
+std::unique_ptr<Wannabe::ICutsceneEvent> GameBattleEventFactory::CreateAsciiAnimation(Wannabe::Actor* pOwner, EAniType eType, float fFrameDelay)
 {
-    return std::make_unique<AsciiAnimationEvent>(frames, fFrameDelay);
+    return std::make_unique<AsciiAnimationEvent>(pOwner, eType, fFrameDelay);
 }
 
 std::unique_ptr<Wannabe::ICutsceneEvent> GameBattleEventFactory::CreateAsciiParticle(const Wannabe::Vector2& pos, int iParticleCnt, float fDuration)

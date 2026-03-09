@@ -80,13 +80,19 @@ namespace Wannabe
 
         int dmg = stat->ApplyDmg(effect.iValue);
         bool bIsDead = stat->IsDead();
-        
+
+        // 공격자 애니 (atk타입)
+        context.GetCutscenePlayer().Push(m_pEventFactory->CreateAsciiAnimation(atker, EAniType::Attack));
+
         // 투사체 연출, 직선
         Vector2 startPos = atker->GetPosition();
         Vector2 endPos = target->GetPosition();
         context.GetCutscenePlayer().Push(m_pEventFactory->CreateVisualEffect(
             startPos, endPos, EffectMovementType::Parabola, L'*', Color::Yellow, 0.8f
         ));
+
+        // 피격자 애니메이션
+        context.GetCutscenePlayer().Push(m_pEventFactory->CreateAsciiAnimation(target, EAniType::Hit));
 
         // 로그 출력
         BattleLog log;
@@ -101,13 +107,16 @@ namespace Wannabe
         // 입자 연출, 50개의 입자가 1.0초간 비산
         context.GetCutscenePlayer().Push(m_pEventFactory->CreateAsciiParticle(endPos, 50, 1.0f)); 
         
-        // 연출
-        //todo test 26.03.08 여기서 색상 변경할 수 있게 하자.
+        // 데미지 연출
         context.GetCutscenePlayer().Push(m_pEventFactory->CreateDmg(atker, target, dmg, effect.bCritical));
         
         // 사망
         if (stat->IsDead())
         {
+            // 사망 애니메이션
+            context.GetCutscenePlayer().Push(m_pEventFactory->CreateAsciiAnimation(target, EAniType::Death));
+
+            // 사망 이벤트
             context.GetCutscenePlayer().Push(m_pEventFactory->CreateDeath(target));
         }
     }

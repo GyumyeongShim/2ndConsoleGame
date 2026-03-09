@@ -1,19 +1,22 @@
 #pragma once
 #include <vector>
 #include <string>
+
 #include "Interface/ICutsceneEvent.h"
 #include "Math/Vector2.h"
+
+enum class EAniType;
 
 namespace Wannabe
 {
     class RenderSystem;
+    class Actor;
 }
 
 class AsciiAnimationEvent : public Wannabe::ICutsceneEvent
 {
 public:
-    // 애니메이션 프레임 리스트, 프레임당 재생 시간, 중앙 박스 위치
-    AsciiAnimationEvent(const std::vector<std::vector<std::wstring>>& frames, float fFrameDelay);
+    AsciiAnimationEvent(Wannabe::Actor* pOwner, EAniType eType, float fFrameDelay);
 
     virtual void OnStart(Wannabe::BattleContext& context) override;
     virtual bool Update(Wannabe::BattleContext& context, float fDeltaTime) override;
@@ -26,8 +29,11 @@ public:
 
 private:
     void DrawBox(Wannabe::RenderSystem& renderSys);
+    Wannabe::Vector2 CalcBoxPos(Wannabe::Actor* pTarget);
 
 private:
+    Wannabe::Actor* m_pOwner = nullptr;
+    EAniType m_eType;
     std::vector<std::vector<std::wstring>> m_frames;
     float m_fFrameDelay = 0.1f;
     float m_fElapsed = 0.f;

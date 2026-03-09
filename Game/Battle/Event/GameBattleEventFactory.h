@@ -5,13 +5,14 @@
 
 #include "Enum/CombatType.h"
 #include "Interface/IBattleEventFactory.h"
+#include "Data/CharacterData.h"
 
 class Wannabe::Actor;
 
 class GameBattleEventFactory : public Wannabe::IBattleEventFactory
 {
 public:
-    std::unique_ptr<Wannabe::ICutsceneEvent> CreateAsciiAnimation(const std::vector<std::vector<std::wstring>>& frames, float fFrameDelay) override;
+    std::unique_ptr<Wannabe::ICutsceneEvent> CreateAsciiAnimation(Wannabe::Actor* pOwner, EAniType eType, float fFrameDelay);
     std::unique_ptr<Wannabe::ICutsceneEvent> CreateAsciiParticle(const Wannabe::Vector2& pos, int iParticleCnt, float fDuration) override;
     std::unique_ptr<Wannabe::ICutsceneEvent> CreatePhaseChange(BattleState nextState) override;
     std::unique_ptr<Wannabe::ICutsceneEvent> CreateDmg(Wannabe::Actor* pAtker, Wannabe::Actor* pTarget,
