@@ -1,0 +1,177 @@
+SLIME
+
+---
+
+## (   )
+
+POISON_SLIME
+
+---
+
+## (x x)
+
+KING_SLIME
+
+---
+
+(   )
+( o )
+-----
+
+GOBLIN
+o
+/|\
+/ \
+|
+
+GOBLIN_ARCHER
+o
+/|}
+/ \
+
+GOBLIN_SHAMAN
+\o/
+|
+/ \
+|
+*
+
+SKELETON
+0
+/|\
+/ \
+|
+
+SKELETON_KNIGHT
+[0]
+/|\
+/ \
+|
+
+ZOMBIE
+z
+/|\
+/ \
+
+WOLF
+/_
+( o )
+/|
+/ \
+
+MAD_WOLF
+/_
+(>< )
+/|
+/ \
+
+BEAR
+(oo)
+/||
+||
+/  \
+
+BAT
+\   /
+( )
+/   \
+
+CROW
+_/
+(o )
+/ \
+
+GARGOYLE
+/o o
+_/
+/|\
+/ \
+
+IMP
+
+> o<
+> /|\
+> / \
+> v
+
+DEMON
+\o_o/
+/|\
+/ \
+
+HELL_HOUND
+/_
+(## )
+/|
+/ \
+
+ORC
+Oo
+/|\
+/ \
+|
+
+TROLL
+To
+/|\
+/ \
+||
+
+OGRE
+OO
+/||
+/  
+||
+
+FIRE_SPIRIT
+/\
+(  )
+/
+/\
+
+ICE_SPIRIT
+//
+|  |
+//
+
+WIND_SPIRIT
+
+```
+(   )
+```
+
+SPIDER
+\o o/
+/|
+/ | \
+
+SCORPION
+_/
+(o )
+/|>
+/ \
+
+BEETLE
+
+---
+
+(o o)
+/ | \
+
+MINOTAUR
+\O O/
+/|
+/ 
+||
+
+LICH
+[L ]
+/|
+/ 
+|
+
+DRAGON
+/^/
+(o o)
+/|
+/ \
