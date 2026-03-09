@@ -50,7 +50,7 @@ void UI_TargetCursor::Draw(Wannabe::RenderSystem& renderSys)
                 continue;
 
             Wannabe::Vector2 screenPos = bActor->GetBattleScreenPosition();
-            renderSys.GetUICanvas().SetCell(screenPos.x + 2, screenPos.y - 1, cell);
+            renderSys.GetUICanvas().SetCell(screenPos.x + 2, screenPos.y - 3, cell);
         }
     }
     else
@@ -64,7 +64,7 @@ void UI_TargetCursor::Draw(Wannabe::RenderSystem& renderSys)
             return;
 
         Wannabe::Vector2 screenPos = actor->GetBattleScreenPosition();
-        renderSys.GetUICanvas().SetCell(screenPos.x + 2, screenPos.y - 1, cell);
+        renderSys.GetUICanvas().SetCell(screenPos.x + 2, screenPos.y - 3, cell);
     }
 }
 
