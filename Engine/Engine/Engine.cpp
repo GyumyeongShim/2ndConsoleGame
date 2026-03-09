@@ -99,7 +99,6 @@ namespace Wannabe
 					// 종료 연출 로직
 					m_fShutdownTimer -= fDeltaTime;
 
-					m_Renderer->BeginFrame();
 					m_RenderSystem->BeginFrame();
 
 					DrawShutdownScreen();
@@ -113,7 +112,6 @@ namespace Wannabe
 				{
 					m_pInput->ProcessInput();
 
-					m_Renderer->BeginFrame();
 					m_RenderSystem->BeginFrame();
 
 					BeginPlay();

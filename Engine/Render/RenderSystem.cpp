@@ -31,42 +31,8 @@ void RenderSystem::RenderFrame()
     Composite(m_DebugCanvas);
     Composite(m_EffectCanvas);
 
-    const std::vector<CanvasCell>& buffer = m_FinalCanvas.GetMutableBuffer();
-
-    int width = m_FinalCanvas.GetWidth();
-    int height = m_FinalCanvas.GetHeight();
-
-    std::wstring frameStream;
-    frameStream.reserve(width * height * 12); // ANSI 코드를 고려해 넉넉하게 예약
-
-    Color lastColor = { 1, 1, 1 }; // 절대 나올 수 없는 초기값
-    for (int y = 0; y < height; ++y)
-    {
-        frameStream += L"\x1b[" + std::to_wstring(y + 1) + L";1H";
-
-        for (int x = 0; x < width; ++x)
-        {
-            int index = y * width + x;
-            if (index >= buffer.size()) 
-                break;
-
-            const auto& cell = buffer[index];
-
-            if (cell.color != lastColor)
-            {
-                frameStream += cell.color.ToAnsiFG();
-                lastColor = cell.color;
-            }
-
-            frameStream += (cell.wch == L'\0' ? L' ' : cell.wch);
-        }
-    }
-
-    // ANSI 리셋 코드로 마무리
-    frameStream += Color::Reset();
-
     // 렌더러에 최종 스트림 전달
-    m_Renderer.EndFrame(frameStream);
+    m_Renderer.DrawCanvas(m_FinalCanvas);
 }
 
 void RenderSystem::DrawActor(const Actor& actor)

@@ -40,7 +40,6 @@ namespace Wannabe
         bool IsEnemy(Actor* actor) const;
 
         BattleState GetBattleState();
-        std::vector<Actor*> ResolveTargets(Actor* pAtker, Actor* pTarget, ActionTargetType eTargetType,int iMaxTargetCnt);
         std::vector<Actor*> GetEnemyParty(Actor* actor);
         std::vector<Actor*> GetPlayerParty(Actor* actor);
 
