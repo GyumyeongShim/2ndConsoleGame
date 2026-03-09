@@ -3,107 +3,127 @@
     {
       "tid": 1,
       "baseStat": {
-        "maxHp": 55,
-        "atk": 8,
-        "def": 4,
-        "spd": 6,
-        "accuracy": 95,
-        "evasion": 2,
-        "critChance": 5,
-        "critResist": 0,
-        "level": 1,
-        "maxExp": 0
+        "maxHp": 55, "atk": 8, "def": 4, "spd": 6,
+        "accuracy": 95, "evasion": 2, "critChance": 5, "critResist": 0,
+        "level": 1, "maxExp": 0
       },
       "expReward": 15,
-      "skillIds": [301,302],
+      "skillIds": [301, 302],
       "visual": {
         "name": "슬라임",
-        "ascii": [
-          "____",
-          "(*_*)",
-          "-----"
-        ],
-        "color": "LightGreen"
+        "ascii": [" ____ ", "(*_*)", "-----"],
+        "color": "LightGreen",
+        "animations": {
+          "Attack": [
+            ["  ____  ", " ( > < )", "  ----- "],
+            ["  ____  ", " ( @ @ )", "  ===== "]
+          ],
+          "Skill": [
+            ["  _  _  ", " ( o o )", "  ----- "],
+            [" (  O  )", "  ----- "]
+          ],
+          "Hit": [
+            ["  ____  ", " ( x x )", "  ----- "]
+          ],
+          "Death": [
+            ["        ", " ( x x )", "  ----- "],
+            ["        ", "  ..... ", "        "]
+          ]
+        }
       }
     },
     {
       "tid": 2,
       "baseStat": {
-        "maxHp": 70,
-        "atk": 12,
-        "def": 6,
-        "spd": 5,
-        "accuracy": 100,
-        "evasion": 5,
-        "critChance": 10,
-        "critResist": 5,
-        "level": 3,
-        "maxExp": 0
+        "maxHp": 70, "atk": 12, "def": 6, "spd": 5,
+        "accuracy": 100, "evasion": 5, "critChance": 10, "critResist": 5,
+        "level": 3, "maxExp": 0
       },
       "expReward": 30,
-      "skillIds": [303,304],
+      "skillIds": [303, 304],
       "visual": {
         "name": "고블린",
-        "ascii": [
-          "  /\\  ",
-          " (oo) ",
-          " /||\\ ",
-          "/_  _\\",
-          "  ~~  "
-        ],
-        "color": "Green"
+        "ascii": ["  /\\  ", " (oo) ", " /||\\ ", "/_  _\\", "  ~~  "],
+        "color": "Green",
+        "animations": {
+          "Attack": [
+            ["  /\\  ", " (>o) ", " /||--", "/_  _\\"],
+            ["  /\\  ", " (oo) ", " /||\\ ", "/_  _\\"]
+          ],
+          "Skill": [
+            ["  /\\  ", " (OO) ", " /||\\ ", "/_  _\\"],
+            ["  /\\  ", " (**) ", " <||> ", "/_  _\\"]
+          ],
+          "Hit": [
+            ["  /\\  ", " (xx) ", " /||\\ ", "/_  _\\"]
+          ],
+          "Death": [
+            ["  /\\  ", " (xx) ", " /||\\ ", "/_  _\\"],
+            ["      ", "  ~~  ", "      "]
+          ]
+        }
       }
     },
     {
       "tid": 3,
       "baseStat": {
-        "maxHp": 65,
-        "atk": 14,
-        "def": 5,
-        "spd": 9,
-        "accuracy": 110,
-        "evasion": 15,
-        "critChance": 20,
-        "critResist": 10,
-        "level": 5,
-        "maxExp": 0
+        "maxHp": 65, "atk": 14, "def": 5, "spd": 9,
+        "accuracy": 110, "evasion": 15, "critChance": 20, "critResist": 10,
+        "level": 5, "maxExp": 0
       },
       "expReward": 35,
-      "skillIds": [305,306],
+      "skillIds": [305, 306],
       "visual": {
         "name": "늑대",
-        "ascii": [
-          "/\\^/ ",
-          "(oo) ",
-          " vv  "
-        ],
-        "color": "LightGray"
+        "ascii": ["/\\^/ ", "(oo) ", " vv  "],
+        "color": "LightGray",
+        "animations": {
+          "Attack": [
+            ["/\\^/ ", "(><) ", " vv  "],
+            ["/\\^/ ", "(OO) ", " WW  "]
+          ],
+          "Skill": [
+            ["/\\^/ ", "(@@) ", " vv  "],
+            [" AUUU ", "/\\^/ ", " vv  "]
+          ],
+          "Hit": [
+            ["/\\^/ ", "(xx) ", " vv  "]
+          ],
+          "Death": [
+            ["/\\^/ ", "(--) ", " ..  "]
+          ]
+        }
       }
     },
     {
       "tid": 4,
       "baseStat": {
-        "maxHp": 45,
-        "atk": 10,
-        "def": 3,
-        "spd": 12,
-        "accuracy": 120,
-        "evasion": 20,
-        "critChance": 5,
-        "critResist": 2,
-        "level": 4,
-        "maxExp": 0
+        "maxHp": 45, "atk": 10, "def": 3, "spd": 12,
+        "accuracy": 120, "evasion": 20, "critChance": 5, "critResist": 2,
+        "level": 4, "maxExp": 0
       },
       "expReward": 25,
-      "skillIds": [307,308],
+      "skillIds": [307, 308],
       "visual": {
         "name": "박쥐",
-        "ascii": [
-          "\\/^\\/ ",
-          " (o o) ",
-          "  vv  "
-        ],
-        "color": "Cyan"
+        "ascii": ["\\/^\\/ ", " (o o) ", "  vv  "],
+        "color": "Cyan",
+        "animations": {
+          "Attack": [
+            ["--^-- ", " (o o) ", "  vv  "],
+            ["\\/^\\/ ", " (o o) ", "  vv  "]
+          ],
+          "Skill": [
+            ["\\/^\\/ ", " (O O) ", "  WW  "],
+            ["~~~~~ ", " (O O) ", "  ~~  "]
+          ],
+          "Hit": [
+            ["\\/^\\/ ", " (x x) ", "  vv  "]
+          ],
+          "Death": [
+            ["      ", " (x x) ", "  ..  "]
+          ]
+        }
       }
     }
   ]

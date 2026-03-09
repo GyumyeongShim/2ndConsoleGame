@@ -138,6 +138,12 @@
     <ClCompile Include="UI\UI_ActorInfo.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Battle\Cutscene\AsciiAnimationEvent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Battle\Cutscene\MoveEvent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Level\MainLevel.h">
@@ -276,6 +282,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="UI\UI_ActorInfo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Battle\Cutscene\AsciiAnimationEvent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Battle\Cutscene\MoveEvent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

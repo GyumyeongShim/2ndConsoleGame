@@ -1,14 +1,25 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <map>
 
 #include "Math/Color.h"
+
+enum class EAniType
+{
+    Attack,
+    Skill,
+    Hit,
+    Death
+};
 
 struct CharacterVisualData
 {
     Wannabe::Color color = Wannabe::Color::White;
     std::wstring name;
     std::vector<std::wstring> ascii;
+
+    std::map<EAniType, std::vector<std::vector<std::wstring>>> animations;
 };
 
 struct BaseStat

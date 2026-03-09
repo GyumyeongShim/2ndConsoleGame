@@ -19,7 +19,9 @@ namespace Wannabe
             TurnEnd,
             Delay,
             Death,
-            AsciiParticle
+            AsciiParticle,
+            AsciiAnimation,
+            Move
         };
 
         virtual ~ICutsceneEvent() = default;

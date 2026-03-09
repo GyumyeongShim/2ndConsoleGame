@@ -65,6 +65,15 @@ static CombatEffectType ParseCombatEffectType(const std::string& str)
     return CombatEffectType::None;
 }
 
+static EAniType ParseAniType(const std::string& str)
+{
+    if (str == "Attack") return EAniType::Attack;
+    if (str == "Skill")  return EAniType::Skill;
+    if (str == "Hit")    return EAniType::Hit;
+    if (str == "Death")  return EAniType::Death;
+    return EAniType::Attack;
+}
+
 static StatusType ParseStatusType(const std::string& str)
 {
     if (str == "Burn") return  StatusType::Burn;
@@ -139,6 +148,32 @@ void from_json(const json& j, CharacterVisualData& visual)
         visual.ascii.clear();
         for (auto& line : j["ascii"].get<std::vector<std::string>>())
             visual.ascii.emplace_back(ToWString(line));
+    }
+
+    // Ascii Ani 파싱
+    if (j.contains("animations"))
+    {
+        auto animationsJson = j.at("animations");
+        for (auto it = animationsJson.begin(); it != animationsJson.end(); ++it)
+        {
+            // it.key()는 "Attack", "Skill" 등의 문자열
+            // it.value()는 해당 애니메이션의 프레임 리스트([[...],[...]])
+            EAniType type = ParseAniType(it.key());
+            std::vector<std::vector<std::wstring>> frames;
+
+            const auto& frameList = it.value();
+            for (const auto& frame : frameList)
+            {
+                std::vector<std::wstring> lines;
+                for (const auto& line : frame)
+                {
+                    lines.emplace_back(ToWString(line.get<std::string>()));
+                }
+                frames.emplace_back(lines);
+            }
+
+            visual.animations[type] = frames;
+        }
     }
 }
 

@@ -27,7 +27,7 @@ namespace Wannabe
 std::wstring ToWString(const std::string& str);
 
 void from_json(const json& j, BaseStat& stat);
-void from_json(const json& j, CharacterVisualData& visual);
+void from_json(const json& j, CharacterVisualData& visual); //ascii, ascii ani (atk,skill,hit, death...)
 void from_json(const json& j, PlayerData& data);
 void from_json(const json& j, MonsterData& data);
 void from_json(const json& j, CharacterData& data);
@@ -36,5 +36,3 @@ void from_json(const json& j, StatModifier& mod);
 void from_json(const json& j, ActionVisualData& visual); // 통합 비주얼 데이터
 void from_json(const json& j, CombatEffectData& data);  // 효과 중심 설계의 핵심
 void from_json(const json& j, ActionData& data);        // 통합 액션 데이터
-
-void from_json(const json& j, CombatEffect& data);

@@ -97,10 +97,12 @@
     <ClCompile Include="Battle\Command\ItemCommand.cpp" />
     <ClCompile Include="Battle\Command\RunCommand.cpp" />
     <ClCompile Include="Battle\Command\SkillCommand.cpp" />
+    <ClCompile Include="Battle\Cutscene\AsciiAnimationEvent.cpp" />
     <ClCompile Include="Battle\Cutscene\AsciiParticleEvent.cpp" />
     <ClCompile Include="Battle\Cutscene\BattlePhaseChangeEvent.cpp" />
     <ClCompile Include="Battle\Cutscene\DamageEvent.cpp" />
     <ClCompile Include="Battle\CutScene\LogEvent.cpp" />
+    <ClCompile Include="Battle\Cutscene\MoveEvent.cpp" />
     <ClCompile Include="Battle\Cutscene\VisualEffectEvent.cpp" />
     <ClCompile Include="Battle\AI\EnemyAI.cpp" />
     <ClCompile Include="Battle\Cutscene\DelayEvent.cpp" />
@@ -141,9 +143,11 @@
     <ClInclude Include="Battle\Command\ItemCommand.h" />
     <ClInclude Include="Battle\Command\RunCommand.h" />
     <ClInclude Include="Battle\Command\SkillCommand.h" />
+    <ClInclude Include="Battle\Cutscene\AsciiAnimationEvent.h" />
     <ClInclude Include="Battle\Cutscene\AsciiParticleEvent.h" />
     <ClInclude Include="Battle\Cutscene\BattlePhaseChangeEvent.h" />
     <ClInclude Include="Battle\Cutscene\DamageEvent.h" />
+    <ClInclude Include="Battle\Cutscene\MoveEvent.h" />
     <ClInclude Include="Battle\Cutscene\VisualEffectEvent.h" />
     <ClInclude Include="Battle\CutScene\LogEvent.h" />
     <ClInclude Include="Battle\AI\EnemyAI.h" />
