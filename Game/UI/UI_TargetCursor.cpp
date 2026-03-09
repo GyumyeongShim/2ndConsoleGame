@@ -36,8 +36,9 @@ void UI_TargetCursor::Draw(Wannabe::RenderSystem& renderSys)
         return;
 
     CanvasCell cell;
-    cell.wch = L'>';
-    cell.color = Color::Yellow;
+    cell.wch = L'¡å';
+    cell.color = Color::BrightGold;
+    cell.sortingOrder = 103;
 
     if (m_bAllTarget == true)
     {
@@ -45,11 +46,11 @@ void UI_TargetCursor::Draw(Wannabe::RenderSystem& renderSys)
         for (auto* actor : m_vecTarget)
         {
             auto* bActor = dynamic_cast<BattleActor*>(actor);
-            if (bActor == nullptr)
+            if (bActor == nullptr || bActor->IsDestroyRequested())
                 continue;
 
-            Vector2 screenPos = bActor->GetBattleScreenPosition();
-            renderSys.GetUICanvas().SetCell(screenPos.x - 2, screenPos.y, cell);
+            Wannabe::Vector2 screenPos = bActor->GetBattleScreenPosition();
+            renderSys.GetUICanvas().SetCell(screenPos.x + 2, screenPos.y - 1, cell);
         }
     }
     else
@@ -62,8 +63,8 @@ void UI_TargetCursor::Draw(Wannabe::RenderSystem& renderSys)
         if (actor == nullptr)
             return;
 
-        Vector2 screenPos = actor->GetBattleScreenPosition();
-        renderSys.GetUICanvas().SetCell(screenPos.x - 2, screenPos.y, cell);
+        Wannabe::Vector2 screenPos = actor->GetBattleScreenPosition();
+        renderSys.GetUICanvas().SetCell(screenPos.x + 2, screenPos.y - 1, cell);
     }
 }
 

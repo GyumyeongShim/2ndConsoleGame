@@ -26,7 +26,7 @@ public:
 	int GetActorNum() { return m_iActorNum; }
 	void SetTargeted(bool bIsTargeted);
 
-	Wannabe::Vector2 GetBattleScreenPosition() { return m_BattleScreenPos; }
+	Wannabe::Vector2 GetBattleScreenPosition();
 
 	bool UseItem(Wannabe::Item* pItem, Wannabe::Actor* pTarget, Wannabe::BattleContext& eContext);
 	bool EquipItem(Wannabe::Item* pItem, Wannabe::BattleContext& eContext);

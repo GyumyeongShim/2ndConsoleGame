@@ -133,6 +133,11 @@ void BattleActor::SetTargeted(bool bIsTargeted)
     display->SetName(bIsTargeted ? L"[" + name + L"]" : name);
 }
 
+Wannabe::Vector2 BattleActor::GetBattleScreenPosition()
+{
+    return Engine::Get().GetRenderSystem().GetCamera().WorldToScreen(GetPosition());
+}
+
 bool BattleActor::UseItem(Wannabe::Item * pItem, Wannabe::Actor* pTarget, Wannabe::BattleContext& eContext)
 {
     if (pItem == nullptr)
