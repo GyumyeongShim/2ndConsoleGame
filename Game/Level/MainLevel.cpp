@@ -74,22 +74,22 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 		m_worldMap->Draw(renderSys);
 
 	// 1. 이동 범위 하이라이트 (바닥)
-	if (m_bIsRangeCalculated)
+	if (m_eFieldPhase == FieldState::PlayerTurn && m_bIsRangeCalculated)
 	{
 		for (const auto& tilePos : m_vecMoveRangeTiles)
 		{
 			Vector2 screenPos = tilePos - renderSys.GetCamera().GetPosition();
-			renderSys.GetWorldCanvas().DrawTxt(screenPos.x, screenPos.y, L"\u2592", Color::Cyan);
+			renderSys.GetWorldCanvas().DrawTxt(screenPos.x, screenPos.y, L"\u2592", Color::BrightPink,1);
 		}
 	}
 
-	if (!m_vecMonsterRangeTiles.empty())
+	if (m_eFieldPhase == FieldState::EnemyTurn || m_eFieldPhase == FieldState::EnemyMove)
 	{
 		for (const auto& vPos : m_vecMonsterRangeTiles)
 		{
 			Vector2 vScreen = renderSys.GetCamera().WorldToScreen(vPos);
 			// 붉은색 쉐이드 타일로 위험 지역 표시
-			renderSys.GetWorldCanvas().DrawTxt((int)vScreen.x, (int)vScreen.y, L"\u2591", Color::Red);
+			renderSys.GetWorldCanvas().DrawTxt((int)vScreen.x, (int)vScreen.y, L"\u2591", Color::BrightOrange,1);
 		}
 	}
 
@@ -99,7 +99,7 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 	if (m_eFieldPhase != FieldState::BattleTransition)
 	{
 		Vector2 cursorScreenPos = renderSys.GetCamera().WorldToScreen(m_vCursorPos);
-		renderSys.GetWorldCanvas().DrawTxt((int)cursorScreenPos.x, (int)cursorScreenPos.y, L"\u25A3", Color::BrightLime);
+		renderSys.GetWorldCanvas().DrawTxt((int)cursorScreenPos.x, (int)cursorScreenPos.y, L"\u25A3", Color::BrightLime,2);
 	}
 
 	// 3. 전환 연출 (최상단)
@@ -314,7 +314,7 @@ void MainLevel::Phase_Idle()
 		else if (m_pCurActor->IsTypeOf<Monster>())
 		{
 			m_eFieldPhase = FieldState::EnemyTurn;
-			// EnemyTurn에서 m_pCurActor만 움직이도록 로직 수정 필요
+			CalcMonsterMoveRange(m_pCurActor);
 		}
 	}
 	else
@@ -419,6 +419,9 @@ void MainLevel::Phase_Move(float fDeltaTime)
 		m_pTurnManager->TurnEnd();
 		CheckMonsterEncounter();
 
+		m_vecMonsterRangeTiles.clear();
+		m_vecMoveRangeTiles.clear();
+
 		if (m_eFieldPhase == FieldState::BattleTransition)
 			return;
 
@@ -504,7 +507,7 @@ void MainLevel::Phase_EnemyMove(float fDeltaTime)
 	m_fMoveTimer += fDeltaTime;
 
 	// 0.15초~0.2초 간격으로 한 칸씩 이동 (플레이어보다 약간 느리게 설정하여 가시성 확보)
-	if (m_fMoveTimer >= 0.15f)
+	if (m_fMoveTimer >= 0.2f)
 	{
 		auto& path = pCurrentMonster->GetMovePath();
 
