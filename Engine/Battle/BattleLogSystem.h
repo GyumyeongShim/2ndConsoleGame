@@ -9,7 +9,7 @@ class WANNABE_API BattleLogSystem
 {
 public:
 	void AddLog(const std::wstring& log);
-	void AddBattleLog(const BattleLog& log);
+	//void AddBattleLog(const BattleLog& log);
 	void ClearLog();
 	bool IsEmptyLog();
 

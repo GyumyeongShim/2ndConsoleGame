@@ -43,7 +43,7 @@ void SkillCommand::Execute(Wannabe::BattleContext& context)
     int targetCnt = skill->iMaxTargetCnt;
     ActionTargetType targetType = skill->targetType;
     // Å¸°Ù ¼±Á¤
-    auto targets = context.ResolveTargets(m_pInstigator,m_pTarget,targetType,targetCnt);
+    auto targets = context.GetResolver().ResolveTargets(context, m_pInstigator, m_pTarget, targetType, targetCnt);
     for (auto* target : targets)
     {
         auto results = resolver.ResolveAction(m_pInstigator, target, skill->vecEffects,skill->iPower);

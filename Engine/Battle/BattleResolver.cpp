@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <random>
 
+#include "Battle/BattleContext.h"
 #include "Util/Utill.h"
 #include "Actor/Actor.h"
 #include "Component/StatComponent.h"
@@ -301,6 +302,86 @@ namespace Wannabe
             heal = 0.f;
 
         return static_cast<int>(heal);
+    }
+
+    std::vector<Actor*> BattleResolver::ResolveTargets(Wannabe::BattleContext& context, Actor* pAtker, Actor* pTarget, ActionTargetType eTargetType, int iMaxTargetCnt)
+    {
+        std::vector<Actor*> result;
+        if (IsValidActor(pAtker) == false)
+            return result;
+
+        std::vector<Actor*> temp;
+        switch (eTargetType)
+        {
+        case ActionTargetType::Self:
+        case ActionTargetType::SingleAlly:
+        case ActionTargetType::AllAlly:
+            temp = context.IsEnemy(pAtker) ? context.GetEnemyParty(pAtker) : context.GetPlayerParty(pAtker);
+            break;
+
+        case ActionTargetType::SingleEnemy:
+        case ActionTargetType::AllEnemy:
+        case ActionTargetType::RandomEnemy:
+            temp = context.IsEnemy(pAtker) ? context.GetPlayerParty(pAtker) : context.GetEnemyParty(pAtker);
+            break;
+
+        default:
+            return result;
+        }
+
+        // 2. 유효하지 않거나 죽은 대상 필터링
+        temp.erase(
+            std::remove_if(temp.begin(), temp.end(),
+                [this](Actor* actor)
+        {
+            return !IsValidActor(actor) || actor->GetComponent<StatComponent>()->IsDead();
+        }),
+            temp.end());
+
+        // 3. 타입별 최종 타겟 확정
+        switch (eTargetType)
+        {
+        case ActionTargetType::Self:
+            if (!pAtker->GetComponent<StatComponent>()->IsDead())
+                result.emplace_back(pAtker);
+            break;
+
+        case ActionTargetType::SingleEnemy:
+        case ActionTargetType::SingleAlly:
+            if (IsValidActor(pTarget))
+            {
+                auto it = std::find(temp.begin(), temp.end(), pTarget);
+                if (it != temp.end())
+                    result.emplace_back(pTarget);
+            }
+            break;
+
+        case ActionTargetType::AllEnemy:
+        case ActionTargetType::AllAlly:
+            result = temp;
+            break;
+
+        case ActionTargetType::RandomEnemy:
+        {
+            if (temp.empty())
+                break;
+
+            int count = std::min((int)temp.size(), iMaxTargetCnt);
+            // 셔플 로직
+            for (int i = 0; i < (int)temp.size(); ++i)
+            {
+                int sour = Util::Random(0, (int)temp.size() - 1);
+                int dest = Util::Random(0, (int)temp.size() - 1);
+                std::swap(temp[sour], temp[dest]);
+            }
+
+            for (int i = 0; i < count; ++i)
+                result.emplace_back(temp[i]);
+            break;
+        }
+        }
+
+        return result;
     }
 
     bool BattleResolver::CalcRunSucess()

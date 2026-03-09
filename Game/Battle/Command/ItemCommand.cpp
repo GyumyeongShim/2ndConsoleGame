@@ -54,7 +54,7 @@ void ItemCommand::Execute(Wannabe::BattleContext& context)
         return;
 
     // Å¸°Ù ¼±Á¤
-    auto targets = context.ResolveTargets(m_pInstigator, m_pTarget, 
+    auto targets = context.GetResolver().ResolveTargets(context, m_pInstigator, m_pTarget, 
         itemData->targetType, itemData->iMaxTargetCnt);
     if (targets.empty() == true)
         return;
