@@ -19,7 +19,7 @@ UI_ActorInfo::~UI_ActorInfo()
 
 void UI_ActorInfo::Tick(float fDeltaTime)
 {
-	if (m_pTargetActor == nullptr || !m_pTargetActor->IsDestroyRequested())
+	if (m_pTargetActor == nullptr || m_pTargetActor->IsDestroyRequested())
 		return;
 
     auto* pStat = m_pTargetActor->GetComponent<StatComponent>();
@@ -45,40 +45,63 @@ void UI_ActorInfo::Tick(float fDeltaTime)
     {
         m_Color = bMyTurn ? Wannabe::Color::Yellow : Wannabe::Color::White;
     }
+
+    RecalculateViewportPosition();
 }
 
 void UI_ActorInfo::Draw(Wannabe::RenderSystem& renderSys)
 {
-    if (m_infoStr.empty() || m_pTargetActor == nullptr)
+    if (m_infoStr.empty() || m_pTargetActor == nullptr || m_pTargetActor->IsDestroyRequested())
         return;
 
-    Wannabe::Vector2 pos = m_cachedViewportPos;
-
-    // 이름
-    renderSys.DrawUI(m_infoStr, pos, m_Color, m_SortingOrder);
+    Wannabe::Vector2 actorScreenPos = renderSys.GetCamera().WorldToScreen(m_pTargetActor->GetPosition());
 
     auto* pStat = m_pTargetActor->GetComponent<StatComponent>();
     auto* pStatus = m_pTargetActor->GetComponent<Wannabe::StatusComponent>();
 
-    // Hp
-    Wannabe::Color hpBarColor;
-    std::wstring hpGauge = L"HP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 5, hpBarColor);
-    renderSys.DrawUI(hpGauge, { pos.x, pos.y + 1 }, Wannabe::Color::White, m_SortingOrder);
     if (m_bIsPlayer)
     {
-        Wannabe::Color mpBarColor = Wannabe::Color::Cyan;
-        std::wstring mpGauge = L" MP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 5, mpBarColor);
-        renderSys.DrawUI(mpGauge, { pos.x, pos.y + 2 }, Wannabe::Color::White, m_SortingOrder);
-    }
+        // 플레이어: 아스키 아트 하단(보통 Y+3)부터 정보 출력
+        Wannabe::Vector2 drawPos = { actorScreenPos.x, actorScreenPos.y + 2 };
 
-    // 상태 이상 슬롯
-    if (pStatus)
-    {
-        const auto& states = pStatus->GetCurStatusState();
-        for (size_t i = 0; i < states.size(); ++i)
+        renderSys.DrawUI(m_infoStr, drawPos, m_Color, m_SortingOrder);
+
+        Wannabe::Color hpColor;
+        std::wstring hpBar = L"HP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 10, hpColor);
+        renderSys.DrawUI(hpBar, { drawPos.x, drawPos.y + 1 }, Wannabe::Color::White, m_SortingOrder);
+
+        //Wannabe::Color mpColor = Wannabe::Color::Cyan;
+        //std::wstring mpBar = L"MP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 10, mpColor);
+        //renderSys.DrawUI(mpBar, { drawPos.x, drawPos.y + 2 }, Wannabe::Color::White, m_SortingOrder);
+        if (pStatus)
         {
-            Wannabe::Color statusColor = GetStatusColor(states[i].eStatusType);
-            renderSys.DrawUI(L"■", { pos.x + (static_cast<int>(i) * 2), pos.y + 3 }, statusColor, m_SortingOrder);
+            const auto& states = pStatus->GetCurStatusState();
+            for (size_t i = 0; i < states.size(); ++i)
+            {
+                Wannabe::Color statusColor = GetStatusColor(states[i].eStatusType);
+                renderSys.DrawUI(L"■", { drawPos.x + (static_cast<int>(i) * 2), drawPos.y + 3 }, statusColor, m_SortingOrder);
+            }
+        }
+    }
+    else
+    {
+        // 몬스터: 아스키 아트 상단(Y-2)부터 위로 쌓듯이 출력
+        Wannabe::Vector2 drawPos = { actorScreenPos.x, actorScreenPos.y - 2 };
+
+        renderSys.DrawUI(m_infoStr, drawPos, m_Color, m_SortingOrder);
+
+        Wannabe::Color hpColor;
+        std::wstring hpBar = L"HP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 10, hpColor);
+        renderSys.DrawUI(hpBar, { drawPos.x, drawPos.y + 1 }, Wannabe::Color::White, m_SortingOrder);
+        
+        if (pStatus)
+        {
+            const auto& states = pStatus->GetCurStatusState();
+            for (size_t i = 0; i < states.size(); ++i)
+            {
+                Wannabe::Color statusColor = GetStatusColor(states[i].eStatusType);
+                renderSys.DrawUI(L"■", { drawPos.x + (static_cast<int>(i) * 2), drawPos.y + 3 }, statusColor, m_SortingOrder);
+            }
         }
     }
 }
@@ -101,27 +124,24 @@ bool UI_ActorInfo::IsMyTurn()
 
 std::wstring UI_ActorInfo::MakeGaugeBar(int iCur, int iMax, int iWidth, Wannabe::Color& outColor)
 {
-    std::wstring bar = L"[";
     float percent = (iMax > 0) ? static_cast<float>(iCur) / iMax : 0.0f;
     int fillCount = static_cast<int>(percent * iWidth);
 
-    // ■■■■ ], ■■   ]
-    bar += L"[";
+    // 색상 변화
+    if (percent > 0.6f)
+        outColor = Wannabe::Color::Green;
+    else if (percent > 0.3f)
+        outColor = Wannabe::Color::BrightOrange;
+    else
+        outColor = Wannabe::Color::BrightRed;
+
+    // [||| ], [||   ]
+    std::wstring bar = L"[";
     for (int i = 0; i < iWidth; ++i)
     {
-        bar += (i < fillCount) ? L"■" : L" ";
+        bar += (i < fillCount) ? L"|" : L" ";
     }
-    bar += L"]";
-
-    return bar;
-
-    // 색상 변화
-    if (percent > 0.6f) 
-        outColor = Wannabe::Color::Red;
-    else if (percent > 0.3f) 
-        outColor = Wannabe::Color::Orange;
-    else 
-        outColor = Wannabe::Color::Pink;
+    bar += L"] " + std::to_wstring(iCur) + L"/" + std::to_wstring(iMax);
 
     return bar;
 }

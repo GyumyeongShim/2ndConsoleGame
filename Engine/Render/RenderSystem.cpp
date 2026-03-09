@@ -113,12 +113,6 @@ void RenderSystem::DrawBattleActor(const Actor& actor)
 
         yOffset++;
     }
-
-    // 2. ÀÌ¸§
-    if (!display->GetName().empty())
-    {
-        m_WorldCanvas.DrawTxt(screen.x, screen.y - 1,display->GetName(),display->GetNameColor(), actor.GetSortingOrder() + 1);
-    }
 }
 
 void RenderSystem::DrawUI(const std::wstring& txt, Vector2 pos, Color color, int iOrder)

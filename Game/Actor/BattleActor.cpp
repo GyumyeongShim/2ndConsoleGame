@@ -105,15 +105,15 @@ void BattleActor::SetSlotPos(int slotNum)
 {
     if (m_eTeam == Team::Enemy)
     {
-        m_BattleScreenPos.x = 6 + (slotNum * 14);
-        m_BattleScreenPos.y = 5;
+        m_BattleScreenPos.x = 10 + (slotNum * 30);
+        m_BattleScreenPos.y = 10;
     }
     else if (m_eTeam == Team::Player)
     {
         int height = Engine::Get().GetRenderSystem().GetScreenSize().y;
 
-        m_BattleScreenPos.x = 6 + (slotNum * 14);
-        m_BattleScreenPos.y = 18;
+        m_BattleScreenPos.x = 10 + (slotNum * 30);
+        m_BattleScreenPos.y = 20;
     }
 
     m_Pos = m_BattleScreenPos;

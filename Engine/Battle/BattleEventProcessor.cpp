@@ -166,6 +166,7 @@ namespace Wannabe
         BattleLog log;
         log.wstrAtkerName = effect.pAtker->GetComponent<DisplayComponent>()->GetOriginName();
         log.wstrTargetName = effect.pTarget->GetComponent<DisplayComponent>()->GetOriginName();
+        log.wstrTxt = GetStatusToString(effect.eStatus);
         log.eLogType = LogType::StatusApply;
         log.iValue = effect.iValue;
         log.bCritical = false;
