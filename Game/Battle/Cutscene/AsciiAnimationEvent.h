@@ -29,7 +29,6 @@ public:
 
 private:
     void DrawBox(Wannabe::RenderSystem& renderSys);
-    Wannabe::Vector2 CalcBoxPos(Wannabe::Actor* pTarget);
 
 private:
     Wannabe::Actor* m_pOwner = nullptr;
