@@ -13,7 +13,6 @@ public:
 	virtual void RecalculateViewportPosition() override;
 	virtual void SetRenderSystem(Wannabe::RenderSystem* renderSystem) { m_pRenderSystem = renderSystem; }
 
-	void Init(int idx = 0);
 	void ChangeTxt(const wchar_t* newImage);
 
 	const std::wstring& GetTxt() { return m_strImage; }

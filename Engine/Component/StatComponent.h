@@ -56,6 +56,7 @@ namespace Wannabe
         bool IsTurnMax() const { return m_fTurnCnt >= m_iMaxTurnCnt; }
         bool IsDead() const { return m_iHp <= 0; }
 
+        int GetLevel() const { return m_iLevel; }
         int GetExp() const { return m_iExp; }
         int GetHp() const { return m_iHp; }
         int GetAtk() const { return m_iAtk + m_EquipBonus.iAtk; }

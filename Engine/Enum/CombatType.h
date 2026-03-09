@@ -176,3 +176,28 @@ static std::wstring GetStatusToString(StatusType eType)
         return L"";
     }
 }
+
+inline Wannabe::Color GetStatusColor(StatusType eType)
+{
+    switch (eType)
+    {
+    case StatusType::Burn:
+        return Wannabe::Color::Red;
+    case StatusType::Poison:
+        return Wannabe::Color::Magenta;
+    case StatusType::Freeze:
+        return Wannabe::Color::Cyan;
+    case StatusType::Shock:
+        return Wannabe::Color::Yellow;
+    case StatusType::Stun:
+        return Wannabe::Color::Gray;
+    case StatusType::Sleep:
+        return Wannabe::Color::Blue;
+    case StatusType::AtkUp:
+        return Wannabe::Color::Orange;
+    case StatusType::DefUp:
+        return Wannabe::Color::Green;
+    default:
+        return Wannabe::Color::White;
+    }
+}

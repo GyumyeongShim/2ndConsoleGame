@@ -27,6 +27,7 @@ class UI_Inventory;
 class UI_BattleResult;
 class BattleActor;
 class IBattleLevel;
+class UI_BattleLayout;
 
 namespace Wannabe
 {
@@ -130,14 +131,15 @@ private:
 
 	std::vector<std::unique_ptr<Wannabe::Actor>> m_vecActors; //전투 중 생성된 actor, 특별 처리
 
+	UI_BattleLayout* m_pBattleLayout = nullptr; // 통합 UI
 	std::vector<UI_HPBar*> m_vecPlayerHPUI; //UI
 	std::vector<UI_HPBar*> m_vecEnemyHPUI;
-	std::vector<UI_Dialogue*> m_vecDialogue; // 메시지 표기, 재활용을 위해 사용.
+
 	UI_TargetCursor* m_pTargetCursor = nullptr;
-	UI_TurnOrder* m_pTurnOrder = nullptr;
 	UI_Inventory* m_pInvenMenu = nullptr;
-	UI_MenuList* m_pMenu = nullptr;
 	UI_BattleResult* m_pBattleResult = nullptr;
+	UI_MenuList* m_pMenu = nullptr;
+	UI_TurnOrder* m_pTurnOrder = nullptr;
 
 	MenuTxt m_eMenuTxt = MenuTxt::None;
 	std::vector<std::wstring> m_vecSkillMenu;

@@ -79,7 +79,7 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 		for (const auto& tilePos : m_vecMoveRangeTiles)
 		{
 			Vector2 screenPos = tilePos - renderSys.GetCamera().GetPosition();
-			renderSys.GetWorldCanvas().DrawTxt(screenPos.x, screenPos.y, L"\u2592", Color::BrightPink,1);
+			renderSys.GetWorldCanvas().DrawTxt(screenPos.x, screenPos.y, L"\u2592", Color::BrightCyan,1);
 		}
 	}
 

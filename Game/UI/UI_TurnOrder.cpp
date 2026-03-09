@@ -20,11 +20,20 @@ void UI_TurnOrder::Tick(float fDeltaTime)
 void UI_TurnOrder::Draw(Wannabe::RenderSystem& renderSys)
 {   
     Wannabe::Vector2 pos = m_cachedViewportPos;
-
-    // 오른쪽 정렬 보정
-    for (int i = 0; i < m_lines.size(); ++i)
+    int currentX = pos.x;
+    for (size_t i = 0; i < m_lines.size(); ++i)
     {
-        renderSys.DrawUI(m_lines[i], Wannabe::Vector2(pos.x, pos.y + i),m_lineColors[i],m_SortingOrder);
+        // 1. 이름 출력
+        renderSys.DrawUI(m_lines[i], Wannabe::Vector2(currentX, pos.y), m_lineColors[i], m_SortingOrder);
+        currentX += static_cast<int>(m_lines[i].length());
+
+        // 2. 화살표 출력 (마지막 요소가 아닐 때만)
+        if (i < m_lines.size() - 1)
+        {
+            std::wstring arrow = L" → ";
+            renderSys.DrawUI(arrow, Wannabe::Vector2(currentX, pos.y), Wannabe::Color::White, m_SortingOrder);
+            currentX += static_cast<int>(arrow.length());
+        }
     }
 }
 
@@ -33,12 +42,7 @@ void UI_TurnOrder::RecalculateViewportPosition()
     if (m_pRenderSystem == nullptr)
         return;
 
-    Wannabe::Vector2 screen = m_pRenderSystem->GetScreenSize();
-
-    int marginRight = 6;
-    int marginTop = 1;
-
-    m_cachedViewportPos = Wannabe::Vector2(screen.x - marginRight,marginTop);
+    m_cachedViewportPos = Wannabe::Vector2(2, 1);
 }
 
 void UI_TurnOrder::RefreshTurnOrder()
@@ -85,7 +89,7 @@ void UI_TurnOrder::UpdateTurnText()
         if (actor == current)
         {
             name = L"▶" + name;
-            m_lineColors.emplace_back(Wannabe::Color::Yellow);
+            m_lineColors.emplace_back(Wannabe::Color::Pink);
         }
         else
             m_lineColors.emplace_back(Wannabe::Color::White);

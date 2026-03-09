@@ -73,39 +73,40 @@ void UI_MenuList::Draw(Wannabe::RenderSystem& renderSys)
 
 void UI_MenuList::RecalculateViewportPosition()
 {
-    if (!m_pRenderSystem)
-        return;
+    //if (!m_pRenderSystem)
+    //    return;
 
-    Vector2 screen = m_pRenderSystem->GetScreenSize();
-    int currentDrawCount = std::min<int>(m_iMaxShow, (int)m_wstItems.size());
-    int menuHeight = currentDrawCount + 2;
+    //Vector2 screen = m_pRenderSystem->GetScreenSize();
+    //int currentDrawCount = std::min<int>(m_iMaxShow, (int)m_wstItems.size());
+    //int menuHeight = currentDrawCount + 2;
 
-    Vector2 basePos = { 0, 0 };
+    //Vector2 basePos = { 0, 0 };
 
-    switch (m_anchor)
-    {
-    case UIAnchor::Center:
-        basePos.x = (screen.x / 2) - (m_iMenuWidth / 2);
-        basePos.y = (screen.y / 2) - (menuHeight / 2);
-        break;
+    //switch (m_anchor)
+    //{
+    //case UIAnchor::Center:
+    //    basePos.x = (screen.x / 2) - (m_iMenuWidth / 2);
+    //    basePos.y = (screen.y / 2) - (menuHeight / 2);
+    //    break;
 
-    case UIAnchor::BottomRight:
-        basePos.x = screen.x - m_iMenuWidth;
-        basePos.y = screen.y - menuHeight;
-        break;
+    //case UIAnchor::BottomRight:
+    //    basePos.x = screen.x - m_iMenuWidth;
+    //    basePos.y = screen.y - menuHeight;
+    //    break;
 
-    case UIAnchor::TopLeft:
-        basePos = { 0, 0 };
-        break;
-    }
+    //case UIAnchor::TopLeft:
+    //    basePos = { 0, 0 };
+    //    break;
+    //}
 
-    Vector2 relativePos =
-    {
-        static_cast<int>(screen.x * m_relative.x),
-        static_cast<int>(screen.y * m_relative.y)
-    };
+    //Vector2 relativePos =
+    //{
+    //    static_cast<int>(screen.x * m_relative.x),
+    //    static_cast<int>(screen.y * m_relative.y)
+    //};
 
-    m_cachedViewportPos = basePos + relativePos + m_offset;
+    //m_cachedViewportPos = basePos + relativePos + m_offset;
+    m_cachedViewportPos = GetViewportPosition();
 }
 
 void UI_MenuList::Init()

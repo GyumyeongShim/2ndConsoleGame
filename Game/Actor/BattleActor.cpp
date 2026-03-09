@@ -112,8 +112,8 @@ void BattleActor::SetSlotPos(int slotNum)
     {
         int height = Engine::Get().GetRenderSystem().GetScreenSize().y;
 
-        m_BattleScreenPos.x = 2;
-        m_BattleScreenPos.y = height - 5 + slotNum;
+        m_BattleScreenPos.x = 6 + (slotNum * 14);
+        m_BattleScreenPos.y = 18;
     }
 
     m_Pos = m_BattleScreenPos;

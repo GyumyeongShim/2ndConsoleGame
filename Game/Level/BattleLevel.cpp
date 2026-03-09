@@ -32,6 +32,7 @@
 
 #include "Battle/AI/EnemyAI.h"
 
+#include "UI/UI_BattleLayout.h"
 #include "UI/UI_Dialogue.h"
 #include "UI/UI_HPBar.h"
 #include "UI/UI_MenuList.h"
@@ -89,7 +90,6 @@ BattleLevel::~BattleLevel()
 
     m_vecPlayerHPUI.clear();
     m_vecEnemyHPUI.clear();
-    m_vecDialogue.clear();
 
     m_pMenu = nullptr;
     m_pTargetCursor = nullptr;
@@ -135,9 +135,14 @@ void BattleLevel::SetupBattle(std::vector<Wannabe::Actor*> vecPlayer, std::vecto
         AddNewActor(hpUI);
         m_vecEnemyHPUI.emplace_back(hpUI);
     }
- 
+
     m_logSystem.AddLog(L"적과의 조우!");
     m_logSystem.AddLog(std::to_wstring(m_vecEnemyParty.size()) + L"명의 적 발견!");
+
+    m_pBattleLayout->SetupBattleUI(m_pTurnManager, &m_logSystem, m_vecEnemyParty, m_vecPlayerParty);
+    m_pMenu = m_pBattleLayout->GetCommandMenu();
+    m_pTurnOrder = m_pBattleLayout->GetTurnOrder();
+
     RequestBattleStateChange(BattleState::Init);
 }
 
@@ -309,19 +314,11 @@ void BattleLevel::Init()
     // 턴 매니저
     m_pTurnManager = new TurnManager();
 
-    // 메뉴
-    m_pMenu = new UI_MenuList();
-    m_pMenu->SetRenderSystem(&renderSys);
-    m_pMenu->Init();
-    m_pMenu->SetAnchor(UI::UIAnchor::BottomRight);
-    m_pMenu->SetBoxSize(28, 6);       // 스킬명과 MP 표기를 위해 가로 길이를 넉넉히 잡음
-    m_pMenu->SetOffset(Vector2(- 4, -2));       // 화면 오른쪽 끝(-4), 아래 끝(-2)에서 안쪽으로 띄움
-    m_pMenu->SetPadding(2, 1);
-    m_pMenu->SetActive(false);
-    m_pMenu->DefaultMenuItems();
+    // 통합 UI 배경, 틀 역할을 함
+    m_pBattleLayout = new UI_BattleLayout();
+    m_pBattleLayout->SetRenderSystem(&renderSys);
 
-    AddNewActor(m_pMenu);
-
+    AddNewActor(m_pBattleLayout);
 
     // 타겟 커서
     m_pTargetCursor = new UI_TargetCursor(this);
@@ -331,14 +328,7 @@ void BattleLevel::Init()
 
     AddNewActor(m_pTargetCursor);
 
-
-    // 턴 UI
-    m_pTurnOrder = new UI_TurnOrder(m_pTurnManager, Vector2(70, 2));
-    m_pTurnOrder->SetRenderSystem(&renderSys);
-    m_pTurnOrder->Init();
-    AddNewActor(m_pTurnOrder);
-
-    // Inventory UI
+    // Inventory UI 모달 윈도우
     m_pInvenMenu = new UI_Inventory(nullptr);
     m_pInvenMenu->SetRenderSystem(&renderSys);
     m_pInvenMenu->Init();
@@ -346,43 +336,16 @@ void BattleLevel::Init()
 
     AddNewActor(m_pInvenMenu);
 
-    // Log 출력
-    for (int i = 0; i < 2; ++i)
-    {
-        UI_Dialogue* log = new UI_Dialogue(L"Text", i, Color::Green);
-        log->SetRenderSystem(&renderSys);
-        log->Init(i);
-        AddNewActor(log);
-        m_vecDialogue.emplace_back(log);
-    }
-
-    //actor 제거
     m_BattleContext.GetEventProcessor().SetRemoveCallback(this);
 }
 
 void BattleLevel::Phase_Init()
 {
-    const auto& logs = m_logSystem.GetLog(); // 로그 목록
-    int iCnt = std::min(2, (int)logs.size()); //최대 2개까지만 보여준다.
-    if (iCnt >= 1)
-    {
-        // 1. 최신 로그 (가장 아래줄)
-        m_vecDialogue[1]->ChangeTxt(logs[iCnt - 1].c_str());
-
-        // 2. 이전 로그 (윗줄로 밀려남)
-        if (iCnt >= 2)
-            m_vecDialogue[0]->ChangeTxt(logs[iCnt - 2].c_str());
-        else
-            m_vecDialogue[0]->ChangeTxt(L""); // 로그가 1개뿐이면 윗줄은 비움
-    }
-
     if (Input::Get().GetKeyDown(VK_RETURN))
     {
         //start Phase, enter시 로그 지우고 다음 phase로
-        for (auto* pUI : m_vecDialogue)
-        {
-            pUI->ChangeTxt(L"");
-        }
+        while (!m_logSystem.IsEmptyLog())
+            m_logSystem.PopFrontLog();
 
         RequestBattleStateChange(BattleState::Start);
     }
@@ -783,55 +746,16 @@ void BattleLevel::Phase_Animation(float fDeltaTime)
 
 void BattleLevel::Phase_Log()
 {
-    if (m_logSystem.IsEmptyLog() == false)
-    {
-        m_vecDialogue[0]->ChangeTxt(m_vecDialogue[1]->GetTxt().c_str());
-
-        std::wstring nextLog = m_logSystem.PopFrontLog();
-        m_vecDialogue[1]->ChangeTxt(nextLog.c_str());
-    }
-
-    // 5. 모든 로그가 소모되었고 Enter를 누르면 페이즈 전환
     if (Input::Get().GetKeyDown(VK_RETURN))
     {
-        if (m_logSystem.IsEmptyLog() == true)
+        if (!m_logSystem.IsEmptyLog())
+            m_logSystem.PopFrontLog();
+
+        // 모든 로그를 확인했다면 다음 단계로
+        if (m_logSystem.IsEmptyLog())
         {
-            ClearDialogue();
-            CleanupDeacActor();
-            // 승리/패배 여부에 따라 결과창 혹은 다음 턴으로
-            if (IsFinishBattle())
-                RequestBattleStateChange(BattleState::Result);
-            else
-                RequestBattleStateChange(BattleState::Start);
-            return;
+            RequestBattleStateChange(IsFinishBattle() ? BattleState::Result : BattleState::TurnCheck);
         }
-        else
-        {
-            // 다음 로그를 보여주기 위해 갱신
-            std::wstring nextLog = m_logSystem.PopFrontLog();
-            m_vecDialogue[0]->ChangeTxt(m_vecDialogue[1]->GetTxt().c_str());
-            m_vecDialogue[1]->ChangeTxt(nextLog.c_str());
-        }
-    }
-
-    const auto& logs = m_logSystem.GetLog(); // 로그 목록
-    int iCnt = std::min(2, (int)logs.size()); //최대 2개까지만 보여준다.
-    if (iCnt >= 1)
-    {
-        // 1. 최신 로그 (가장 아래줄)
-        m_vecDialogue[1]->ChangeTxt(logs[iCnt - 1].c_str());
-
-        // 2. 이전 로그 (윗줄로 밀려남)
-        if (iCnt >= 2)
-            m_vecDialogue[0]->ChangeTxt(logs[iCnt - 2].c_str());
-        else
-            m_vecDialogue[0]->ChangeTxt(L""); // 로그가 1개뿐이면 윗줄은 비움
-    }
-
-    if (Input::Get().GetKeyDown(VK_RETURN))
-    {
-        CleanupDeacActor();
-        RequestBattleStateChange(IsFinishBattle() ? BattleState::Result : BattleState::TurnCheck);
     }
 }
 
@@ -861,21 +785,21 @@ void BattleLevel::Phase_Result()
             rank = 'F';
         }
 
-        auto pUI = std::make_unique<UI_BattleResult>(totalGold, totalExp, rank);
-        m_pBattleResult = pUI.get();
-
-        AddActor(std::move(pUI));
+        m_pBattleLayout->ShowBattleResult(totalGold, totalExp, rank);
+        m_pBattleResult = m_pBattleLayout->GetResultUI();
         return;
     }
 
     // 연출이 Finished 상태일 때만 Enter 입력을 받음
-    if (m_pBattleResult->GetDisplayState() == UI_BattleResult::DisplayState::Finished)
+    UI_BattleResult* pResultUI = m_pBattleLayout->GetResultUI();
+    if (pResultUI->GetDisplayState() == UI_BattleResult::DisplayState::Finished)
     {
         if (Input::Get().GetKeyDown(VK_RETURN))
         {
-            m_pBattleResult->SetExit(true);
+            pResultUI->SetExit(true);
         }
     }
+
 
     // 종료 플래그가 세워졌다면 씬 전환
     if (m_pBattleResult->Exit() == true)
@@ -1031,15 +955,6 @@ bool BattleLevel::IsEnemyWin() const
 
 void BattleLevel::ClearDialogue()
 {
-    // 로그 UI 벡터에 담긴 모든 대화창의 텍스트를 빈 문자열로 초기화합니다.
-    for (auto* pUI : m_vecDialogue)
-    {
-        if (pUI != nullptr)
-        {
-            pUI->ChangeTxt(L"");
-        }
-    }
-
     // 내부 로그 시스템의 큐도 함께 비워주어 다음 페이즈에 영향이 없도록 합니다.
     while (!m_logSystem.IsEmptyLog())
     {

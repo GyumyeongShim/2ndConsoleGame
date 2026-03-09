@@ -50,7 +50,7 @@ void DamageEvent::OnStart(Wannabe::BattleContext& context)
     RenderSystem& renderSys = Engine::Get().GetRenderSystem();
     if (m_bCritical)
     {
-        renderSys.Shake(0.2f, 1.2f); // 0.2초 동안 강도 1.2로 크게 흔들기
+        renderSys.Shake(0.2f, 1.4f); // 0.2초 동안 강도 1.4로 크게 흔들기
     }
     else
     {

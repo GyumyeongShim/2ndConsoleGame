@@ -11,8 +11,6 @@ UI_Dialogue::UI_Dialogue(const wchar_t* txt, int idx, Color color)
 void UI_Dialogue::Tick(float fDeltaTime)
 {
 	super::Tick(fDeltaTime);
-
-	RecalculateViewportPosition(); // 화면 크기 변경 시 자동 위치 갱신
 }
 
 void UI_Dialogue::Draw(Wannabe::RenderSystem& renderSys)
@@ -30,17 +28,7 @@ void UI_Dialogue::Draw(Wannabe::RenderSystem& renderSys)
 
 void UI_Dialogue::RecalculateViewportPosition()
 {
-	Vector2 screen = m_pRenderSystem->GetScreenSize();
-	Vector2 base = { 0, screen.y }; // BottomLeft
-	m_cachedViewportPos = base + m_offset;
-}
-
-void UI_Dialogue::Init(int idx)
-{
-	SetAnchor(UIAnchor::BottomLeft);
-	SetOffset({ 2, -9 + idx });
-
-	RecalculateViewportPosition();
+	m_cachedViewportPos = GetViewportPosition();
 }
 
 void UI_Dialogue::ChangeTxt(const wchar_t* newImage)
