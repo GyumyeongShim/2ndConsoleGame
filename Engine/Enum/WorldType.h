@@ -2,6 +2,7 @@
 enum class FieldState
 {
     None,
+    Idle,
     PlayerTurn,
     Move,
     EnemyTurn,

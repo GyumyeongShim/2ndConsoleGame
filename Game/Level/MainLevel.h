@@ -7,6 +7,10 @@
 class Player;
 class TileMap;
 struct RunGameData;
+namespace Wannabe
+{
+	class TurnManager;
+}
 
 class MainLevel : public Level
 {
@@ -25,6 +29,7 @@ protected:
 	virtual bool CanMove(const Vector2& nextPos) override;
 	virtual void CheckPortal() override;
 
+	void Phase_Idle();
 	void Phase_PlayerTurn(float fDeltaTime);
 	void Phase_Move(float fDeltaTime);
 	void Phase_EnemyTurn();
@@ -43,9 +48,12 @@ private:
 private:
 	std::unique_ptr<TileMap> m_worldMap;
 	Player* m_pPlayer = nullptr;
-	bool m_RequestBattleTransition;
+	bool m_RequestBattleTransition = false;
 
-	FieldState m_eFieldPhase = FieldState::PlayerTurn; // 기본 상태 설정
+	Actor* m_pCurActor = nullptr;
+
+	TurnManager* m_pTurnManager = nullptr; //턴 매니저
+	FieldState m_eFieldPhase = FieldState::Idle; // 기본 상태 설정
 	Vector2 m_vCursorPos = { 1, 1 };
 	std::vector<Vector2> m_vecPath;
 	std::vector<Vector2> m_vecMoveRangeTiles;
@@ -63,7 +71,7 @@ private:
 	Vector2 m_vPlayerStartPos = {1,1};
 	Vector2 m_vLastPlayerPos;
 
-	float m_fTickCollisionTime;
+	float m_fTickCollisionTime = 0.0f;
 	std::vector<Actor*> m_vecPlayers;	
-	std::vector<Actor*> m_vecMonsters;	
+	std::vector<Actor*> m_vecMonsters;
 };

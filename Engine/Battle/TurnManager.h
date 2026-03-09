@@ -16,6 +16,7 @@ namespace Wannabe
 
 		void ProgressTurns(); //각 Actor 턴 진행
 		void TurnEnd();
+		void ResetTurns();
 
 		static TurnManager& Get();
 		Actor* GetCurBattleActor() { return m_CurActor; }

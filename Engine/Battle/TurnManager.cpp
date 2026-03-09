@@ -92,6 +92,27 @@ namespace Wannabe
         m_CurActor = nullptr;
     }
 
+    void TurnManager::ResetTurns()
+    {
+        if (m_vecActors.empty())
+            return;
+
+        for (Wannabe::Actor* actor : m_vecActors)
+        {
+            if (actor == nullptr)
+                continue;
+
+            if (actor->IsDestroyRequested())
+                continue;
+
+            auto* stat = actor->GetComponent<StatComponent>();
+            if (stat == nullptr || stat->IsDead() == true)
+                continue;
+
+            stat->ResetTurn();
+        }
+    }
+
     TurnManager& TurnManager::Get()
     {
         if (!instance)
@@ -114,6 +135,9 @@ namespace Wannabe
             if (actor->IsDestroyRequested())
                 continue;
             
+            if (actor->GetComponent<StatComponent>() == nullptr)
+                continue;
+
             if (actor->GetComponent<StatComponent>()->IsDead())
                 continue;
 

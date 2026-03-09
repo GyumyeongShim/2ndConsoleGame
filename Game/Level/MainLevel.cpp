@@ -12,6 +12,7 @@
 
 #include "World/TileMap.h"
 
+#include "Battle/TurnManager.h"
 #include "Actor/Player.h"
 #include "Actor/Monster.h"
 
@@ -24,11 +25,13 @@ MainLevel::MainLevel()
 MainLevel::~MainLevel()
 {
 	m_vecMonsters.clear();
+	SafeDelete(m_pTurnManager);
 }
 
 void MainLevel::BeginPlay()
 {
 	super::BeginPlay();
+	ConfigureRenderer(Engine::Get().GetRenderSystem());
 }
 
 void MainLevel::Tick(float fDeltaTime)
@@ -38,6 +41,10 @@ void MainLevel::Tick(float fDeltaTime)
 
 	switch (m_eFieldPhase)
 	{
+	case FieldState::Idle:
+		Phase_Idle();
+		break;
+
 	case FieldState::PlayerTurn:      
 		Phase_PlayerTurn(fDeltaTime); 
 		break;
@@ -135,7 +142,6 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 	std::string mapFileName;
 	std::vector<int> spawnMonsterTIDs;
 	std::vector<Vector2> spawnPoints;
-
 	if (m_worldMap == nullptr)
 	{
 		// Init에서 할당되지 않았을 경우에 대비
@@ -161,27 +167,41 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 		if (pData->m_NextWorldPos == Vector2::Zero)
 			pData->m_NextWorldPos = Vector2(30, 11); // 포탈 근처
 	}
-
 	m_worldMap->LoadFromFile(mapFileName);
 
-	//player stat
-	m_pPlayer = new Player(1, pData->m_NextWorldPos);
-	if (m_pPlayer->GetComponent<StatComponent>())
+	// 최초 진입한 경우
+	if (m_pPlayer == nullptr) 
 	{
-		m_pPlayer->GetComponent<StatComponent>()->SetStatByData(pData->m_PlayerStat);
-	}
-	AddNewActor(m_pPlayer);
-	m_vecPlayers.emplace_back(m_pPlayer);
+		m_pPlayer = new Player(1, pData->m_NextWorldPos);
+		if (m_pPlayer->GetComponent<StatComponent>())
+			m_pPlayer->GetComponent<StatComponent>()->SetStatByData(pData->m_PlayerStat);
 
-	m_vecMonsters.clear();
-	for (const auto& pos : spawnPoints)
+		AddNewActor(m_pPlayer);
+		m_vecPlayers.emplace_back(m_pPlayer);
+
+		// 몬스터 최초 스폰 (최초 1회만)
+		m_vecMonsters.clear();
+		for (const auto& pos : spawnPoints) // 별도의 스폰 포인트 리스트 활용
+		{
+			Monster* pMonster = new Monster(Util::Random(1, 4));
+			pMonster->SetPosition(pos);
+			AddNewActor(pMonster);
+			m_vecMonsters.emplace_back(pMonster);
+		}
+	}
+	// 전투 후 복귀한 경우
+	else
 	{
-		Monster* pMonster = new Monster(Util::Random(1, 4)); // 랜덤 종류
-		pMonster->SetPosition(pos);
-		AddNewActor(pMonster);
-		m_vecMonsters.emplace_back(pMonster);
+		auto it = std::remove_if(m_vecMonsters.begin(), m_vecMonsters.end(), [](Actor* p) {
+			return p == nullptr || p->IsDestroyRequested();
+			});
+		m_vecMonsters.erase(it, m_vecMonsters.end());
+
+		if (m_pTurnManager)
+			m_pTurnManager->ResetTurns();
 	}
 
+	//카메라 설정
 	if (m_pCamera == nullptr)
 	{
 		Vector2 vScreenSize = Vector2(Engine::Get().GetSetting().width, Engine::Get().GetSetting().height);
@@ -200,22 +220,19 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 	m_pCamera->SetFollowMode(true);
 	Engine::Get().GetRenderSystem().SetCamera(*m_pCamera);
 
+	// 데이터 정리 및 상태 초기화
 	if (pData->m_pEncounteredEnemy != nullptr)
 	{
-		auto it = std::find(m_vecMonsters.begin(), m_vecMonsters.end(), 
-			pData->m_pEncounteredEnemy);
-
-		// 몬스터 목록에서 제거 요청
-		if (it != m_vecMonsters.end())
-		{
-			(*it)->Destroy(); // 필드에서 삭제
-			m_vecMonsters.erase(it);
-		}
-
-		// 데이터 초기화
 		pData->m_pEncounteredEnemy = nullptr;
 		pData->m_vecBattleMonsters.clear();
 	}
+
+	if (m_pTurnManager == nullptr)
+		m_pTurnManager = new TurnManager();
+
+	m_eFieldPhase = FieldState::Idle;
+	m_fTransitionTimer = 0.0f;
+	m_bShowFlash = false;
 }
 
 void MainLevel::OnExitLevel(RunGameData* pData)
@@ -260,6 +277,48 @@ void MainLevel::CheckPortal()
 			Game::Get().RequestChangeLevel(MainLevel::TypeIdClass());
 		}
 	}
+}
+
+void MainLevel::Phase_Idle()
+{
+	RunGameData* pRunData = Game::Get().GetRunData();
+	if (pRunData && pRunData->m_pEncounteredEnemy != nullptr)
+	{
+		// 이미 Destroy 요청이 되었을 것이므로 포인터만 밀어줍니다.
+		pRunData->m_pEncounteredEnemy = nullptr;
+	}
+
+	CheckMonsterEncounter();
+
+	if (m_eFieldPhase == FieldState::BattleTransition)
+		return;
+
+	if (m_pPlayer != nullptr)
+	{
+		// 이동 범위 계산 플래그 초기화 (PlayerTurn 진입 시 다시 계산하도록)
+		m_bIsRangeCalculated = false;
+		m_vecMoveRangeTiles.clear();
+		m_vecMonsterRangeTiles.clear();
+	}
+
+	m_pCurActor = m_pTurnManager->GetNextActor(m_vecPlayers, m_vecMonsters);
+	if (m_pCurActor != nullptr)
+	{
+		// 3. 찾았다면 해당 액터의 타입에 따라 상태 전이
+		if (m_pCurActor->IsTypeOf<Player>())
+		{
+			m_eFieldPhase = FieldState::PlayerTurn;
+			m_vCursorPos = m_pCurActor->GetPosition();
+			m_bIsRangeCalculated = false;
+		}
+		else if (m_pCurActor->IsTypeOf<Monster>())
+		{
+			m_eFieldPhase = FieldState::EnemyTurn;
+			// EnemyTurn에서 m_pCurActor만 움직이도록 로직 수정 필요
+		}
+	}
+	else
+		m_pTurnManager->ProgressTurns();
 }
 
 void MainLevel::Phase_PlayerTurn(float fDeltaTime)
@@ -357,6 +416,7 @@ void MainLevel::Phase_Move(float fDeltaTime)
 {
 	if (m_vecPath.empty())
 	{
+		m_pTurnManager->TurnEnd();
 		CheckMonsterEncounter();
 
 		if (m_eFieldPhase == FieldState::BattleTransition)
@@ -383,43 +443,31 @@ void MainLevel::Phase_Move(float fDeltaTime)
 
 void MainLevel::Phase_EnemyTurn()
 {
-	for (Actor* pActor : m_vecMonsters)
+	Monster* pMonster = static_cast<Monster*>(m_pCurActor);
+	if (pMonster == nullptr || pMonster->IsDestroyRequested())
 	{
-		Monster* pMonster = static_cast<Monster*>(pActor);
-		if (pMonster == nullptr || pMonster->IsDestroyRequested())
+		m_eFieldPhase = FieldState::Idle; // 행동 불가 시 다시 결정
+		return;
+	}
+
+	std::vector<Vector2> fullPath = m_worldMap->FindPath(pMonster->GetPosition(), m_pPlayer->GetPosition());
+	// 경로가 존재하고, 플레이어 바로 옆칸까지만 이동하도록 조절 (공격 거리 고려)
+	if (fullPath.size() > 1)
+	{
+		// 이동력(MoveRange)만큼만 경로 잘라내기 (+1은 현재 위치 포함 기준)
+		size_t iLimit = (size_t)pMonster->GetMoveRange() + 1;
+		if (fullPath.size() > iLimit)
 		{
-			continue;
+			fullPath.resize(iLimit);
 		}
 
-		// 플레이어와의 직선 거리 계산
-		Vector2 temp;
-		float fDist = temp.Distance(pMonster->GetPosition(), m_pPlayer->GetPosition());
-
-		// 1. 시야(SightRange) 내에 플레이어가 있을 때만 추격 시작
-		if (fDist <= (float)pMonster->GetSightRange())
+		// 마지막 목적지가 플레이어와 겹치지 않게 (겹침 방지 로직)
+		if (!fullPath.empty() && fullPath.back() == m_pPlayer->GetPosition())
 		{
-			// 플레이어 위치까지의 전체 경로 계산
-			std::vector<Vector2> fullPath = m_worldMap->FindPath(pMonster->GetPosition(), m_pPlayer->GetPosition());
-
-			// 경로가 존재하고, 플레이어 바로 옆칸까지만 이동하도록 조절 (공격 거리 고려)
-			if (fullPath.size() > 1)
-			{
-				// 이동력(MoveRange)만큼만 경로 잘라내기 (+1은 현재 위치 포함 기준)
-				size_t iLimit = (size_t)pMonster->GetMoveRange() + 1;
-				if (fullPath.size() > iLimit)
-				{
-					fullPath.resize(iLimit);
-				}
-
-				// 마지막 목적지가 플레이어와 겹치지 않게 (겹침 방지 로직)
-				if (!fullPath.empty() && fullPath.back() == m_pPlayer->GetPosition())
-				{
-					fullPath.pop_back();
-				}
-
-				pMonster->SetMovePath(fullPath);
-			}
+			fullPath.pop_back();
 		}
+
+		pMonster->SetMovePath(fullPath);
 	}
 
 	// 첫 번째 몬스터부터 이동 연출을 시작하기 위해 인덱스 초기화
@@ -432,7 +480,8 @@ void MainLevel::Phase_EnemyMove(float fDeltaTime)
 	// 모든 몬스터의 이동 처리가 끝났다면 플레이어 턴으로 복귀
 	if (m_iCurEnemyIdx >= (int)m_vecMonsters.size())
 	{
-		m_eFieldPhase = FieldState::PlayerTurn;
+		m_pTurnManager->TurnEnd();
+		m_eFieldPhase = FieldState::Idle;
 		m_vCursorPos = m_pPlayer->GetPosition(); // 커서를 플레이어 위치로 초기화
 		m_bIsRangeCalculated = false;            // 다음 턴 범위 계산 준비
 		return;
