@@ -2,6 +2,7 @@
 
 #include "UI_MenuList.h"
 
+#include "Engine/Engine.h"
 #include "Render/RenderSystem.h"
 #include "Math/Vector2.h"
 #include "Math/Color.h"
@@ -24,6 +25,9 @@ void UI_MenuList::Tick(float fDeltaTime)
 void UI_MenuList::Draw(Wannabe::RenderSystem& renderSys)
 {
     if (m_bIsActive == false || m_wstItems.empty())
+        return;
+
+    if (m_cachedViewportPos == Vector2::Zero) //의도, 좌 상단
         return;
 
     int posX = static_cast<int>(m_cachedViewportPos.x);
@@ -73,40 +77,20 @@ void UI_MenuList::Draw(Wannabe::RenderSystem& renderSys)
 
 void UI_MenuList::RecalculateViewportPosition()
 {
-    //if (!m_pRenderSystem)
-    //    return;
+    auto& renderSys = Wannabe::Engine::Get().GetRenderSystem();
+    Wannabe::Vector2 screen = renderSys.GetScreenSize(); // 140, 40
 
-    //Vector2 screen = m_pRenderSystem->GetScreenSize();
-    //int currentDrawCount = std::min<int>(m_iMaxShow, (int)m_wstItems.size());
-    //int menuHeight = currentDrawCount + 2;
+    // 현재 그려질 메뉴의 전체 높이 계산 (항목 수 + 위아래 테두리 2줄)
+    int currentDrawCount = std::min<int>(m_iMaxShow, (int)m_wstItems.size());
+    int menuHeight = currentDrawCount + 2;
 
-    //Vector2 basePos = { 0, 0 };
+    // 중앙 정렬 좌표 계산
+    float centerX = (screen.x / 2.0f) - (m_iMenuWidth / 2.0f);
+    float centerY = (screen.y / 2.0f) - (menuHeight / 2.0f);
 
-    //switch (m_anchor)
-    //{
-    //case UIAnchor::Center:
-    //    basePos.x = (screen.x / 2) - (m_iMenuWidth / 2);
-    //    basePos.y = (screen.y / 2) - (menuHeight / 2);
-    //    break;
-
-    //case UIAnchor::BottomRight:
-    //    basePos.x = screen.x - m_iMenuWidth;
-    //    basePos.y = screen.y - menuHeight;
-    //    break;
-
-    //case UIAnchor::TopLeft:
-    //    basePos = { 0, 0 };
-    //    break;
-    //}
-
-    //Vector2 relativePos =
-    //{
-    //    static_cast<int>(screen.x * m_relative.x),
-    //    static_cast<int>(screen.y * m_relative.y)
-    //};
-
-    //m_cachedViewportPos = basePos + relativePos + m_offset;
-    m_cachedViewportPos = GetViewportPosition();
+    // 정수 단위로 딱 떨어지게 캐스팅 (ASCII 렌더링 특성상 소수점은 무의미함)
+    m_cachedViewportPos.x = static_cast<float>(static_cast<int>(centerX));
+    m_cachedViewportPos.y = static_cast<float>(static_cast<int>(centerY));
 }
 
 void UI_MenuList::Init()

@@ -68,11 +68,11 @@ void UI_ActorInfo::Draw(Wannabe::RenderSystem& renderSys)
 
         Wannabe::Color hpColor;
         std::wstring hpBar = L"HP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 5, hpColor);
-        renderSys.DrawUI(hpBar, { drawPos.x, drawPos.y + 1 }, Wannabe::Color::White, m_SortingOrder);
+        renderSys.DrawUI(hpBar, { drawPos.x, drawPos.y + 1 }, hpColor, m_SortingOrder);
 
         //Wannabe::Color mpColor = Wannabe::Color::Cyan;
         //std::wstring mpBar = L"MP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 5, mpColor);
-        //renderSys.DrawUI(mpBar, { drawPos.x, drawPos.y + 2 }, Wannabe::Color::White, m_SortingOrder);
+        //renderSys.DrawUI(mpBar, { drawPos.x, drawPos.y + 2 }, mpColor, m_SortingOrder);
         if (pStatus)
         {
             const auto& states = pStatus->GetCurStatusState();
@@ -92,7 +92,7 @@ void UI_ActorInfo::Draw(Wannabe::RenderSystem& renderSys)
 
         Wannabe::Color hpColor;
         std::wstring hpBar = L"HP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 5, hpColor);
-        renderSys.DrawUI(hpBar, { drawPos.x, drawPos.y + 1 }, Wannabe::Color::White, m_SortingOrder);
+        renderSys.DrawUI(hpBar, { drawPos.x, drawPos.y + 1 }, hpColor, m_SortingOrder);
         
         if (pStatus)
         {
