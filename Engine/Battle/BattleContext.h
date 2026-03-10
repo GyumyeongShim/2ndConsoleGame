@@ -50,6 +50,9 @@ namespace Wannabe
         BattleResolver& GetResolver() { return m_BattleResolver; }
         CheckChainSystem& GetCheckChain() { return m_CheckChain; }
 
+        void AddEarnedExp(int iExp) { m_iTotalEarnedExp += iExp; }
+        int GetTotalExp() const { return m_iTotalEarnedExp; }
+
     private:
         std::unique_ptr<BattleEventProcessor> m_BattleEventProcessor;
         BattleResolver m_BattleResolver;
@@ -60,5 +63,7 @@ namespace Wannabe
         RemoveActorFunc m_RemoveFunc;
         IBattleLevel* m_pLevel = nullptr;
         IBattleEventFactory* m_pEventFactory = nullptr;
+
+        int m_iTotalEarnedExp = 0;
     };
 }

@@ -751,18 +751,12 @@ void BattleLevel::Phase_Result()
     if (m_pBattleResult == nullptr)
     {
         int totalGold = 0;
-        int totalExp = 0;
+        int totalExp = 100;
         char rank = 'F';
 
         if (IsPlayerWin())
         {
-            // 승리 보상 계산 (예: 몬스터들로부터 골드/경험치 합산)
-            for (auto* enemy : m_vecEnemyParty)
-            {
-                if (auto stat = enemy->GetComponent<StatComponent>())
-                    totalExp += stat->GetStatData().iMaxExp;
-            }
-
+            totalExp = m_BattleContext.GetTotalExp();
             Game::Get().ProcessBattleReward(totalGold, totalExp);
         }
         else

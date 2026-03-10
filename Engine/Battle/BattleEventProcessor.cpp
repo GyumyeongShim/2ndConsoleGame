@@ -79,8 +79,7 @@ namespace Wannabe
         }
 
         int dmg = stat->ApplyDmg(effect.iValue);
-        bool bIsDead = stat->IsDead();
-        
+
         Vector2 startPos = atker->GetPosition();
         Vector2 endPos = target->GetPosition();
 
@@ -117,6 +116,9 @@ namespace Wannabe
         // »ç¸Á
         if (stat->IsDead())
         {
+            int exp = stat->GetStatData().iMaxExp;
+            context.AddEarnedExp(exp);
+
             // »ç¸Á ¾Ö´Ï¸ÞÀÌ¼Ç
             context.GetCutscenePlayer().Push(m_pEventFactory->CreateAsciiAnimation(target, EAniType::Death));
 

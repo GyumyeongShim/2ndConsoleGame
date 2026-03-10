@@ -25,6 +25,7 @@ Player::Player(int iTid, const Vector2& pos)
 	m_eTeam = Team::Player;
 	Init();
 	m_iMoveRange = 5;
+	m_iSightRange = 7;
 }
 
 Player::~Player()
