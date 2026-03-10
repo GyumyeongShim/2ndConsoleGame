@@ -83,13 +83,15 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 		}
 	}
 
-	if (m_eFieldPhase == FieldState::EnemyTurn || m_eFieldPhase == FieldState::EnemyMove)
+	if (m_eFieldPhase == FieldState::EnemyTurn ||
+		m_eFieldPhase == FieldState::EnemyMove ||
+		m_vecMonsterRangeTiles.empty() == false)
 	{
 		for (const auto& vPos : m_vecMonsterRangeTiles)
 		{
 			Vector2 vScreen = renderSys.GetCamera().WorldToScreen(vPos);
 			// 붉은색 쉐이드 타일로 위험 지역 표시
-			renderSys.GetWorldCanvas().DrawTxt((int)vScreen.x, (int)vScreen.y, L"\u2591", Color::BrightOrange,1);
+			renderSys.GetWorldCanvas().DrawTxt((int)vScreen.x, (int)vScreen.y, L"\u2591", Color::Red,1);
 		}
 	}
 
@@ -108,22 +110,48 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 		auto& effectCanvas = renderSys.GetEffectCanvas();
 		effectCanvas.Clear(); // 이전 프레임 잔상 제거
 
-		// 깜빡임 로직 (0.1초 주기로 반전)
-		bool bShowCurrentFlash = ((int)(m_fTransitionTimer * 10) % 2 == 0);
+		static struct Stream {
+			int headY;           // 현재 줄의 머리 위치
+			int length;          // 스트림 길이
+		} streams[256]; // 최대 256 열 (필요시 effectCanvas.GetWidth() 사용)
 
-		if (bShowCurrentFlash)
+		static bool initialized = false;
+		if (!initialized)
 		{
-			static std::wstring fillLine;
-			if (fillLine.length() != (size_t)effectCanvas.GetWidth())
-				fillLine.assign((size_t)effectCanvas.GetWidth(), L'#');
-
-			for (int i = 0; i < effectCanvas.GetHeight(); ++i)
-				effectCanvas.DrawTxt(0, i, fillLine, Color::Red);
-
-			int centerX = effectCanvas.GetWidth() / 2 - 8;
-			int centerY = effectCanvas.GetHeight() / 2;
-			effectCanvas.DrawTxt(centerX, centerY, L"!! ENCOUNTER !!", Color::White);
+			for (int x = 0; x < effectCanvas.GetWidth(); ++x)
+			{
+				streams[x].headY = rand() % effectCanvas.GetHeight();
+				streams[x].length = 3 + rand() % 6; // 3~8 길이 랜덤
+			}
+			initialized = true;
 		}
+
+		auto RandomChar = []() -> wchar_t {
+			const wchar_t chars[] = L"089MNOP345UVW12JKLIQRSBCDEFGHAT#$%XYZ@67&*";
+			return chars[rand() % (sizeof(chars) / sizeof(wchar_t) - 1)];
+			};
+
+		// 세로 스트림 그리기
+		for (int x = 0; x < effectCanvas.GetWidth(); ++x)
+		{
+			for (int i = 0; i < streams[x].length; ++i)
+			{
+				int y = (streams[x].headY - i + effectCanvas.GetHeight()) % effectCanvas.GetHeight();
+				effectCanvas.DrawTxt(x, y, std::wstring(1, RandomChar()), Color::Green);
+			}
+
+			// 머리 위치 이동 (아래로 흐르도록)
+			streams[x].headY = (streams[x].headY + 1) % effectCanvas.GetHeight();
+
+			// 길이 변경 (약간의 랜덤성 추가)
+			if (rand() % 20 == 0) // 5% 확률로 길이 바꾸기
+				streams[x].length = 3 + rand() % 6;
+		}
+
+		// 중앙 텍스트 고정
+		int centerX = effectCanvas.GetWidth() / 2 - 8;
+		int centerY = effectCanvas.GetHeight() / 2;
+		effectCanvas.DrawTxt(centerX, centerY, L"!! ENCOUNTER !!", Color::Purple);
 	}
 }
 
@@ -340,17 +368,17 @@ void MainLevel::Phase_PlayerTurn(float fDeltaTime)
 		vDir.y = -1; 
 		bIsMoving = true;
 	}
-	else if (Input::Get().GetKey(VK_DOWN)) 
+	if (Input::Get().GetKey(VK_DOWN)) 
 	{ 
 		vDir.y = 1;  
 		bIsMoving = true;
 	}
-	else if (Input::Get().GetKey(VK_LEFT)) 
+	if (Input::Get().GetKey(VK_LEFT)) 
 	{ 
 		vDir.x = -1; 
 		bIsMoving = true;
 	}
-	else if (Input::Get().GetKey(VK_RIGHT)) 
+	if (Input::Get().GetKey(VK_RIGHT)) 
 	{ 
 		vDir.x = 1;  
 		bIsMoving = true;
@@ -378,8 +406,10 @@ void MainLevel::Phase_PlayerTurn(float fDeltaTime)
 			}
 
 			// 초기 입력을 감지했다면 타이머를 약간 진행시켜 쾌적하게 만듦
-			if (bInitialHit) fCursorMoveTimer = 0.0f;
-			else fCursorMoveTimer = fInitialDelay; // 반복 구간으로 진입
+			if (bInitialHit) 
+				fCursorMoveTimer = 0.0f;
+			else 
+				fCursorMoveTimer = fInitialDelay; // 반복 구간으로 진입
 		}
 	}
 	else

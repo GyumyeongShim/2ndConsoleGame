@@ -34,15 +34,15 @@ void UI_HPBar::Tick(float fDeltaTime)
 
 void UI_HPBar::Draw(Wannabe::RenderSystem& renderSys)
 {
-    if (m_pOwner == nullptr || m_pOwner->GetComponent<StatComponent>() == nullptr)
+    if (m_pOwner == nullptr || m_pOwner->IsDestroyRequested())
         return;
 
-    if (m_pOwner->IsDestroyRequested())
+    if (m_pOwner->GetComponent<StatComponent>() == nullptr)
         return;
 
     if (m_cachedViewportPos.y < 0)
         return;
-    //HP °è»ê
+
     m_iCurHp = m_pOwner->GetComponent<StatComponent>()->GetHp();
     m_iMaxHp = m_pOwner->GetComponent<StatComponent>()->GetMaxHp();
 

@@ -122,7 +122,7 @@ namespace Wannabe
 		Level* m_Owner = nullptr;
 
 		// 그리기 우선 순위
-		int m_SortingOrder = 0;
+		int m_SortingOrder = 60;
 
 		Vector2 m_Pos; // 위치
 

@@ -38,10 +38,12 @@ namespace Wannabe
 
 		void BeginFrame();
 		void RenderFrame();
-		void DrawActor(const Actor& actor);
+		void DrawActor(const Actor& actor); //iorder 0
 		void DrawFieldActor(const Actor& actor);
 		void DrawBattleActor(const Actor& actor);
 		void DrawUI(const std::wstring& txt,Vector2 pos,Color color,int iOrder = 100);
+		void DrawDebug(const std::wstring& txt, Vector2 pos, Color color, int iOrder = 1000);
+		void DrawEffect(const std::wstring& txt, Vector2 pos, Color color, int iOrder = 10000);
 
 		void Shake(float fDuration, float fIntensity);
 		void Update(float fDeltaTime);

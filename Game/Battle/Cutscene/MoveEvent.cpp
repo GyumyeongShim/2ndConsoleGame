@@ -24,11 +24,19 @@ bool MoveEvent::Update(Wannabe::BattleContext& context, float fDeltaTime)
     if (ratio > 1.0f) 
         ratio = 1.0f;
 
-    // 선형 보간(Lerp) 계산
-    float curX = m_startPos.x + (m_targetPos.x - m_startPos.x) * ratio;
-    float curY = m_startPos.y + (m_targetPos.y - m_startPos.y) * ratio;
+    float effectRatio = sinf(ratio * 3.141592f);
+    float jumpHeight = 5.0f;
+    float curX = m_startPos.x + (m_targetPos.x - m_startPos.x) * effectRatio;
+    float curY = m_startPos.y + (m_targetPos.y - m_startPos.y) * effectRatio - (effectRatio * jumpHeight);
 
     m_pActor->SetPosition({ (int)curX, (int)curY });
+
+    if (m_fElapsed >= m_fDuration)
+    {
+        // 종료 시 확실히 시작 지점으로 되돌림
+        m_pActor->SetPosition(m_startPos);
+        return false;
+    }
 
     return m_fElapsed < m_fDuration;
 }

@@ -32,8 +32,7 @@ namespace Wannabe
         {
             if (actor == nullptr || actor->IsDestroyRequested() == true)
                 continue;
-
-            
+      
             auto* stat = actor->GetComponent<StatComponent>();
             if (stat == nullptr || stat->IsDead() == true)
                 continue;
@@ -60,7 +59,7 @@ namespace Wannabe
 
         for (Wannabe::Actor* actor : m_vecActors)
         {
-            if (actor == nullptr)
+            if (actor == nullptr || actor->IsDestroyRequested())
                 continue;
 
             auto* stat = actor->GetComponent<StatComponent>();
@@ -83,7 +82,7 @@ namespace Wannabe
 
     void TurnManager::TurnEnd()
     {
-        if (m_CurActor == nullptr)
+        if (m_CurActor == nullptr || m_CurActor->IsDestroyRequested())
             return;
 
         if (m_CurActor->GetComponent<StatComponent>())
@@ -129,12 +128,9 @@ namespace Wannabe
         std::vector<Actor*> displayQueue;
         for (auto actor : m_vecActors) 
         {
-            if (actor == nullptr)
+            if (actor == nullptr || actor->IsDestroyRequested())
                 continue;
-            
-            if (actor->IsDestroyRequested())
-                continue;
-            
+
             if (actor->GetComponent<StatComponent>() == nullptr)
                 continue;
 

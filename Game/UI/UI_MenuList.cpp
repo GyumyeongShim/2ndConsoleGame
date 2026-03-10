@@ -89,8 +89,8 @@ void UI_MenuList::RecalculateViewportPosition()
     float centerY = (screen.y / 2.0f) - (menuHeight / 2.0f);
 
     // 정수 단위로 딱 떨어지게 캐스팅 (ASCII 렌더링 특성상 소수점은 무의미함)
-    m_cachedViewportPos.x = static_cast<float>(static_cast<int>(centerX));
-    m_cachedViewportPos.y = static_cast<float>(static_cast<int>(centerY));
+    m_cachedViewportPos.x = static_cast<int>(centerX);
+    m_cachedViewportPos.y = static_cast<int>(centerY);
 }
 
 void UI_MenuList::Init()

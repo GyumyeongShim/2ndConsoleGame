@@ -80,13 +80,17 @@ namespace Wannabe
 
         int dmg = stat->ApplyDmg(effect.iValue);
         bool bIsDead = stat->IsDead();
+        
+        Vector2 startPos = atker->GetPosition();
+        Vector2 endPos = target->GetPosition();
+
+        // 이동 연출
+        context.GetCutscenePlayer().Push(m_pEventFactory->CreateMove(atker, endPos, 0.3f));
 
         // 공격자 애니 (atk타입)
         context.GetCutscenePlayer().Push(m_pEventFactory->CreateAsciiAnimation(atker, EAniType::Attack));
 
         // 투사체 연출, 직선
-        Vector2 startPos = atker->GetPosition();
-        Vector2 endPos = target->GetPosition();
         context.GetCutscenePlayer().Push(m_pEventFactory->CreateVisualEffect(
             startPos, endPos, EffectMovementType::Parabola, L'*', Color::Yellow, 0.8f
         ));
@@ -227,10 +231,13 @@ namespace Wannabe
         if (actor == nullptr)
             return;
 
-        if (actor->GetComponent<StatComponent>()->IsDead())
+        if (actor->IsDestroyRequested())
             return;
 
-        if (actor->IsDestroyRequested())
+        if (actor->GetComponent<StatComponent>() == nullptr)
+            return;
+
+        if (actor->GetComponent<StatComponent>()->IsDead())
             return;
 
         if (m_pRemoveCallback)

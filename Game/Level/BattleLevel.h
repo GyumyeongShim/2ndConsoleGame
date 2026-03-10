@@ -132,9 +132,6 @@ private:
 	std::vector<std::unique_ptr<Wannabe::Actor>> m_vecActors; //전투 중 생성된 actor, 특별 처리
 
 	UI_BattleLayout* m_pBattleLayout = nullptr; // 통합 UI
-	std::vector<UI_HPBar*> m_vecPlayerHPUI; //UI
-	std::vector<UI_HPBar*> m_vecEnemyHPUI;
-
 	UI_TargetCursor* m_pTargetCursor = nullptr;
 	UI_Inventory* m_pInvenMenu = nullptr;
 	UI_BattleResult* m_pBattleResult = nullptr;

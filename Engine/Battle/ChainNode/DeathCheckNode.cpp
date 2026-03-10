@@ -32,10 +32,22 @@ std::vector<CombatEffect> DeathCheckNode::Check(const CombatEffect& effect, Wann
     auto enemyParty = context.GetEnemyParty(effect.pTarget);
 
     bool bAllPlayersDead = std::all_of(playerParty.begin(), playerParty.end(),
-        [](Actor* a) { return a->GetComponent<StatComponent>()->IsDead(); });
+        [](Actor* a)
+        {
+            return (a == nullptr ||
+                a->IsDestroyRequested() ||
+                a->GetComponent<StatComponent>() == nullptr ||
+                a->GetComponent<StatComponent>()->IsDead());
+        });
 
     bool bAllEnemiesDead = std::all_of(enemyParty.begin(), enemyParty.end(),
-        [](Actor* a) { return a->GetComponent<StatComponent>()->IsDead(); });
+        [](Actor* a) 
+        { 
+            return (a == nullptr ||
+                a->IsDestroyRequested() ||
+                a->GetComponent<StatComponent>() == nullptr ||
+                a->GetComponent<StatComponent>()->IsDead());
+        });
 
     if (bAllEnemiesDead || bAllPlayersDead)
     {

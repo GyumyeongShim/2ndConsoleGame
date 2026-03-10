@@ -86,6 +86,16 @@ void RenderSystem::DrawUI(const std::wstring& txt, Vector2 pos, Color color, int
     m_UICanvas.DrawTxt(pos.x, pos.y, txt, color, iOrder);
 }
 
+void Wannabe::RenderSystem::DrawDebug(const std::wstring& txt, Vector2 pos, Color color, int iOrder)
+{
+    m_DebugCanvas.DrawTxt(pos.x, pos.y, txt, color, iOrder);
+}
+
+void Wannabe::RenderSystem::DrawEffect(const std::wstring& txt, Vector2 pos, Color color, int iOrder)
+{
+    m_EffectCanvas.DrawTxt(pos.x, pos.y, txt, color, iOrder);
+}
+
 void RenderSystem::Shake(float fDuration, float fIntensity)
 {
     m_Shake.fDuration = fDuration;

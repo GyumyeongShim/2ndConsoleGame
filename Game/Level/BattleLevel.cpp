@@ -88,9 +88,6 @@ BattleLevel::~BattleLevel()
     m_vecTargets.clear();
     m_vecPendingDestroy.clear();
 
-    m_vecPlayerHPUI.clear();
-    m_vecEnemyHPUI.clear();
-
     m_pMenu = nullptr;
     m_pTargetCursor = nullptr;
     m_pTurnOrder = nullptr;
@@ -112,13 +109,6 @@ void BattleLevel::SetupBattle(std::vector<Wannabe::Actor*> vecPlayer, std::vecto
         clone->CloneStat(vecPlayer[i], i, Team::Player);
         AddNewActor(clone);
         m_vecPlayerParty.emplace_back(clone);
-
-        //HP bar
-        UI_HPBar* hpUI = new UI_HPBar(clone,i,Team::Player);
-        hpUI->SetRenderSystem(&renderSys);
-        hpUI->Init();
-        AddNewActor(hpUI);
-        m_vecPlayerHPUI.emplace_back(hpUI);
     }
 
     for (int i = 0; i < vecEnemy.size(); ++i)
@@ -127,13 +117,6 @@ void BattleLevel::SetupBattle(std::vector<Wannabe::Actor*> vecPlayer, std::vecto
         clone->CloneStat(vecEnemy[i], i, Team::Enemy);
         AddNewActor(clone);
         m_vecEnemyParty.emplace_back(clone);
-
-        //HP bar
-        UI_HPBar* hpUI = new UI_HPBar(clone, i, Team::Enemy);
-        hpUI->SetRenderSystem(&renderSys);
-        hpUI->Init();
-        AddNewActor(hpUI);
-        m_vecEnemyHPUI.emplace_back(hpUI);
     }
 
     m_logSystem.AddLog(L"적과의 조우!");
@@ -179,10 +162,7 @@ void BattleLevel::FinishBattle()
     }
 
     m_vecPlayerParty.clear();
-    m_vecPlayerHPUI.clear();
-
     m_vecEnemyParty.clear();
-    m_vecEnemyHPUI.clear();
 
     for (auto* actor : m_vecPendingDestroy)
     {
@@ -702,8 +682,15 @@ void BattleLevel::Phase_EnemyAI()
 
     std::vector<Actor*> targets;
     for (auto* p : m_vecPlayerParty)
-        if (p && p->GetComponent<StatComponent>()->IsDead() == false)
-            targets.push_back(p);
+    {
+        if (p == nullptr || p->IsDestroyRequested())
+            continue;
+
+        if (p->GetComponent<StatComponent>() == nullptr || p->GetComponent<StatComponent>()->IsDead())
+            continue;
+
+        targets.push_back(p);
+    }
 
     if (targets.empty()) 
         return;
@@ -845,8 +832,13 @@ void BattleLevel::EnterTargetSelect(int iTID)
     std::vector<Actor*> finalTargets; //사망 제외
     for (Actor* actor : targets)
     {
-        if (actor && actor->GetComponent<StatComponent>()->IsDead() == false)
-            finalTargets.emplace_back(actor);
+        if (actor == nullptr || actor->IsDestroyRequested())
+            continue;
+
+        if (actor->GetComponent<StatComponent>() == nullptr || actor->GetComponent<StatComponent>()->IsDead())
+            continue;
+
+        finalTargets.emplace_back(actor);
     }
 
     if (finalTargets.empty()) // 선택 가능 대상 없음
@@ -935,7 +927,16 @@ bool BattleLevel::IsPlayerWin() const
 {
     for (auto* enemy : m_vecEnemyParty)
     {
-        if (enemy && !enemy->GetComponent<StatComponent>()->IsDead())
+        if (enemy == nullptr)
+            continue;
+
+        if (enemy->IsDestroyRequested() == true)
+            continue;
+
+        if (enemy->GetComponent<StatComponent>() == nullptr)
+            continue;
+
+        if (enemy->GetComponent<StatComponent>()->IsDead() == false)
             return false;
     }
 
@@ -946,7 +947,16 @@ bool BattleLevel::IsEnemyWin() const
 {
     for (auto* player : m_vecPlayerParty)
     {
-        if (player && !player->GetComponent<StatComponent>()->IsDead())
+        if (player == nullptr)
+            continue;
+
+        if (player->IsDestroyRequested() == true)
+            continue;
+
+        if (player->GetComponent<StatComponent>() == nullptr)
+            continue;
+
+        if (player->GetComponent<StatComponent>()->IsDead() == false)
             return false;
     }
 
@@ -975,36 +985,6 @@ void BattleLevel::RemoveActor(Wannabe::Actor* actor)
 
 void BattleLevel::CleanupDeacActor()
 {
-    auto Cleanup = [this](std::vector<Actor*>& party, std::vector<UI_HPBar*>& uiVec)
-    {
-        for (auto it = party.begin(); it != party.end(); )
-        {
-            Actor* actor = *it;
-
-            if (actor == nullptr || actor->GetComponent<StatComponent>()->IsDead())
-            {
-                // HPBar 제거
-                uiVec.erase(
-                    std::remove_if(uiVec.begin(), uiVec.end(),
-                        [actor](UI_HPBar* ui)
-                {
-                    return ui == nullptr ||
-                        ui->GetBattleActorOwner() == actor;
-                }),
-                    uiVec.end()
-                );
-
-                m_vecPendingDestroy.emplace_back(actor);
-                it = party.erase(it);
-            }
-            else
-                ++it;
-        }
-    };
-
-    Cleanup(m_vecPlayerParty, m_vecPlayerHPUI);
-    Cleanup(m_vecEnemyParty, m_vecEnemyHPUI);
-
     m_vecActors.erase(
         std::remove_if(m_vecActors.begin(), m_vecActors.end(),
             [](const std::unique_ptr<Actor>& ptr)
