@@ -46,14 +46,13 @@ private:
 	void OnCursorMoved();
 
 private:
-	std::unique_ptr<TileMap> m_worldMap;
 	Player* m_pPlayer = nullptr;
-	bool m_RequestBattleTransition = false;
-
 	Actor* m_pCurActor = nullptr;
-
 	TurnManager* m_pTurnManager = nullptr; //턴 매니저
 	FieldState m_eFieldPhase = FieldState::Idle; // 기본 상태 설정
+
+	// 길 찾기
+	std::unique_ptr<TileMap> m_worldMap; // 타일 맵
 	Vector2 m_vCursorPos = { 1, 1 };
 	std::vector<Vector2> m_vecPath;
 	std::vector<Vector2> m_vecMoveRangeTiles;
@@ -68,9 +67,11 @@ private:
 	float m_fMoveTimer = 0.0f;
 	int m_iCurEnemyIdx = 0;
 
+	// level 전환
 	Vector2 m_vPlayerStartPos = {1,1};
 	Vector2 m_vLastPlayerPos;
 
+	// Bush 충돌
 	float m_fTickCollisionTime = 0.0f;
 	std::vector<Actor*> m_vecPlayers;	
 	std::vector<Actor*> m_vecMonsters;

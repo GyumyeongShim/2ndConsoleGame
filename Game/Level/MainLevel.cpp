@@ -16,6 +16,8 @@
 #include "Actor/Player.h"
 #include "Actor/Monster.h"
 
+#include "Level/TownLevel.h"
+
 using namespace Wannabe;
 
 MainLevel::MainLevel()
@@ -192,8 +194,7 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 		spawnMonsterTIDs = { 1, 1, 4, 4 };
 		spawnPoints = { {5, 5}, {10, 5}, {45, 16}, {50, 5} };
 
-		if (pData->m_NextWorldPos == Vector2::Zero)
-			pData->m_NextWorldPos = Vector2(30, 11); // 포탈 근처
+		pData->m_NextWorldPos = Vector2(30, 11); // 포탈 근처
 	}
 	m_worldMap->LoadFromFile(mapFileName);
 
@@ -292,17 +293,18 @@ void MainLevel::CheckPortal()
 		if (pRunData)
 		{
 			// 현재 Forest(2)라면 Dungeon(1)으로, 반대면 반대로
-			if (pRunData->m_CurLevelId == 2)
-			{
-				pRunData->m_CurLevelId = 1;
-				pRunData->m_NextWorldPos = Vector2(2, 2); // 던전 시작점
-			}
-			else
-			{
-				pRunData->m_CurLevelId = 2;
-				pRunData->m_NextWorldPos = Vector2(45, 11); // 포탈 앞
-			}
-			Game::Get().RequestChangeLevel(MainLevel::TypeIdClass());
+			//if (pRunData->m_CurLevelId == 2)
+			//{
+			//	pRunData->m_CurLevelId = 1;
+			//	pRunData->m_NextWorldPos = Vector2(2, 2); // 던전 시작점
+			//}
+			//else
+			//{
+			//	pRunData->m_CurLevelId = 2;
+			//	pRunData->m_NextWorldPos = Vector2(45, 11); // 포탈 앞
+			//}
+			pRunData->m_lastWorldPos = { 1, 1 }; // 마을 입구 좌표
+			Game::Get().RequestChangeLevel(TownLevel::TypeIdClass());
 		}
 	}
 }

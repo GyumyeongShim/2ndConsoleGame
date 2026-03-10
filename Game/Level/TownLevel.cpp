@@ -28,9 +28,6 @@ void TownLevel::Tick(float fDeltaTime)
 
 void TownLevel::Draw(Wannabe::RenderSystem& renderSys)
 {
-    if (m_worldMap)
-        m_worldMap->Draw(renderSys);
-
     if (m_pPlayer)
     {
         Vector2 playerPos = m_pPlayer->GetPosition();
@@ -38,6 +35,9 @@ void TownLevel::Draw(Wannabe::RenderSystem& renderSys)
             renderSys.GetCamera().GetHeight() / 2);
         renderSys.GetCamera().SetPosition(camPos);
     }
+
+    if (m_worldMap)
+        m_worldMap->Draw(renderSys);
 
     super::Draw(renderSys);
 }
