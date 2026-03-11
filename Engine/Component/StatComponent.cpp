@@ -48,7 +48,7 @@ namespace Wannabe
 
 	int StatComponent::ApplyDmg(int iValue)
 	{
-		int finalDmg = std::max(0, iValue - GetDef());
+		int finalDmg = std::max(1, iValue - GetDef());
 
 		int origin = m_iHp;
 		m_iHp = Clamp(m_iHp - finalDmg, 0, GetMaxHp());

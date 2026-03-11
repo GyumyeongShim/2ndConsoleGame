@@ -103,7 +103,7 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 	if (m_eFieldPhase != FieldState::BattleTransition)
 	{
 		Vector2 cursorScreenPos = renderSys.GetCamera().WorldToScreen(m_vCursorPos);
-		renderSys.GetWorldCanvas().DrawTxt((int)cursorScreenPos.x, (int)cursorScreenPos.y, L"\u25A3", Color::BrightLime,2);
+		renderSys.GetUICanvas().DrawTxt((int)cursorScreenPos.x, (int)cursorScreenPos.y, L"\u25A3", Color::BrightLime,2);
 	}
 
 	// 3. 전환 연출 (최상단)
