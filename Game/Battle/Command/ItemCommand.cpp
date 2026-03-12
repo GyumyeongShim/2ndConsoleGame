@@ -78,5 +78,5 @@ void ItemCommand::Execute(Wannabe::BattleContext& context)
         }
     }
 
-    inventory->RemoveItem(m_iItemTID, 1);
+    inventory->RemoveItemByTID(m_iItemTID, 1);
 }

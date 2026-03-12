@@ -89,7 +89,8 @@ void UI_TargetCursor::SetActive(bool bIsActive)
             if (actor)
             {
                 auto* battleActor = dynamic_cast<BattleActor*>(actor);
-                if (battleActor) battleActor->SetTargeted(false);
+                if (battleActor)
+                    battleActor->SetTargeted(false);
             }
         }
     }

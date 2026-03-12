@@ -17,6 +17,7 @@
 #include "Actor/Monster.h"
 
 #include "Level/TownLevel.h"
+#include "Component/StatComponent.h"
 
 using namespace Wannabe;
 
@@ -93,7 +94,7 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 		{
 			Vector2 vScreen = renderSys.GetCamera().WorldToScreen(vPos);
 			// 붉은색 쉐이드 타일로 위험 지역 표시
-			renderSys.GetWorldCanvas().DrawTxt((int)vScreen.x, (int)vScreen.y, L"\u2591", Color::Red,1);
+			renderSys.GetWorldCanvas().DrawTxt(vScreen.x, vScreen.y, L"\u2591", Color::Red,1);
 		}
 	}
 
@@ -103,7 +104,7 @@ void MainLevel::Draw(Wannabe::RenderSystem& renderSys)
 	if (m_eFieldPhase != FieldState::BattleTransition)
 	{
 		Vector2 cursorScreenPos = renderSys.GetCamera().WorldToScreen(m_vCursorPos);
-		renderSys.GetUICanvas().DrawTxt((int)cursorScreenPos.x, (int)cursorScreenPos.y, L"\u25A3", Color::BrightLime,2);
+		renderSys.GetUICanvas().DrawTxt(cursorScreenPos.x, cursorScreenPos.y, L"\u25A3", Color::BrightLime,2);
 	}
 
 	// 3. 전환 연출 (최상단)
@@ -270,7 +271,7 @@ void MainLevel::OnExitLevel(RunGameData* pData)
 		return;
 
 	pData->m_NextWorldPos = m_pPlayer->GetPosition();
-	// 현재 스탯(HP, Exp 등) 백업은 Battle 종료 시나 특정 시점에 수행할 수도 있음
+
 	if (m_pPlayer->GetComponent<StatComponent>())
 		pData->m_PlayerStat = m_pPlayer->GetComponent<StatComponent>()->GetStatData();
 }
@@ -313,10 +314,7 @@ void MainLevel::Phase_Idle()
 {
 	RunGameData* pRunData = Game::Get().GetRunData();
 	if (pRunData && pRunData->m_pEncounteredEnemy != nullptr)
-	{
-		// 이미 Destroy 요청이 되었을 것이므로 포인터만 밀어줍니다.
 		pRunData->m_pEncounteredEnemy = nullptr;
-	}
 
 	CheckMonsterEncounter();
 
@@ -334,7 +332,6 @@ void MainLevel::Phase_Idle()
 	m_pCurActor = m_pTurnManager->GetNextActor(m_vecPlayers, m_vecMonsters);
 	if (m_pCurActor != nullptr)
 	{
-		// 3. 찾았다면 해당 액터의 타입에 따라 상태 전이
 		if (m_pCurActor->IsTypeOf<Player>())
 		{
 			m_eFieldPhase = FieldState::PlayerTurn;

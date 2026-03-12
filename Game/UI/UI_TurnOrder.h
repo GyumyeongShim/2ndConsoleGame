@@ -3,9 +3,13 @@
 #include <string>
 
 #include "UI/UI.h"
-#include "Math/Color.h"
-#include "Math/Vector2.h"
-#include "Battle/TurnManager.h"
+
+namespace Wannabe
+{
+    class TurnManager;
+    class Vector2;
+    struct Color;
+}
 
 class UI_TurnOrder : public Wannabe::UI
 {

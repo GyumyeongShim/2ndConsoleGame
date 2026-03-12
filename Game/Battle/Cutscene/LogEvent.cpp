@@ -110,7 +110,8 @@ std::wstring LogEvent::BuildStatusLog(const BattleLog& log)
     if (log.wstrTargetName.empty()) 
         return L"상태 이상 발생";
 
-    return log.wstrTargetName + L"에게 [" + log.wstrTxt + L"] 상태가 적용되었다!";
+    return log.bMiss ? log.wstrTargetName + L"에게 상태이상 적용 빗나감!" :
+        log.wstrTargetName + L"에게 [" + log.wstrTxt + L"] 상태가 적용되었다!";
 }
 
 std::wstring LogEvent::BuildStatusExpireLog(const BattleLog& log)

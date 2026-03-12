@@ -1,10 +1,12 @@
 #include "TownLevel.h"
+
 #include "Engine/Engine.h"
 #include "Game/Game.h"
 #include "World/TileMap.h"
 #include "Actor/Player.h"
 #include "Level/MainLevel.h"
 #include "Data/RunGameData.h"
+#include "Component/StatComponent.h"
 
 TownLevel::TownLevel()
 {
@@ -21,9 +23,7 @@ void TownLevel::Tick(float fDeltaTime)
     super::Tick(fDeltaTime);
 
     if (m_pPlayer)
-    {
         CheckPortal();
-    }
 }
 
 void TownLevel::Draw(Wannabe::RenderSystem& renderSys)

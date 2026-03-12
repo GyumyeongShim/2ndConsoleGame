@@ -1,10 +1,10 @@
 #pragma once
 #include "Level/Level.h"
-#include "Math/Vector2.h"
+
+#include <memory>
 
 class Player;
 class TileMap;
-struct RunGameData;
 
 class TownLevel : public Level
 {

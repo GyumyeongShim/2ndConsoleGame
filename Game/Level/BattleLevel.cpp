@@ -1,7 +1,7 @@
-﻿#include <string>
+﻿#include "BattleLevel.h"
+
 #include <algorithm>
 
-#include "BattleLevel.h"
 #include "Game/Game.h"
 #include "Engine/Engine.h"
 #include "Util/Utill.h"

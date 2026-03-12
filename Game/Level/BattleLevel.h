@@ -2,6 +2,7 @@
 #include <queue>
 #include <vector>
 #include <memory>
+#include <string>
 
 #include "Level/Level.h"
 #include "Engine/Engine.h"

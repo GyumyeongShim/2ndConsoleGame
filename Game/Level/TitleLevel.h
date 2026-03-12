@@ -1,10 +1,5 @@
 #pragma once
-#include <vector>
-
 #include "Level/Level.h"
-#include "Engine/Engine.h"
-#include "Math/Color.h"
-#include "Math/Vector2.h"
 
 class UI_MenuList;
 class TitleLevel : public Level

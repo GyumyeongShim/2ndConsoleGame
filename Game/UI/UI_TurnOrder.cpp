@@ -1,6 +1,10 @@
 #include "UI_TurnOrder.h"
-#include "Render/RenderSystem.h"
 
+#include "Math/Color.h"
+#include "Math/Vector2.h"
+#include "Render/RenderSystem.h"
+#include "Battle/TurnManager.h"
+#include "Actor/Actor.h"
 #include "Component/DisplayComponent.h"
 
 UI_TurnOrder::UI_TurnOrder(Wannabe::TurnManager* pTurnMgr, Wannabe::Vector2 pos)

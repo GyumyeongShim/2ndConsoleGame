@@ -1,12 +1,10 @@
 #pragma once
 #include "Level/Level.h"
-#include "Engine/Engine.h"
 #include "Enum/WorldType.h"
-#include "Math/Vector2.h"
 
 class Player;
 class TileMap;
-struct RunGameData;
+
 namespace Wannabe
 {
 	class TurnManager;
