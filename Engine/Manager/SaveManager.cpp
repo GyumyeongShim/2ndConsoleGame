@@ -1,7 +1,8 @@
 #include <fstream>
 #include <sstream>
-#include <string>
 #include <direct.h>
+#include <algorithm>
+#include <io.h>
 
 #include "SaveManager.h"
 
@@ -43,4 +44,58 @@ bool Wannabe::SaveManager::LoadData(int iSlotIdx, json& data)
 
     File >> data;
     return true;
+}
+
+bool SaveManager::SaveRecord(const std::string& fileName, const RunGameData& data)
+{
+    int mkdirResult = _mkdir("../Records"); // 기록 보관용 폴더
+    std::string path = "../Records/" + fileName + ".json";
+    std::ofstream File(path);
+
+    if (File.is_open() == false)
+    {
+        return false;
+    }
+
+    File << std::setw(4) << data.ToJson() << std::endl;
+    return true;
+}
+
+std::vector<RunGameData> Wannabe::SaveManager::LoadAllRecords()
+{
+    std::vector<RunGameData> records;
+    std::string recordDir = "../Records/*.json";
+    _finddata_t fd;
+    intptr_t handle = _findfirst(recordDir.c_str(), &fd);
+
+    if (handle != -1)
+    {
+        do
+        {
+            // 파일명 결합
+            std::string fileName = "../Records/";
+            fileName += fd.name;
+
+            std::ifstream file(fileName);
+            if (file.is_open())
+            {
+                json j;
+                file >> j;
+
+                RunGameData data;
+
+                data.FromJson(j);
+                records.push_back(data);
+            }
+        } while (_findnext(handle, &fd) == 0);
+
+        _findclose(handle);
+    }
+
+    std::sort(records.begin(), records.end(), [](const auto& a, const auto& b) 
+    {
+        return a.m_iKillCount > b.m_iKillCount;
+    });
+
+    return records;
 }

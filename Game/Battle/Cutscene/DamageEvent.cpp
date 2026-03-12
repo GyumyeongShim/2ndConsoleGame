@@ -52,10 +52,6 @@ void DamageEvent::OnStart(Wannabe::BattleContext& context)
     {
         renderSys.Shake(0.2f, 1.4f); // 0.2초 동안 강도 1.4로 크게 흔들기
     }
-    else
-    {
-        renderSys.Shake(0.1f, 0.6f); // 0.1초 동안 살짝 흔들기
-    }
 }
 
 bool DamageEvent::Update(Wannabe::BattleContext& context, float fDeltaTime)

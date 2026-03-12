@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+#include <vector>
+
 #include "Core/Common.h"
 
 #include "../Includes/ThirdParty/json.hpp"
@@ -20,6 +23,8 @@ namespace Wannabe
 		bool Check(int iSlotIdx);
 		bool SaveData(int iSlotIdx, const RunGameData& data);
 		bool LoadData(int iSlotIdx, json& data);
+		bool SaveRecord(const std::string& fileName, const RunGameData& data);
+		std::vector<RunGameData> LoadAllRecords();
 
 	private:
 		std::string GetPath(int iSlotIdx);

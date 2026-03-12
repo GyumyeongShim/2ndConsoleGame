@@ -10,6 +10,9 @@ UI_BattleResult::UI_BattleResult(int iGold, int iExp, char rank)
 
 void UI_BattleResult::Tick(float fDeltaTime)
 {
+    if (!m_bIsActive)
+        return;
+
     m_fTimer += fDeltaTime;
 
     switch (m_eDisplayState)
@@ -48,6 +51,9 @@ void UI_BattleResult::Tick(float fDeltaTime)
 
 void UI_BattleResult::Draw(Wannabe::RenderSystem& renderSys)
 {
+    if (!m_bIsActive)
+        return;
+
     Vector2 sz = renderSys.GetScreenSize();
     int cx = (int)sz.x / 2;
     int cy = (int)sz.y / 2;

@@ -72,7 +72,9 @@ enum class DamageSource
     BasicAtk,
     Skill,
     StatusTick, // 중독 등의 상태 이상 데미지
-    Reflect     // 반사 데미지 등
+    Reflect,    // 반사 데미지 등
+    TurnStart,  // [추가] 턴 시작 트리거용
+    TurnEnd     // [추가] 턴 종료 트리거용
 };
 
 enum class CombatEffectType //스킬, 아이템 대분류 (공격, 회복, 버프/디버프)

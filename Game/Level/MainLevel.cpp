@@ -12,6 +12,7 @@
 
 #include "World/TileMap.h"
 
+#include "Manager/SaveManager.h"
 #include "Battle/TurnManager.h"
 #include "Actor/Player.h"
 #include "Actor/Monster.h"
@@ -213,7 +214,7 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 		m_vecMonsters.clear();
 		for (const auto& pos : spawnPoints) // 별도의 스폰 포인트 리스트 활용
 		{
-			Monster* pMonster = new Monster(Util::Random(1, 4));
+			Monster* pMonster = new Monster(Util::Random(1, 10));
 			pMonster->SetPosition(pos);
 			AddNewActor(pMonster);
 			m_vecMonsters.emplace_back(pMonster);
@@ -222,13 +223,32 @@ void MainLevel::OnEnterLevel(RunGameData* pData)
 	// 전투 후 복귀한 경우
 	else
 	{
-		auto it = std::remove_if(m_vecMonsters.begin(), m_vecMonsters.end(), [](Actor* p) {
+		int iBeforeCount = (int)m_vecMonsters.size();
+
+		auto it = std::remove_if(m_vecMonsters.begin(), m_vecMonsters.end(),
+			[](Actor* p) {
 			return p == nullptr || p->IsDestroyRequested();
 			});
 		m_vecMonsters.erase(it, m_vecMonsters.end());
 
+		int iKilled = iBeforeCount - (int)m_vecMonsters.size();
+		pData->m_iKillCount += iKilled;
+
 		if (m_pTurnManager)
 			m_pTurnManager->ResetTurns();
+
+		if (m_vecMonsters.empty())
+		{
+			pData->m_PlayerStat = m_pPlayer->GetComponent<StatComponent>()->GetStatData();
+			pData->m_bIsClear = true;
+			// TODO: 여기서 바로 저장하기보다, "이름 입력 UI"를 띄우는 상태(Phase)로 전환하는 것이 좋습니다.
+				// 임시로 레코드 저장 호출
+			std::string recordName = pData->m_UserName + "_" + Util::GetCurrentDateTimeString();
+			if (SaveManager::Get().SaveRecord(recordName, *pData))
+			{
+				std::cout << "Final Victory Recorded!" << std::endl;
+			}
+		}
 	}
 
 	//카메라 설정
@@ -482,25 +502,45 @@ void MainLevel::Phase_EnemyTurn()
 		return;
 	}
 
-	std::vector<Vector2> fullPath = m_worldMap->FindPath(pMonster->GetPosition(), m_pPlayer->GetPosition());
-	// 경로가 존재하고, 플레이어 바로 옆칸까지만 이동하도록 조절 (공격 거리 고려)
-	if (fullPath.size() > 1)
+	Vector2 vMonsterPos = pMonster->GetPosition();
+	Vector2 vPlayerPos = m_pPlayer->GetPosition();
+
+	// 거리 계산
+	Vector2 vDiff;
+	float fDistToPlayer = vDiff.Distance(vMonsterPos, vPlayerPos);
+
+	const float fSenseRange = 5.0f;
+	if (fDistToPlayer <= fSenseRange)
 	{
-		// 이동력(MoveRange)만큼만 경로 잘라내기 (+1은 현재 위치 포함 기준)
-		size_t iLimit = (size_t)pMonster->GetMoveRange() + 1;
-		if (fullPath.size() > iLimit)
-		{
-			fullPath.resize(iLimit);
-		}
+		// 플레이어 방향으로 경로 탐색
+		std::vector<Vector2> fullPath = m_worldMap->FindPath(vMonsterPos, vPlayerPos);
 
-		// 마지막 목적지가 플레이어와 겹치지 않게 (겹침 방지 로직)
-		if (!fullPath.empty() && fullPath.back() == m_pPlayer->GetPosition())
+		if (fullPath.size() > 1)
 		{
-			fullPath.pop_back();
-		}
+			// 이동력만큼 자르기
+			size_t iLimit = (size_t)pMonster->GetMoveRange() + 1;
+			if (fullPath.size() > iLimit)
+			{
+				fullPath.resize(iLimit);
+			}
 
-		pMonster->SetMovePath(fullPath);
+			// 겹침 방지, 경로의 마지막 칸(목적지)에 이미 누가 있는지 확인
+			while (fullPath.size() > 1)
+			{
+				Vector2 vFinalDest = fullPath.back();
+
+				// 플레이어와 겹치거나, 다른 몬스터가 이미 점유 중이라면
+				if (vFinalDest == vPlayerPos || IsTileOccupied(vFinalDest, pMonster))
+					fullPath.pop_back(); // 한 칸 뒤로 후퇴
+				else
+					break; // 빈 칸을 찾았으면 확정
+			}
+
+			pMonster->SetMovePath(fullPath);
+		}
 	}
+	else
+		pMonster->GetMovePath().clear();
 
 	// 첫 번째 몬스터부터 이동 연출을 시작하기 위해 인덱스 초기화
 	m_iCurEnemyIdx = 0;
@@ -693,7 +733,9 @@ void MainLevel::StartBattleTransition(Actor* pTarget)
 		if (temp.Distance(pTarget->GetPosition(), pOthers->GetPosition()) <= 3.0f)
 		{
 			pRunData->m_vecBattleMonsters.emplace_back(pOthers);
-			if (pRunData->m_vecBattleMonsters.size() >= 4) break; // 최대 4마리 제한
+
+			if (pRunData->m_vecBattleMonsters.size() >= 4) 
+				break; // 최대 4마리 제한
 		}
 	}
 
@@ -702,6 +744,25 @@ void MainLevel::StartBattleTransition(Actor* pTarget)
 	m_eFieldPhase = FieldState::BattleTransition;
 	m_fTransitionTimer = 0.0f;
 	m_bShowFlash = true;
+}
+
+bool MainLevel::IsTileOccupied(const Vector2& targetPos, Actor* pSelf)
+{
+	// Player 위치
+	if (m_pPlayer != nullptr && m_pPlayer->GetPosition() == targetPos)
+		return true;
+
+	// 다른 몬스터들 위치 확인
+	for (auto* pMonster : m_vecMonsters)
+	{
+		if (pMonster == nullptr || pMonster == pSelf || pMonster->IsDestroyRequested())
+			continue;
+
+		if (pMonster->GetPosition() == targetPos)
+			return true;
+	}
+
+	return false;
 }
 
 void MainLevel::CalcMoveRange()

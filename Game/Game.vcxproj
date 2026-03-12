@@ -129,6 +129,7 @@
     <ClCompile Include="UI\UI_FloatingText.cpp" />
     <ClCompile Include="UI\UI_Inventory.cpp" />
     <ClCompile Include="UI\UI_MenuList.cpp" />
+    <ClCompile Include="UI\UI_NameInput.cpp" />
     <ClCompile Include="UI\UI_TurnOrder.cpp" />
     <ClCompile Include="UI\UI_TargetCursor.cpp" />
     <ClCompile Include="World\TileMap.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="UI\UI_FloatingText.h" />
     <ClInclude Include="UI\UI_Inventory.h" />
     <ClInclude Include="UI\UI_MenuList.h" />
+    <ClInclude Include="UI\UI_NameInput.h" />
     <ClInclude Include="UI\UI_TurnOrder.h" />
     <ClInclude Include="UI\UI_TargetCursor.h" />
     <ClInclude Include="World\Tile.h" />

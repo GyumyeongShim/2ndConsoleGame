@@ -13,6 +13,11 @@ using json = nlohmann::json;
 // 레벨전환시 사용할 데이터
 struct RunGameData
 {
+    // 랭킹용
+    std::string m_UserName = "Unknown";
+    bool m_bIsClear = false;
+    int m_iKillCount = 0; // 몇 마리를 잡았는지 기록
+
     // Map, Pos
     size_t m_CurLevelId;
     Wannabe::Vector2 m_lastWorldPos;
@@ -35,6 +40,11 @@ struct RunGameData
     json ToJson() const
     {
         json j;
+        // 랭킹용
+        j["UserName"] = m_UserName;
+        j["IsClear"] = m_bIsClear;
+        j["KillCount"] = m_iKillCount;
+
         j["CurLevelId"] = m_CurLevelId;
         j["LastPos"] = { m_lastWorldPos.x, m_lastWorldPos.y };
         j["Gold"] = m_iGold;
@@ -55,7 +65,6 @@ struct RunGameData
 
         // 세이브 시간 기록 (TitleLevel에서 사용 중)
         j["SaveTime"] = Util::GetCurrentDateTimeString();
-
         return j;
     }
 

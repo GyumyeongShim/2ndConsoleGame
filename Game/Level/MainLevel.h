@@ -39,6 +39,7 @@ private:
 	void CheckRandomEncounter();
 	void CheckMonsterEncounter();
 	void StartBattleTransition(Actor* pTarget);
+	bool IsTileOccupied(const Vector2& targetPos, Actor* pSelf);
 	void CalcMoveRange();
 	void CalcMonsterMoveRange(Actor* pTarget);
 	void OnCursorMoved();

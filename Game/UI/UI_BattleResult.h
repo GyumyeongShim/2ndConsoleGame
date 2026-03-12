@@ -22,6 +22,9 @@ public:
     void SetExit(bool bIsExit) { m_bExit = bIsExit; }
     bool Exit() const { return m_bExit; }
 
+    void SetActive(bool bActive) { m_bIsActive = bActive; }
+    bool IsActive() const { return m_bIsActive; }
+
 private:
     DisplayState m_eDisplayState = DisplayState::Background; // 연출용 변수
     float m_fTimer = 0.0f;
@@ -34,4 +37,6 @@ private:
     int m_iTargetExp = 0;
 
     char m_rank = 'b';
+
+    bool m_bIsActive = true;
 };
