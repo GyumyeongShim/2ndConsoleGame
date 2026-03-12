@@ -32,9 +32,12 @@ namespace Wannabe
         {
             if (actor == nullptr || actor->IsDestroyRequested() == true)
                 continue;
-      
+
+            if (actor->GetComponent<StatComponent>() == nullptr)
+                continue;
+
             auto* stat = actor->GetComponent<StatComponent>();
-            if (stat == nullptr || stat->IsDead() == true)
+            if (stat->IsDead() == true)
                 continue;
 
             if (stat->IsTurnMax())
