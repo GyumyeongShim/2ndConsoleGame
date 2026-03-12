@@ -158,6 +158,14 @@ struct BattleLog
     bool bMiss = false;
 };
 
+enum class BattleFinishResult
+{
+    None,       //전투 진행중
+    Victory,    //승리
+    Defeat,     //패배
+    Escape      //도주
+};
+
 static std::wstring GetStatusToString(StatusType eType)
 {
     switch (eType)

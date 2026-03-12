@@ -8,23 +8,19 @@
          "effects":[
             {
                "type":"Heal",
-               "power":50
+               "power":40
             }
          ]
       },
-      {
-         "tid":1002,
-         "name":"Poison Bomb",
-         "itemType":"Consumable",
-         "targetType":"AllEnemy",
-         "effects":[
-            {
-               "type":"ApplyStatus",
-               "statusType":"Poison",
-               "duration":2
-            }
-         ]
-      },
+	{
+      "tid": 1002,
+      "name": "Poison Bomb",
+      "itemType": "Consumable",
+      "targetType": "AllEnemy",
+      "effects": [
+        { "type": "ApplyStatus", "statusType": "Poison", "value": 15, "duration": 2 }
+      ]
+	},
       {
          "tid":1010,
          "name":"Battle Tonic",
@@ -66,18 +62,15 @@
             }
          ]
       },
-      {
-         "tid":1005,
-         "name":"Antidote",
-         "itemType":"Consumable",
-         "targetType":"SingleAlly",
-         "effects":[
-            {
-               "type":"RemoveStatus",
-               "statusType":"Poison"
-            }
-         ]
-      },
+	{
+      "tid": 1005,
+      "name": "Antidote",
+      "itemType": "Consumable",
+      "targetType": "SingleAlly",
+      "effects": [
+        { "type": "RemoveStatus", "statusType": "Poison" }
+      ]
+    },
       {
          "tid":1006,
          "name":"Holy Water",
@@ -129,8 +122,8 @@
          "itemType":"Equipment",
          "equipSlot":"Armor",
          "statModifier":{
-            "iDef":15,
-            "iSpd":-2
+            "iDef":6,
+            "iSpd":-1
          }
       },
       {
@@ -167,6 +160,30 @@
                "duration":5
             }
          ]
-      }
+      },
+	  {
+      "tid": 1013,
+      "name": "Smoke Bomb",
+      "itemType": "Consumable",
+      "targetType": "Self",
+      "effects": [
+        {
+          "type": "ApplyStatus",
+          "statusType": "EvasionUp",
+          "value": 30,
+          "duration": 2
+        }
+      ]
+    },
+    {
+      "tid": 1014,
+      "name": "Unstable Flask",
+      "itemType": "Consumable",
+      "targetType": "AllEnemy",
+      "effects": [
+        { "type": "Damage", "power": 10 },
+        { "type": "ApplyStatus", "statusType": "Burn", "value": 8, "duration": 3 }
+      ]
+    }
    ]
 }

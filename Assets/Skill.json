@@ -7,49 +7,25 @@
       "cost": 0,
       "targetType": "SingleEnemy",
       "maxTargetCnt": 1,
-      "effects": [
-        {
-          "type": "Damage",
-          "ratio": 100,
-          "value": 0,
-          "duration": 0,
-          "statusType": "None"
-        }
-      ]
+      "effects": [{ "type": "Damage", "ratio": 100 }]
     },
     {
       "tid": 101,
       "name": "Slash",
-      "power": 120,
-      "cost": 5,
+      "power": 130,
+      "cost": 4,
       "targetType": "SingleEnemy",
       "maxTargetCnt": 1,
-      "effects": [
-        {
-          "type": "Damage",
-          "ratio": 100,
-          "value": 0,
-          "duration": 0,
-          "statusType": "None"
-        }
-      ]
+      "effects": [{ "type": "Damage", "ratio": 100 }]
     },
     {
       "tid": 102,
       "name": "Heavy Strike",
-      "power": 80,
-      "cost": 8,
+      "power": 100,
+      "cost": 10,
       "targetType": "SingleEnemy",
       "maxTargetCnt": 1,
-      "effects": [
-        {
-          "type": "Damage",
-          "ratio": 150,
-          "value": 0,
-          "duration": 0,
-          "statusType": "None"
-        }
-      ]
+      "effects": [{ "type": "Damage", "ratio": 220 }]
     },
     {
       "tid": 103,
@@ -58,56 +34,28 @@
       "cost": 10,
       "targetType": "Self",
       "maxTargetCnt": 1,
-      "effects": [
-        {
-          "type": "ApplyStatus",
-          "ratio": 0,
-          "value": 5,
-          "duration": 3,
-          "statusType": "AtkUp"
-        }
-      ]
+      "effects": [{ "type": "ApplyStatus", "statusType": "AtkUp", "value": 25, "duration": 4 }]
     },
     {
       "tid": 201,
       "name": "Fireball",
-      "power": 150,
+      "power": 180,
       "cost": 12,
       "targetType": "RandomEnemy",
       "maxTargetCnt": 3,
       "effects": [
-        {
-          "type": "Damage",
-          "ratio": 100,
-          "value": 0,
-          "duration": 0,
-          "statusType": "None"
-        },
-        {
-          "type": "ApplyStatus",
-          "ratio": 0,
-          "value": 5,
-          "duration": 2,
-          "statusType": "Burn"
-        }
+        { "type": "Damage", "ratio": 100 },
+        { "type": "ApplyStatus", "statusType": "Burn", "value": 12, "duration": 2 }
       ]
     },
     {
       "tid": 202,
       "name": "Heal",
       "power": 100,
-      "cost": 10,
+      "cost": 8,
       "targetType": "SingleAlly",
       "maxTargetCnt": 1,
-      "effects": [
-        {
-          "type": "Heal",
-          "ratio": 40,
-          "value": 0,
-          "duration": 0,
-          "statusType": "None"
-        }
-      ]
+      "effects": [{ "type": "Heal", "ratio": 60 }]
     }
   ]
 }
