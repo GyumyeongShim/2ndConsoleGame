@@ -1,5 +1,8 @@
 #include "UI_FloatingText.h"
 
+#include "Math/Color.h"
+#include "Math/Vector2.h"
+
 #include "Render/RenderSystem.h"
 
 UI_FloatingText::UI_FloatingText(const std::wstring& text, Wannabe::Vector2 worldPos, Wannabe::Color color, float fLifeTime)

@@ -5,8 +5,8 @@
 #include "Battle/TurnManager.h"
 #include "Actor/BattleActor.h"
 #include "Component/StatComponent.h"
-#include "Component/DisplayComponent.h"
 #include "Component/StatusComponent.h"
+#include "Component/DisplayComponent.h"
 
 UI_ActorInfo::UI_ActorInfo(Wannabe::TurnManager* pTurnManager, Wannabe::Actor* pTarget, bool bIsPlayer)
 	:super(L"",Wannabe::Color::White), m_pTurnManager(pTurnManager), m_pTargetActor(pTarget), m_bIsPlayer(bIsPlayer)
@@ -33,18 +33,12 @@ void UI_ActorInfo::Tick(float fDeltaTime)
 
     m_infoStr = prefix + pDisplay->GetOriginName();
     if (m_bIsPlayer)
-    {
         m_infoStr += L" LV" + std::to_wstring(pStat->GetLevel());
-    }
 
     if (pStatus && pStatus->HasStatus(StatusType::Stun))
-    {
         m_Color = Wannabe::Color::Gray; // 기절 시 회색
-    }
     else
-    {
         m_Color = bMyTurn ? Wannabe::Color::Yellow : Wannabe::Color::White;
-    }
 
     RecalculateViewportPosition();
 }
@@ -70,10 +64,12 @@ void UI_ActorInfo::Draw(Wannabe::RenderSystem& renderSys)
         std::wstring hpBar = L"HP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 5, hpColor);
         renderSys.DrawUI(hpBar, { drawPos.x, drawPos.y + 1 }, hpColor, m_SortingOrder);
 
+        // todo MP 구현시 사용 예정
         //Wannabe::Color mpColor = Wannabe::Color::Cyan;
         //std::wstring mpBar = L"MP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 5, mpColor);
         //renderSys.DrawUI(mpBar, { drawPos.x, drawPos.y + 2 }, mpColor, m_SortingOrder);
-        if (pStatus)
+
+        if (pStatus) //상태 이상 표기
         {
             const auto& states = pStatus->GetCurStatusState();
             for (size_t i = 0; i < states.size(); ++i)
@@ -94,7 +90,7 @@ void UI_ActorInfo::Draw(Wannabe::RenderSystem& renderSys)
         std::wstring hpBar = L"HP:" + MakeGaugeBar(pStat->GetHp(), pStat->GetMaxHp(), 5, hpColor);
         renderSys.DrawUI(hpBar, { drawPos.x, drawPos.y + 1 }, hpColor, m_SortingOrder);
         
-        if (pStatus)
+        if (pStatus) // 상태 이상 표기
         {
             const auto& states = pStatus->GetCurStatusState();
             for (size_t i = 0; i < states.size(); ++i)
@@ -135,7 +131,7 @@ std::wstring UI_ActorInfo::MakeGaugeBar(int iCur, int iMax, int iWidth, Wannabe:
     else
         outColor = Wannabe::Color::BrightRed;
 
-    // [||| ], [||   ]
+    //  체력표기 [||| ], [||   ]
     std::wstring bar = L"[";
     for (int i = 0; i < iWidth; ++i)
     {

@@ -1,13 +1,14 @@
-#include <algorithm>
 #include "UI_Inventory.h"
-#include "Component/InventoryComponent.h"
-#include "Render/RenderSystem.h"
-#include "Item/Item.h"
-#include "Item/ItemInstance.h"
-#include "Manager/DataManager.h"
+
+#include <algorithm>
+
 #include "Math/Vector2.h"
 #include "Math/Color.h"
-#include "UI_MenuList.h"
+#include "Render/RenderSystem.h"
+#include "Manager/DataManager.h"
+#include "Item/Item.h"
+#include "Item/ItemInstance.h"
+#include "Component/InventoryComponent.h"
 
 UI_Inventory::UI_Inventory(Wannabe::InventoryComponent* inven)
 	:m_pInventory(inven)
@@ -74,10 +75,17 @@ void UI_Inventory::RecalculateViewportPosition()
 
     pos = pos + m_offset;
 
-    if (pos.x < 0) pos.x = 0;
-    if (pos.y < 0) pos.y = 0;
-    if (pos.x > screen.x - width) pos.x = screen.x - width;
-    if (pos.y > screen.y - height) pos.y = screen.y - height;
+    if (pos.x < 0) 
+        pos.x = 0;
+
+    if (pos.y < 0) 
+        pos.y = 0;
+
+    if (pos.x > screen.x - width) 
+        pos.x = screen.x - width;
+
+    if (pos.y > screen.y - height) 
+        pos.y = screen.y - height;
 
     m_cachedViewportPos = pos;
 }

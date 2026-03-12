@@ -2,12 +2,12 @@
 #include <vector>
 #include "UI/UI.h"
 
-class UI_TurnOrder;
 class UI_MenuList;
+class UI_TurnOrder;
+class UI_BattleResult;
 class UI_ActorInfo;
 class UI_Dialogue;
 class BattleLogSystem;
-class UI_BattleResult;
 
 namespace Wannabe
 {
@@ -43,10 +43,10 @@ private:
 
 private:
     Wannabe::TurnManager* m_pTurnMgr = nullptr;
-    UI_TurnOrder* m_pTurnOrderUI = nullptr;
     UI_MenuList* m_pCommandMenu = nullptr;
-    BattleLogSystem* m_pLogSys = nullptr;
+    UI_TurnOrder* m_pTurnOrderUI = nullptr;
     UI_BattleResult* m_pResultUI = nullptr;
+    BattleLogSystem* m_pLogSys = nullptr;
 
     std::vector<UI_ActorInfo*> m_vecMonsterInfos;
     std::vector<UI_ActorInfo*> m_vecPlayerInfos;

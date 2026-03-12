@@ -4,7 +4,14 @@
 class UI_BattleResult : public Wannabe::UI
 {
 public:
-    enum class DisplayState { Background, Stats, Rank, Finished };
+    enum class DisplayState 
+    { 
+        Background, 
+        Stats, 
+        Rank, 
+        Finished 
+    };
+
     UI_BattleResult(int iGold, int iExp, char rank = 'A');
 
     virtual void Tick(float fDeltaTime) override;
@@ -17,12 +24,14 @@ public:
 
 private:
     DisplayState m_eDisplayState = DisplayState::Background; // 연출용 변수
-    bool m_bExit = false;
     float m_fTimer = 0.0f;
+    bool m_bExit = false;
+    
     int m_iCurGold = 0;
-    int m_iCurExp = 0;
-
     int m_iTargetGold = 0;
+    
+    int m_iCurExp = 0;
     int m_iTargetExp = 0;
+
     char m_rank = 'b';
 };

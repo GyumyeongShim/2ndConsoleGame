@@ -127,7 +127,6 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Battle\Command\AtkCommand.cpp" />
     <ClCompile Include="UI\UI_FloatingText.cpp" />
-    <ClCompile Include="UI\UI_HPBar.cpp" />
     <ClCompile Include="UI\UI_Inventory.cpp" />
     <ClCompile Include="UI\UI_MenuList.cpp" />
     <ClCompile Include="UI\UI_TurnOrder.cpp" />
@@ -176,7 +175,6 @@
     <ClInclude Include="Level\MainLevel.h" />
     <ClInclude Include="Level\TitleLevel.h" />
     <ClInclude Include="UI\UI_FloatingText.h" />
-    <ClInclude Include="UI\UI_HPBar.h" />
     <ClInclude Include="UI\UI_Inventory.h" />
     <ClInclude Include="UI\UI_MenuList.h" />
     <ClInclude Include="UI\UI_TurnOrder.h" />

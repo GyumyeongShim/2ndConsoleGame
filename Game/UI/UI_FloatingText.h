@@ -1,6 +1,14 @@
 #pragma once
 #include "UI/UI.h"
 
+#include <string>
+
+namespace Wannabe
+{
+    struct Color;
+    class Vector2;
+}
+
 class UI_FloatingText : public Wannabe::UI
 {
 public:

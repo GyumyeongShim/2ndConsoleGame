@@ -34,7 +34,6 @@
 
 #include "UI/UI_BattleLayout.h"
 #include "UI/UI_Dialogue.h"
-#include "UI/UI_HPBar.h"
 #include "UI/UI_MenuList.h"
 #include "UI/UI_TargetCursor.h"
 #include "UI/UI_TurnOrder.h"

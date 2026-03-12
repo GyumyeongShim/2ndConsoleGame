@@ -41,10 +41,10 @@ private:
 	int m_iCursorIdx = 0;		//전체 인덱스
 	int m_iStartIdx = 0;		//첫 아이템의 인덱스
 
-	int m_iMenuWidth = 20;   // 가변 너비
-	int m_iMaxShow = 4;     // 한 번에 보여줄 항목 수
-	int m_iPaddingX = 2;    // 텍스트 시작 X 오프셋
-	int m_iPaddingY = 1;    // 텍스트 시작 Y 오프셋
+	int m_iMenuWidth = 20;		// 가변 너비
+	int m_iMaxShow = 4;			// 한 번에 보여줄 항목 수
+	int m_iPaddingX = 2;		// 텍스트 시작 X 오프셋
+	int m_iPaddingY = 1;		// 텍스트 시작 Y 오프셋
 
 	std::function<void(int)> m_OnConfirm;
 	std::function<void()> m_OnCancel;

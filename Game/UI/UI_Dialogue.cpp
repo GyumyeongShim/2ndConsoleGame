@@ -1,9 +1,11 @@
 #include "UI_Dialogue.h"
+
+#include "Math/Color.h"
 #include "Render/RenderSystem.h"
 
 using namespace Wannabe;
 
-UI_Dialogue::UI_Dialogue(const wchar_t* txt, int idx, Color color)
+UI_Dialogue::UI_Dialogue(const wchar_t* txt, int idx, Wannabe::Color color)
 	:super(L"", color)
 {
 }

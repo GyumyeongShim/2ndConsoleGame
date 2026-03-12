@@ -1,5 +1,8 @@
-#include <fstream>
 #include "TileMap.h"
+
+#include <fstream>
+
+#include "Render/RenderSystem.h"
 
 void TileMap::Draw(Wannabe::RenderSystem& renderSys)
 {
@@ -162,15 +165,11 @@ bool TileMap::IsInMap(int x, int y) const
 {
     // 1. x 좌표가 0보다 작거나 너비(m_iWidth)보다 크거나 같으면 거짓
     if (x < 0 || x >= m_iWidth)
-    {
         return false;
-    }
 
     // 2. y 좌표가 0보다 작거나 높이(m_iHeight)보다 크거나 같으면 거짓
     if (y < 0 || y >= m_iHeight)
-    {
         return false;
-    }
 
     // 모든 조건을 통과하면 유효한 좌표
     return true;
@@ -184,28 +183,30 @@ const Tile* TileMap::GetTile(int x, int y)
     return &m_vecTiles[y * m_iWidth + x];
 }
 
-Vector2 TileMap::WorldToTile(const Vector2& worldPos) const
+Wannabe::Vector2 TileMap::WorldToTile(const Wannabe::Vector2& worldPos) const
 {
-    return Vector2((int)worldPos.x,(int)worldPos.y);
+    Vector2 out = Vector2(worldPos.x, worldPos.y);
+    return out;
 }
 
-Vector2 TileMap::TileToWorld(const Vector2& tilePos) const
+Wannabe::Vector2 TileMap::TileToWorld(const Wannabe::Vector2& tilePos) const
 {
     return tilePos;
 }
 
-std::vector<Vector2> TileMap::FindPath(const Vector2& start, const Vector2& end)
+std::vector<Wannabe::Vector2> TileMap::FindPath(const Wannabe::Vector2& start, const Wannabe::Vector2& end)
 {
     struct Node
     {
-        Vector2 pos;
-        float g, h;
+        Vector2 pos; // 내 위치
+        float g, h; //시작-내위치, 내위치-목적지 거리값
         Node* parent;
-        float f() const { return g + h; }
+        float f() const { return g + h; } //총 거리값
     };
 
     std::vector<Vector2> path;
-    if (!IsWalkable((int)end.x, (int)end.y)) return path;
+    if (!IsWalkable(end.x, end.y)) 
+        return path;
 
     std::vector<Node*> openList;
     std::vector<Node*> closedList;
@@ -218,7 +219,10 @@ std::vector<Vector2> TileMap::FindPath(const Vector2& start, const Vector2& end)
     {
         // F값이 가장 낮은 노드 선택
         auto it = std::min_element(openList.begin(), openList.end(),
-            [](Node* a, Node* b) { return a->f() < b->f(); });
+            [](Node* a, Node* b) 
+            { 
+                return a->f() < b->f();
+            });
 
         Node* current = *it;
         if (current->pos == end)
@@ -240,15 +244,24 @@ std::vector<Vector2> TileMap::FindPath(const Vector2& start, const Vector2& end)
         for (auto& dir : neighbors)
         {
             Vector2 nextPos = current->pos + dir;
-            if (!IsWalkable((int)nextPos.x, (int)nextPos.y)) continue;
+            if (!IsWalkable((int)nextPos.x, (int)nextPos.y)) 
+                continue;
 
             auto isClosed = std::find_if(closedList.begin(), closedList.end(),
-                [&](Node* n) { return n->pos == nextPos; });
-            if (isClosed != closedList.end()) continue;
+                [&](Node* n) 
+                { 
+                    return n->pos == nextPos; 
+                });
+
+            if (isClosed != closedList.end()) 
+                continue;
 
             float newG = current->g + 1;
             auto isOpen = std::find_if(openList.begin(), openList.end(),
-                [&](Node* n) { return n->pos == nextPos; });
+                [&](Node* n) 
+                {
+                    return n->pos == nextPos; 
+                });
 
             Vector2 temp;
             if (isOpen == openList.end())
@@ -264,8 +277,11 @@ std::vector<Vector2> TileMap::FindPath(const Vector2& start, const Vector2& end)
     }
 
     // 메모리 정리
-    for (auto n : openList) delete n;
-    for (auto n : closedList) delete n;
+    for (auto n : openList) 
+        delete n;
+
+    for (auto n : closedList) 
+        delete n;
 
     return path;
 }

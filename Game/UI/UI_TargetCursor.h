@@ -4,6 +4,7 @@
 #include "UI/UI.h"
 
 class BattleLevel;
+class Wannabe::Actor;
 
 class UI_TargetCursor : public Wannabe::UI
 {
@@ -25,12 +26,12 @@ public:
 
     void SetAllTargetMode(bool bAll) { m_bAllTarget = bAll; }
 
-    void SetTargets(const std::vector<Actor*>& vecTargets);
-    Actor* GetSelectedTarget();
+    void SetTargets(const std::vector<Wannabe::Actor*>& vecTargets);
+    Wannabe::Actor* GetSelectedTarget();
 
 private:
     BattleLevel* m_pLevel = nullptr;
-    std::vector<Actor*> m_vecTarget;
+    std::vector<Wannabe::Actor*> m_vecTarget;
     bool m_bAllTarget = false;
     bool m_bIsActive = false;
     int m_iCursorIdx = 0;

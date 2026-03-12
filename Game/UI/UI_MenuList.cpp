@@ -1,6 +1,6 @@
-#include <algorithm>
-
 #include "UI_MenuList.h"
+
+#include <algorithm>
 
 #include "Engine/Engine.h"
 #include "Render/RenderSystem.h"
@@ -42,23 +42,17 @@ void UI_MenuList::Draw(Wannabe::RenderSystem& renderSys)
 
     // 스크롤 상단 화살표 (위쪽 아이템이 더 있을 때)
     if (m_iStartIdx > 0)
-    {
         renderSys.DrawUI(L" ▲ ", Vector2(posX + (m_iMenuWidth / 2) - 1, posY), Color::Yellow, m_SortingOrder + 1);
-    }
 
     for (int i = 1; i <= drawCount; ++i)
-    {
         renderSys.DrawUI(emptyLine, Vector2(posX, posY + i), Color::White, m_SortingOrder);
-    }
 
     renderSys.DrawUI(horizontalLine, Vector2(posX, posY + drawCount + 1), Color::White, m_SortingOrder);
 
     // 스크롤 하단 화살표 (아래쪽 아이템이 더 있을 때)
     if (m_iStartIdx + m_iMaxShow < (int)m_wstItems.size())
-    {
         renderSys.DrawUI(L" ▼ ", Vector2(posX + (m_iMenuWidth / 2) - 1, posY + drawCount + 1),
             Color::Yellow, m_SortingOrder + 1);
-    }
 
     // 2. 아이템 출력 (Padding 반영)
     for (int i = 0; i < drawCount; i++)
@@ -88,7 +82,6 @@ void UI_MenuList::RecalculateViewportPosition()
     float centerX = (screen.x / 2.0f) - (m_iMenuWidth / 2.0f);
     float centerY = (screen.y / 2.0f) - (menuHeight / 2.0f);
 
-    // 정수 단위로 딱 떨어지게 캐스팅 (ASCII 렌더링 특성상 소수점은 무의미함)
     m_cachedViewportPos.x = static_cast<int>(centerX);
     m_cachedViewportPos.y = static_cast<int>(centerY);
 }

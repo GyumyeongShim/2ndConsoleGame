@@ -8,8 +8,6 @@
 #include "Player.h"
 #include "Monster.h"
 
-#include "UI/UI_HPBar.h"
-
 #include "Engine/Engine.h" //todo
 #include "Component/StatComponent.h"
 #include "Component/StatusComponent.h"

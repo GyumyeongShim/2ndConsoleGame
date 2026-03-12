@@ -18,7 +18,6 @@
 #include "Battle/BattleLogSystem.h"
 #include "Battle/System/CutScenePlayer.h"
 
-class UI_HPBar;
 class UI_Dialogue;
 class UI_MenuList;
 class UI_TargetCursor;

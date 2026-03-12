@@ -17,7 +17,7 @@ class UI_ActorInfo : public Wannabe::UI
 {
     RTTI_DECLARATIONS(UI_ActorInfo, UI)
 public:
-    UI_ActorInfo(Wannabe::TurnManager* pTurnManager, Actor* pTarget, bool bIsPlayer);
+    UI_ActorInfo(Wannabe::TurnManager* pTurnManager, Wannabe::Actor* pTarget, bool bIsPlayer);
     virtual ~UI_ActorInfo();
 
     virtual void Tick(float fDeltaTime) override;
@@ -35,6 +35,7 @@ private:
     Wannabe::TurnManager* m_pTurnManager = nullptr;
     Wannabe::Actor* m_pTargetActor = nullptr;
     bool m_bIsPlayer = false;
+
     std::wstring m_infoStr = L"";
     Wannabe::Color m_Color = Wannabe::Color::White;
 };

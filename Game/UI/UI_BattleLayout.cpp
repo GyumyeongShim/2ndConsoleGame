@@ -1,14 +1,11 @@
 #include "UI_BattleLayout.h"
 
-#include <vector>
-
 #include "Render/RenderSystem.h"
 #include "Battle/TurnManager.h"
 #include "Battle/BattleLogSystem.h"
 #include "Util/Utill.h"
 
 #include "Actor/Actor.h"
-#include "Actor/BattleActor.h"
 #include "UI/UI_TurnOrder.h"
 #include "UI/UI_MenuList.h"
 #include "UI/UI_Dialogue.h"
@@ -222,12 +219,8 @@ void UI_BattleLayout::UpdateLogs()
 	for (int i = 0; i < MAX_LOG_LINES; ++i)
 	{
 		if (i < (int)dqLogs.size())
-		{
 			m_vecLogs[i]->ChangeTxt(dqLogs[i].c_str());
-		}
 		else
-		{
 			m_vecLogs[i]->ChangeTxt(L""); // ºó ·Î±× Ã³¸®
-		}
 	}
 }
