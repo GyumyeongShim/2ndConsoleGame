@@ -73,8 +73,6 @@ namespace Wannabe
             log.eLogType = LogType::Miss;
             context.GetCutscenePlayer().Push(m_pEventFactory->CreateLog(log));
 
-            // 턴 변경
-            context.GetCutscenePlayer().Push(m_pEventFactory->CreatePhaseChange(BattleState::Log));
             return;
         }
 
@@ -170,7 +168,10 @@ namespace Wannabe
 
         bool applied = status->AddStatus(effect.eStatus,effect.iDuration,effect.iValue,effect.pAtker);
         if (applied == false)
+        {
+            //todo 저항 비슷한 연출 추가 예정
             return;
+        }
 
         // 2. 시각적 연출 (타겟 머리 위에서 반짝이는 느낌)
         Vector2 pos = target->GetPosition();

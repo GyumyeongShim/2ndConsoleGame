@@ -24,8 +24,8 @@ Player::Player(int iTid, const Vector2& pos)
 	m_SortingOrder = 10;
 	m_eTeam = Team::Player;
 	Init();
-	m_iMoveRange = 5;
-	m_iSightRange = 7;
+	m_iMoveRange = 10;
+	m_iSightRange = 10;
 }
 
 Player::~Player()
@@ -138,11 +138,11 @@ void Player::Init()
 	// 인벤토리
 	InventoryComponent* pInven = new InventoryComponent();
 	pInven->AddItem(1001, 5);
-	pInven->AddItem(1002, 3);
-	pInven->AddItem(1008, 3);
-	pInven->AddItem(1003, 25);
-	pInven->AddItem(1005, 777);
-	pInven->AddItem(1006, 3);
+	pInven->AddItem(1002, 5);
+	pInven->AddItem(1007, 5);
+	pInven->AddItem(1008, 10);
+	pInven->AddItem(1012, 17);
+	pInven->AddItem(1013, 20);
 	AddComponent(pInven);
 }
 

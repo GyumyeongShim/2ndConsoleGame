@@ -15,22 +15,14 @@ namespace Wannabe
 			if (status.eStatusType == StatusType::Poison) // todo only poison, 추가 예정
 			{
 				CombatEffect eff;
-				eff.pTarget = GetOwner();
+				eff.pAtker = status.pAtker;
 				eff.pTarget = GetOwner();
 				eff.eCombatEffectType = CombatEffectType::Damage;
 				eff.iValue = status.iValue;
 
 				effect.emplace_back(eff);
 			}
-
-			if (status.iDuration > 0)
-				status.iDuration--;
 		}
-
-		m_vecStatusState.erase(
-			std::remove_if(m_vecStatusState.begin(), m_vecStatusState.end(),
-				[](const auto& s) { return s.iDuration <= 0; }),
-			m_vecStatusState.end());
 
 		return effect;
 	}

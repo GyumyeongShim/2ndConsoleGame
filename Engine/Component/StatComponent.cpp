@@ -48,10 +48,8 @@ namespace Wannabe
 
 	int StatComponent::ApplyDmg(int iValue)
 	{
-		int finalDmg = std::max(1, iValue - GetDef());
-
 		int origin = m_iHp;
-		m_iHp = Clamp(m_iHp - finalDmg, 0, GetMaxHp());
+		m_iHp = Clamp(m_iHp - iValue, 0, GetMaxHp());
 
 		return origin - m_iHp;
 	}
@@ -67,7 +65,7 @@ namespace Wannabe
 	void StatComponent::CalcExp(const int exp)
 	{
 		m_iExp += exp;
-		// 레벨업 체크 루프 (한 번에 여러 레벨이 오를 수도 있음)
+
 		while (m_iExp >= m_iMaxExp)
 		{
 			LevelUp();
@@ -79,7 +77,6 @@ namespace Wannabe
 		m_iExp -= m_iMaxExp;
 		++m_iLevel;
 
-		// 기본 성장
 		m_iMaxHp += 20;
 		m_iHp = m_iMaxHp;
 
@@ -87,7 +84,6 @@ namespace Wannabe
 		if (m_iLevel % 2 == 0)
 			m_iDef += 1;
 
-		m_iExp = 0;
 		m_iMaxExp = m_iLevel * 100;
 	}
 
