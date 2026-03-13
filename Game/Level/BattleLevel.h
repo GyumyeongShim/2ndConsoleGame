@@ -67,6 +67,9 @@ public:
 
 	virtual void PushCommand(std::unique_ptr<Wannabe::IBattleCommand> cmd) override;
 
+	void SetActionDone(bool bDone) { m_bIsActionDone = bDone; }
+	bool IsActionDone() const { return m_bIsActionDone; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float fDeltaTime)override;
@@ -141,4 +144,6 @@ private:
 	MenuTxt m_eMenuTxt = MenuTxt::None;
 	std::vector<std::wstring> m_vecSkillMenu;
 	std::vector<std::wstring> m_vecItemMenu;
+
+	bool m_bIsActionDone = false;
 };

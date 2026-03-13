@@ -332,18 +332,18 @@ void BattleLevel::Phase_Init()
 
 void BattleLevel::Phase_Start()
 {
-    m_CurActor = m_pTurnManager->GetNextActor(m_vecPlayerParty, m_vecEnemyParty);
-    if (m_CurActor == nullptr)
+    // 한 명 이상의 액터가 턴을 획득할 때까지 반복
+    while (m_CurActor == nullptr)
     {
-        m_pTurnManager->ProgressTurns();
-        // 다시 Start로 와서 다음 액터가 있는지 재확인
-        RequestBattleStateChange(BattleState::Start);
+        m_CurActor = m_pTurnManager->GetNextActor(m_vecPlayerParty, m_vecEnemyParty);
+        if (m_CurActor == nullptr)
+        {
+            m_pTurnManager->ProgressTurns();
+        }
     }
-    else
-    {
-        // 행동할 액터가 있다면 턴 체크 단계로 진입
-        RequestBattleStateChange(BattleState::TurnCheck);
-    }
+
+    // 행동할 액터가 결정되면 턴 체크 단계로 진입
+    RequestBattleStateChange(BattleState::TurnCheck);
 }
 
 void BattleLevel::Phase_CommandSelect()
@@ -717,16 +717,38 @@ void BattleLevel::Phase_Animation(float fDeltaTime)
     {
         std::unique_ptr<IBattleCommand> cmd = std::move(m_queBattleCmd.front());
         m_queBattleCmd.pop();
-        cmd->Execute(m_BattleContext);
+        if (cmd)
+        {
+            bool bResult = cmd->Execute(m_BattleContext);
+            SetActionDone(bResult);
+        }
+        
         return;
     }
 
     if (m_CurActor != nullptr)
     {
-        m_pTurnManager->TurnEnd();
-        m_CurActor = nullptr;
+        // 사망자 정리
         m_BattleContext.GetEventProcessor().FlushRemoval();
-        RequestBattleStateChange(BattleState::TurnCheck);
+
+        // 행동(공격/아이템)이 완료되었다면 턴 종료
+        if (m_bIsActionDone)
+        {
+            m_bIsActionDone = false;
+
+            m_pTurnManager->TurnEnd();
+            m_CurActor = nullptr;
+
+            RequestBattleStateChange(BattleState::TurnCheck);
+        }
+        else
+        {
+            // 행동 전(턴 시작 연출 등)이라면 명령 단계로 이동
+            if (m_BattleContext.IsEnemy(m_CurActor))
+                RequestBattleStateChange(BattleState::EnemyAI);
+            else
+                RequestBattleStateChange(BattleState::CommandSelect);
+        }
     }
 }
 

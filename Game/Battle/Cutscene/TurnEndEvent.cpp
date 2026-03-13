@@ -14,7 +14,8 @@ TurnEndEvent::TurnEndEvent(Wannabe::Actor* actor)
 }
 void TurnEndEvent::OnStart(Wannabe::BattleContext& context)
 {
-    if (m_pTarget == nullptr) return;
+    if (m_pTarget == nullptr) 
+        return;
 
     auto expirationLogs = context.GetResolver().ResolveStatusExpiration(m_pTarget);
     for (const auto& log : expirationLogs)
@@ -30,10 +31,6 @@ void TurnEndEvent::OnStart(Wannabe::BattleContext& context)
         // Processor에 제거 예약
         context.GetEventProcessor().MarkForRemoval(m_pTarget);
     }
-
-    // 4. 턴 종료 후 다음 단계(보통 TurnCheck 또는 차례 교대)로 전이
-    // 이 부분은 BattleLevel의 설계에 따라 달라질 수 있습니다.
-    context.GetCutscenePlayer().Push(std::make_unique<BattlePhaseChangeEvent>(BattleState::TurnCheck));
 }
 
 bool TurnEndEvent::Update(Wannabe::BattleContext&, float)

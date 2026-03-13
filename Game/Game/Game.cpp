@@ -74,7 +74,7 @@ void Game::OnFrameEnd()
 		}
 		else
 		{
-			ChangeLevel(m_nNextLevelID); //todo юс╫ц
+			ChangeLevel(m_nNextLevelID);
 		}
 
 		m_eState = State::GamePlay;
