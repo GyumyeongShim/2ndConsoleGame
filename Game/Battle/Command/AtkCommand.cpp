@@ -6,6 +6,7 @@
 #include "Battle/BattleEventProcessor.h"
 #include "Battle/System/CutScenePlayer.h"
 #include "Battle/Cutscene/LogEvent.h"
+#include "Level/BattleLevel.h"
 
 AtkCommand::AtkCommand(Wannabe::Actor* instigator, Wannabe::Actor* pTarget)
 {
@@ -14,10 +15,10 @@ AtkCommand::AtkCommand(Wannabe::Actor* instigator, Wannabe::Actor* pTarget)
     m_eType = CommandType::Atk;
 }
 
-void AtkCommand::Execute(Wannabe::BattleContext& context)
+bool AtkCommand::Execute(Wannabe::BattleContext& context)
 {
     if(context.IsValidActor(m_pInstigator) == false || context.IsValidActor(m_pTarget) == false)
-        return;
+        return false;
 
     Wannabe::BattleResolver& resolver = context.GetResolver();
     ActCheckResult act = resolver.CanAct(m_pInstigator);
@@ -27,9 +28,11 @@ void AtkCommand::Execute(Wannabe::BattleContext& context)
         log.eLogType = LogType::Free;
         log.wstrTxt = act.wstrReason;
         context.GetCutscenePlayer().Push(std::make_unique<LogEvent>(log));
-        return;
+        return true;
     }
 
     CombatEffectResult skill = resolver.ResolveBasicAtk(m_pInstigator, m_pTarget);
     context.GetEventProcessor().ProcessCombatEffectResult(context, skill);
+
+    return true;
 }

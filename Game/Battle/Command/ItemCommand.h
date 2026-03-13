@@ -13,7 +13,7 @@ public:
 	ItemCommand(Wannabe::Actor* pIntsigator, Wannabe::Actor* pTarget, int iItemTID);
 
 public:
-	virtual void Execute(Wannabe::BattleContext& context) override;
+	virtual bool Execute(Wannabe::BattleContext& context) override;
 
 private:
 	Wannabe::Actor* m_pInstigator = nullptr;

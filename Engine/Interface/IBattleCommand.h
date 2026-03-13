@@ -18,7 +18,7 @@ namespace Wannabe
 	public:
 		IBattleCommand();
 		virtual ~IBattleCommand();
-		virtual void Execute(BattleContext& context) = 0;
+		virtual bool Execute(BattleContext& context) = 0;
 
 	protected:
 		Actor* m_pInstigator = nullptr;

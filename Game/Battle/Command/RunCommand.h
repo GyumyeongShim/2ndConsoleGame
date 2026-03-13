@@ -8,5 +8,5 @@ public:
 	RunCommand(Wannabe::Actor* self);
 
 public:
-	virtual void Execute(Wannabe::BattleContext& context) override;
+	virtual bool Execute(Wannabe::BattleContext& context) override;
 };

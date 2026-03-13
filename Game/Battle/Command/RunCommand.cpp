@@ -10,10 +10,10 @@ RunCommand::RunCommand(Wannabe::Actor* self)
 {
 }
 
-void RunCommand::Execute(Wannabe::BattleContext& context)
+bool RunCommand::Execute(Wannabe::BattleContext& context)
 {
     if (!context.IsValidActor(m_pInstigator)) 
-        return;
+        return false;
 
     bool bSuccess = context.GetResolver().CalcRunSucess();
 
@@ -32,4 +32,6 @@ void RunCommand::Execute(Wannabe::BattleContext& context)
         log.wstrTxt = L"도망에 실패했습니다!";
         context.GetCutscenePlayer().Push(std::make_unique<LogEvent>(log));
     }
+
+    return true;
 }

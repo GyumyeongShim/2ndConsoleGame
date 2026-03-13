@@ -15,6 +15,7 @@
 #include "Component/DisplayComponent.h"
 #include "Manager/DataManager.h"
 #include "Data/ActionData.h"
+#include "Level/BattleLevel.h"
 
 ItemCommand::ItemCommand(Wannabe::Actor* pIntsigator, Wannabe::Actor* pTarget, int iItemTID)
 	:m_pInstigator(pIntsigator), m_pTarget(pTarget), m_iItemTID(iItemTID)
@@ -22,10 +23,10 @@ ItemCommand::ItemCommand(Wannabe::Actor* pIntsigator, Wannabe::Actor* pTarget, i
     m_eType = CommandType::Item;
 }
 
-void ItemCommand::Execute(Wannabe::BattleContext& context)
+bool ItemCommand::Execute(Wannabe::BattleContext& context)
 {
     if (context.IsValidActor(m_pTarget) == false || context.IsValidActor(m_pInstigator) == false || m_iItemTID == 0)
-        return;
+        return false;
 
     auto& resolver = context.GetResolver();
     auto& processor = context.GetEventProcessor();
@@ -36,28 +37,28 @@ void ItemCommand::Execute(Wannabe::BattleContext& context)
         log.eLogType = LogType::Free;
         log.wstrTxt = act.wstrReason;
         context.GetCutscenePlayer().Push(std::make_unique<LogEvent>(log));
-        return;
+        return true;
     }
 
     // 인벤토리에서 ItemInstance 가져오기
     auto* inventory = m_pInstigator->GetComponent<Wannabe::InventoryComponent>();
     if (inventory == nullptr)
-        return;
+        return false;
 
     Wannabe::ItemInstance* itemInstance = inventory->FindItem(m_iItemTID);
     if (itemInstance == nullptr)
-        return;
+        return false;
 
     // Item data
     const ActionData* itemData = Wannabe::DataManager::Get().GetActionData(itemInstance->GetItem()->GetItemTID());
     if (itemData == nullptr)
-        return;
+        return false;
 
     // 타겟 선정
     auto targets = context.GetResolver().ResolveTargets(context, m_pInstigator, m_pTarget, 
         itemData->targetType, itemData->iMaxTargetCnt);
     if (targets.empty() == true)
-        return;
+        return false;
 
     // 로그
     BattleLog useLog;
@@ -79,4 +80,5 @@ void ItemCommand::Execute(Wannabe::BattleContext& context)
     }
 
     inventory->RemoveItemByTID(m_iItemTID, 1);
+    return true;
 }

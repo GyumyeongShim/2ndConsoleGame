@@ -9,6 +9,7 @@
 #include "Battle/Cutscene/DeathEvent.h"
 
 #include "Component/DisplayComponent.h"
+#include "Level/BattleLevel.h"
 
 SkillCommand::SkillCommand(Wannabe::Actor* instigator, Wannabe::Actor* pTarget, int iSkillTid)
     :m_iSkillTid(iSkillTid)
@@ -18,17 +19,17 @@ SkillCommand::SkillCommand(Wannabe::Actor* instigator, Wannabe::Actor* pTarget, 
     m_eType = CommandType::Skill;
 }
 
-void SkillCommand::Execute(Wannabe::BattleContext& context)
+bool SkillCommand::Execute(Wannabe::BattleContext& context)
 {
     if (context.IsValidActor(m_pTarget) == false || context.IsValidActor(m_pInstigator) == false)
-        return;
+        return false;
 
     auto& resolver = context.GetResolver();
     auto& processor = context.GetEventProcessor();
 
     const ActionData* skill = DataManager::Get().GetActionData(m_iSkillTid);
     if (skill == nullptr)
-        return;
+        return false;
 
     ActCheckResult act = resolver.CanAct(m_pInstigator);
     if (act.bCanAct == false)
@@ -37,7 +38,7 @@ void SkillCommand::Execute(Wannabe::BattleContext& context)
         log.eLogType = LogType::Free;
         log.wstrTxt = act.wstrReason;
         context.GetCutscenePlayer().Push(std::make_unique<LogEvent>(log));
-        return;
+        return false;
     }
 
     int targetCnt = skill->iMaxTargetCnt;
@@ -46,9 +47,11 @@ void SkillCommand::Execute(Wannabe::BattleContext& context)
     auto targets = context.GetResolver().ResolveTargets(context, m_pInstigator, m_pTarget, targetType, targetCnt);
     for (auto* target : targets)
     {
-        auto results = resolver.ResolveAction(m_pInstigator, target, skill->vecEffects,skill->iPower);
+        auto results = resolver.ResolveAction(m_pInstigator, target, skill->vecEffects, skill->iPower);
 
         for (const auto& result : results)
             processor.ProcessCombatEffectResult(context, result);
     }
+
+    return true;
 }

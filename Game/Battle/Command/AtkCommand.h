@@ -8,5 +8,5 @@ public:
 	virtual ~AtkCommand() override {}
 
 public:
-	virtual void Execute(Wannabe::BattleContext& context) override;
+	virtual bool Execute(Wannabe::BattleContext& context) override;
 };
